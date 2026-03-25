@@ -1,10 +1,9 @@
 import {Button} from "@/components/ui/button";
 
 export default function Home() {
-  return (
+    return (
     <div>
-      <p>Hello</p>
-      <Button variant="destructive">World</Button>
+        <h1>Contact</h1>
     </div>
-  );
+    );
 }
