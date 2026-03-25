@@ -20,7 +20,7 @@ interface Props {
     href: string;
     children: React.ReactNode;
     isActive?: boolean;
-};
+}
 
 const NavbarItem = ({
     href,
