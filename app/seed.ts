@@ -4,51 +4,48 @@ import config from "@payload-config";
 import dns from "node:dns/promises";
 dns.setServers(["1.1.1.1"]);
 
-const properties = [
+const locations = [
     {
-        name: "All",
-        slug: "all",
+        name: "Greensboro",
+        slug: "greensboro",
+        units : [
+            {
+                name: "Greensboro Gray",
+                slug: "gray",
+            },
+            {
+                name: "Greensboro Green",
+                slug: "green",
+            },
+            {
+                name: "Greensboro Red",
+                slug: "red",
+            },
+            {
+                name: "Greensboro Boathouse",
+                slug: "boathouse",
+            },
+        ]
     },
     {
-        name: "Greensboro Property Gray",
-        slug: "gray",
-    },
-    {
-        name: "Greensboro Property Green",
-        slug: "green",
-    },
-    {
-        name: "Greensboro Property Red",
-        slug: "red",
-    },
-    {
-        name: "Greensboro Property Boathouse",
-        slug: "boathouse",
-    },
-    {
-        name: "Maui Property North",
-        slug: "north",
-    },
-    {
-        name: "Maui Property South",
-        slug: "south",
+        name: "Maui",
+        slug: "maui",
+        units : [
+            {
+                name: "Maui North",
+                slug: "north",
+            },
+            {
+                name: "Maui South",
+                slug: "south",
+            },
+        ]
     }
 ]
 
 const seed = async () => {
     const payload = await getPayload({ config });
-
-    //const adminAccount = await stripe.accounts.create({});
-
-    // Create admin tenant
-    const adminTenant = await payload.create({
-        collection: "tenants",
-        data: {
-            name: "admin",
-            slug: "admin",
-            //stripeAccountId: adminAccount.id,
-        },
-    });
+    const wait = (ms: number) => new Promise((res) => setTimeout(res, ms))
 
     // Create admin user
     await payload.create({
@@ -58,22 +55,38 @@ const seed = async () => {
             password: "demo",
             roles: ["super-admin"],
             username: "admin",
-            tenants: [
-                {
-                    tenant: adminTenant.id,
-                },
-            ],
         },
     });
 
-    for (const property of properties) {
-        await payload.create({
-            collection: "properties",
+    for (const location of locations) {
+
+        const tenant = await payload.create({
+            collection: "tenants",
             data: {
-                name: property.name,
-                slug: property.slug,
+                name: location.name,
+                slug: location.slug,
             },
         });
+        console.log(`Created tenant: ${tenant.slug}`);
+
+        for (const unit of location.units) {
+
+            await console.log(`Created unit: ${unit.slug} for tenant: ${tenant.id}`);
+
+            await Promise.all([
+                await payload.create({
+                    collection: 'units',
+                    data: {
+                        tenant: tenant.id,
+                        name: unit.name,
+                        slug: unit.slug,
+                    },
+                }),
+            ])
+
+            await wait(500)
+
+        }
 
     }
 }
