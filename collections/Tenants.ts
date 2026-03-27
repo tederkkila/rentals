@@ -1,13 +1,7 @@
-import type { CollectionConfig } from 'payload';
-
-import { isSuperAdmin } from '@/lib/access';
+import type { CollectionConfig } from 'payload'
 
 export const Tenants: CollectionConfig = {
     slug: 'tenants',
-    access: {
-        create: ({ req }) => isSuperAdmin(req.user),
-        delete: ({ req }) => isSuperAdmin(req.user),
-    },
     admin: {
         useAsTitle: 'slug',
     },
@@ -16,9 +10,9 @@ export const Tenants: CollectionConfig = {
             name: "name",
             required: true,
             type: "text",
-            label: "Store Name",
+            label: "Location Name",
             admin: {
-                description: "This is the name of the store (e.g. Antonio's Store)",
+                description: "This is the name of the location",
             },
         },
         {
@@ -27,12 +21,9 @@ export const Tenants: CollectionConfig = {
             index: true,
             required: true,
             unique: true,
-            access: {
-                update: ({ req }) => isSuperAdmin(req.user),
-            },
             admin: {
                 description:
-                    "This is the subdomain for the store (e.g. [slug].henrymitchell.net)",
+                    "This is the subdomain for the location (e.g. [slug].henrymitchell.net)",
             },
         },
         {
@@ -41,4 +32,4 @@ export const Tenants: CollectionConfig = {
             relationTo: "media",
         }
     ],
-};
+}

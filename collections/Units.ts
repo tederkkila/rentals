@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
-export const Properties: CollectionConfig = {
-    slug: "Properties",
+export const Units: CollectionConfig = {
+    slug: "units",
     fields: [
         {
             name: "name",
@@ -15,5 +15,6 @@ export const Properties: CollectionConfig = {
             unique: true,
             index: true,
         },
+
     ]
 };

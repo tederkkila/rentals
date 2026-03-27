@@ -68,10 +68,11 @@ export interface Config {
   blocks: {};
   collections: {
     users: User;
+    tenants: Tenant;
+    units: Unit;
+    Attractions: Attraction;
     media: Media;
     Categories: Category;
-    Properties: Property;
-    tenants: Tenant;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -80,10 +81,11 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
+    tenants: TenantsSelect<false> | TenantsSelect<true>;
+    units: UnitsSelect<false> | UnitsSelect<true>;
+    Attractions: AttractionsSelect<false> | AttractionsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     Categories: CategoriesSelect<false> | CategoriesSelect<true>;
-    Properties: PropertiesSelect<false> | PropertiesSelect<true>;
-    tenants: TenantsSelect<false> | TenantsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -129,6 +131,14 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: string;
+  username: string;
+  roles?: ('super-admin' | 'user')[] | null;
+  tenants?:
+    | {
+        tenant: string | Tenant;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -147,6 +157,24 @@ export interface User {
     | null;
   password?: string | null;
   collection: 'users';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tenants".
+ */
+export interface Tenant {
+  id: string;
+  /**
+   * This is the name of the location
+   */
+  name: string;
+  /**
+   * This is the subdomain for the location (e.g. [slug].henrymitchell.net)
+   */
+  slug: string;
+  image?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -169,41 +197,36 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "units".
+ */
+export interface Unit {
+  id: string;
+  tenant?: (string | null) | Tenant;
+  name: string;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Attractions".
+ */
+export interface Attraction {
+  id: string;
+  name: string;
+  slug: string;
+  image?: (string | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "Categories".
  */
 export interface Category {
   id: string;
   name: string;
   slug: string;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Properties".
- */
-export interface Property {
-  id: string;
-  name: string;
-  slug: string;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "tenants".
- */
-export interface Tenant {
-  id: string;
-  /**
-   * This is the name of the store (e.g. Antonio's Store)
-   */
-  name: string;
-  /**
-   * This is the subdomain for the store (e.g. [slug].henrymitchell.net)
-   */
-  slug: string;
-  image?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
 }
@@ -236,20 +259,24 @@ export interface PayloadLockedDocument {
         value: string | User;
       } | null)
     | ({
+        relationTo: 'tenants';
+        value: string | Tenant;
+      } | null)
+    | ({
+        relationTo: 'units';
+        value: string | Unit;
+      } | null)
+    | ({
+        relationTo: 'Attractions';
+        value: string | Attraction;
+      } | null)
+    | ({
         relationTo: 'media';
         value: string | Media;
       } | null)
     | ({
         relationTo: 'Categories';
         value: string | Category;
-      } | null)
-    | ({
-        relationTo: 'Properties';
-        value: string | Property;
-      } | null)
-    | ({
-        relationTo: 'tenants';
-        value: string | Tenant;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -298,6 +325,14 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  username?: T;
+  roles?: T;
+  tenants?:
+    | T
+    | {
+        tenant?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -314,6 +349,39 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tenants_select".
+ */
+export interface TenantsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "units_select".
+ */
+export interface UnitsSelect<T extends boolean = true> {
+  tenant?: T;
+  name?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Attractions_select".
+ */
+export interface AttractionsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  image?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -340,27 +408,6 @@ export interface MediaSelect<T extends boolean = true> {
 export interface CategoriesSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Properties_select".
- */
-export interface PropertiesSelect<T extends boolean = true> {
-  name?: T;
-  slug?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "tenants_select".
- */
-export interface TenantsSelect<T extends boolean = true> {
-  name?: T;
-  slug?: T;
-  image?: T;
   updatedAt?: T;
   createdAt?: T;
 }
