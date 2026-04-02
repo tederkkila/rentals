@@ -70,9 +70,11 @@ export interface Config {
     users: User;
     tenants: Tenant;
     units: Unit;
+    rates: Rate;
     Attractions: Attraction;
     media: Media;
     Categories: Category;
+    tags: Tag;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -83,9 +85,11 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     tenants: TenantsSelect<false> | TenantsSelect<true>;
     units: UnitsSelect<false> | UnitsSelect<true>;
+    rates: RatesSelect<false> | RatesSelect<true>;
     Attractions: AttractionsSelect<false> | AttractionsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     Categories: CategoriesSelect<false> | CategoriesSelect<true>;
+    tags: TagsSelect<false> | TagsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -172,7 +176,12 @@ export interface Tenant {
    * This is the subdomain for the location (e.g. [slug].henrymitchell.net)
    */
   slug: string;
+  icon?: (string | null) | Media;
   image?: (string | null) | Media;
+  /**
+   * This is the description of the location
+   */
+  description?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -204,6 +213,46 @@ export interface Unit {
   tenant?: (string | null) | Tenant;
   name: string;
   slug: string;
+  /**
+   * If checked, you must be authenticated to view unit
+   */
+  isPrivate?: boolean | null;
+  /**
+   * If checked, this unit will be archived
+   */
+  isArchived?: boolean | null;
+  image?: (string | null) | Media;
+  coverImage?: (string | null) | Media;
+  guests: number;
+  bathrooms: number;
+  tags?: (string | Tag)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags".
+ */
+export interface Tag {
+  id: string;
+  name: string;
+  slug: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "rates".
+ */
+export interface Rate {
+  id: string;
+  year: number;
+  /**
+   * If checked, this is a peak rate
+   */
+  peak?: boolean | null;
+  unit: string | Unit;
+  price: number;
   updatedAt: string;
   createdAt: string;
 }
@@ -267,6 +316,10 @@ export interface PayloadLockedDocument {
         value: string | Unit;
       } | null)
     | ({
+        relationTo: 'rates';
+        value: string | Rate;
+      } | null)
+    | ({
         relationTo: 'Attractions';
         value: string | Attraction;
       } | null)
@@ -277,6 +330,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'Categories';
         value: string | Category;
+      } | null)
+    | ({
+        relationTo: 'tags';
+        value: string | Tag;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -357,7 +414,9 @@ export interface UsersSelect<T extends boolean = true> {
 export interface TenantsSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
+  icon?: T;
   image?: T;
+  description?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -369,6 +428,25 @@ export interface UnitsSelect<T extends boolean = true> {
   tenant?: T;
   name?: T;
   slug?: T;
+  isPrivate?: T;
+  isArchived?: T;
+  image?: T;
+  coverImage?: T;
+  guests?: T;
+  bathrooms?: T;
+  tags?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "rates_select".
+ */
+export interface RatesSelect<T extends boolean = true> {
+  year?: T;
+  peak?: T;
+  unit?: T;
+  price?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -406,6 +484,16 @@ export interface MediaSelect<T extends boolean = true> {
  * via the `definition` "Categories_select".
  */
 export interface CategoriesSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags_select".
+ */
+export interface TagsSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
   updatedAt?: T;

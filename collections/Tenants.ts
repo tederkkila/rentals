@@ -27,9 +27,21 @@ export const Tenants: CollectionConfig = {
             },
         },
         {
+            name: "icon",
+            type: "upload",
+            relationTo: "media",
+        },
+        {
             name: "image",
             type: "upload",
             relationTo: "media",
+        },
+        {
+            name: "description",
+            type: "textarea",
+            admin: {
+                description: "This is the description of the location",
+            },
         }
     ],
 }
