@@ -5,7 +5,9 @@ import { DEFAULT_LIMIT } from "@/constants";
 import { getQueryClient, trpc } from "@/trpc/server";
 
 import { UnitListView } from "@/modules/units/ui/views/unit-list-view";
+import { TenantRichText } from "@/modules/tenants/ui/components/tenant-rich-text"
 import { loadUnitFilters } from "@/modules/units/search-params";
+
 
 interface Props {
     searchParams: Promise<SearchParams>;
@@ -23,10 +25,25 @@ const Page = async ({ params, searchParams }: Props) => {
         limit: DEFAULT_LIMIT,
     }));
 
+    const queryClientTenant = getQueryClient();
+    void queryClientTenant.prefetchQuery(trpc.tenant.getOne.queryOptions({
+        slug: slug,
+    }));
+
+
+
     return (
-        <HydrationBoundary state={dehydrate(queryClient)}>
-            <UnitListView tenantSlug={slug} narrowView />
-        </HydrationBoundary>
+        <div className="wrapper--ticks p-4 md:p-10 flex flex-col gap-4">
+
+            <HydrationBoundary state={dehydrate(queryClientTenant)}>
+                <TenantRichText slug={slug} />
+            </HydrationBoundary>
+
+            <HydrationBoundary state={dehydrate(queryClient)}>
+                <UnitListView tenantSlug={slug} narrowView />
+            </HydrationBoundary>
+
+        </div>
     );
 }
 

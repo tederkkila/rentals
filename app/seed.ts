@@ -20,6 +20,7 @@ const locations = [
             {
                 name: "The Four Season House",
                 slug: "gray",
+                description: "Enjoy Caspian Lake year round",
                 bathrooms: 2,
                 guests: 6,
                 image: {
@@ -36,14 +37,33 @@ const locations = [
                     {year: 2027, peak: false, price: 1800},
                 ],
                 tags: [
-                    { name: "winterized", slug: "winterized"},
-                    { name: "sauna access", slug: "sauna-access"},
-                    { name: "beach", slug: "beach"},
+                    //special tags
+                    { name: "Winterized", slug: "winterized", icon: "LuSunSnow", isSearchable: true, isAmenity: true},
+                    { name: "Lake View", slug: "lake-view", icon: "MdOutlineWaterDrop", isSearchable: true, isAmenity: false},
+                    { name: "Modern", slug: "modern", icon: "HiHomeModern", isSearchable: true, isAmenity: true},
+                    { name: "Laundry", slug: "outdoor-dining", icon: "MdOutlineLocalLaundryService", isSearchable: true, isAmenity: true},
+                    { name: "Dishwasher", slug: "dishwasher", icon: "BiSolidWasher", isSearchable: true, isAmenity: true},
+
+                    //general tags
+                    { name: "Sauna Access", slug: "sauna-access", icon: "PiTowel", isSearchable: true, isAmenity: true},
+                    { name: "Beach", slug: "beach", icon: "FaUmbrellaBeach", isSearchable: true, isAmenity: true},
+                    { name: "Private Beach", slug: "private-beach", icon: "PiSunglassesFill", isSearchable: true, isAmenity: true},
+                    { name: "Crystal Clear Water", slug: "crystal-clear", icon: "RiDiamondLine", isSearchable: true, isAmenity: false},
+                    { name: "Books", slug: "books", icon: "ImBooks", isSearchable: false, isAmenity: true},
+                    { name: "Kitchen", slug: "kitchen", icon: "FaKitchenSet", isSearchable: true, isAmenity: true},
+                    { name: "Outdoor Grill", slug: "outdoor-grill", icon: "MdOutdoorGrill", isSearchable: true, isAmenity: true},
+                    { name: "Wifi", slug: "wifi", icon: "FaWifi", isSearchable: true, isAmenity: true},
+                    { name: "Outdoor Dining", slug: "outdoor-dining", icon: "MdDeck", isSearchable: false, isAmenity: true},
+                    { name: "Fireplace", slug: "fireplace", icon: "MdFireplace", isSearchable: true, isAmenity: true},
+                    { name: "Water Gear", slug: "water-gear", icon: "TbScubaMask", isSearchable: true, isAmenity: true},
+
+
                 ],
             },
             {
                 name: "The Lakeside Cottage",
                 slug: "green",
+                description: "Caspian Lake on your doorstep",
                 bathrooms: 1,
                 guests: 5,
                 image: {
@@ -60,14 +80,26 @@ const locations = [
                     {year: 2027, peak: false, price: 1250},
                 ],
                 tags: [
-                    { name: "lakeside", slug: "lakeside"},
-                    { name: "sauna access", slug: "sauna-access"},
-                    { name: "beach", slug: "beach"},
+                    { name: "Lake View", slug: "lake-view", icon: "MdOutlineWaterDrop", isSearchable: true, isAmenity: false},
+                    { name: "Lakeside", slug: "lakeside", icon: "GiBoatFishing", isSearchable: true, isAmenity: false},
+                    { name: "Rustic", slug: "rustic", icon: "MdCabin", isSearchable: true, isAmenity: true},
+
+                    { name: "Sauna Access", slug: "sauna-access", icon: "PiTowel", isSearchable: true, isAmenity: true},
+                    { name: "Beach", slug: "beach", icon: "FaUmbrellaBeach", isSearchable: true, isAmenity: true},
+                    { name: "Private Beach", slug: "private-beach", icon: "PiSunglassesFill", isSearchable: true, isAmenity: true},
+                    { name: "Crystal Clear Water", slug: "crystal-clear", icon: "RiDiamondLine", isSearchable: true, isAmenity: false},
+                    { name: "Kitchen", slug: "kitchen", icon: "FaKitchenSet", isSearchable: true, isAmenity: true},
+                    { name: "Outdoor Grill", slug: "outdoor-grill", icon: "MdOutdoorGrill", isSearchable: true, isAmenity: true},
+                    { name: "Wifi", slug: "wifi", icon: "FaWifi", isSearchable: true, isAmenity: true},
+                    { name: "Outdoor Dining", slug: "outdoor-dining", icon: "MdDeck", isSearchable: false, isAmenity: true},
+                    { name: "Fireplace", slug: "fireplace", icon: "MdFireplace", isSearchable: true, isAmenity: true},
+                    { name: "Water Gear", slug: "water-gear", icon: "TbScubaMask", isSearchable: true, isAmenity: true},
                 ],
             },
             {
                 name: "The Red Cabin",
                 slug: "red",
+                description: "This unit will only show to tenantAdmin and superAdmin is it is 'private'",
                 bathrooms: 1,
                 guests: 4,
                 image: {
@@ -84,8 +116,18 @@ const locations = [
                     {year: 2027, peak: false, price: 650},
                 ],
                 tags: [
-                    { name: "sauna access", slug: "sauna-access"},
-                    { name: "beach", slug: "beach"},
+                    { name: "Rustic", slug: "rustic", icon: "MdCabin", isSearchable: true, isAmenity: true},
+
+                    { name: "Sauna Access", slug: "sauna-access", icon: "PiTowel", isSearchable: true, isAmenity: true},
+                    { name: "Beach", slug: "beach", icon: "FaUmbrellaBeach", isSearchable: true, isAmenity: true},
+                    { name: "Private Beach", slug: "private-beach", icon: "PiSunglassesFill", isSearchable: true, isAmenity: true},
+                    { name: "Crystal Clear Water", slug: "crystal-clear", icon: "RiDiamondLine", isSearchable: true, isAmenity: false},
+                    { name: "Kitchen", slug: "kitchen", icon: "FaKitchenSet", isSearchable: true, isAmenity: true},
+                    { name: "Outdoor Grill", slug: "outdoor-grill", icon: "MdOutdoorGrill", isSearchable: true, isAmenity: true},
+                    { name: "Wifi", slug: "wifi", icon: "FaWifi", isSearchable: true, isAmenity: true},
+                    { name: "Outdoor Dining", slug: "outdoor-dining", icon: "MdDeck", isSearchable: false, isAmenity: true},
+                    { name: "Fireplace", slug: "fireplace", icon: "MdFireplace", isSearchable: true, isAmenity: true},
+                    { name: "Water Gear", slug: "water-gear", icon: "TbScubaMask", isSearchable: true, isAmenity: true},
                 ],
                 isPrivate: true,
             },
@@ -100,9 +142,16 @@ const locations = [
                 bathrooms: 0,
                 guests: 2,
                 tags: [
-                    { name: "lakeside", slug: "lakeside"},
-                    { name: "sauna access", slug: "sauna-access"},
-                    { name: "beach", slug: "beach"},
+                    { name: "Lake View", slug: "lake-view", icon: "MdOutlineWaterDrop", isSearchable: true, isAmenity: false},
+                    { name: "Lakeside", slug: "lakeside", icon: "GiBoatFishing", isSearchable: true, isAmenity: false},
+                    { name: "Rustic", slug: "rustic", icon: "MdCabin", isSearchable: true, isAmenity: true},
+
+                    { name: "Sauna Access", slug: "sauna-access", icon: "PiTowel", isSearchable: true, isAmenity: true},
+                    { name: "Beach", slug: "beach", icon: "FaUmbrellaBeach", isSearchable: true, isAmenity: true},
+                    { name: "Private Beach", slug: "private-beach", icon: "PiSunglassesFill", isSearchable: true, isAmenity: true},
+                    { name: "Crystal Clear Water", slug: "crystal-clear", icon: "RiDiamondLine", isSearchable: true, isAmenity: false},
+                    { name: "Water Gear", slug: "water-gear", icon: "TbScubaMask", isSearchable: true, isAmenity: true},
+
                 ],
                 isPrivate: true,
                 isArchived: true,
@@ -177,8 +226,12 @@ const locations = [
                     {year: 2027, peak: false, price: 1250},
                 ],
                 tags: [
-                    { name: "Lānai", slug: "lanai"},
-                    { name: "beach", slug: "beach"},
+                    { name: "Lānai", slug: "lanai", icon: "MdDeck", isSearchable: true, isAmenity: true},
+                    { name: "Beach", slug: "beach", icon: "FaUmbrellaBeach", isSearchable: true, isAmenity: true},
+                    { name: "Kitchen", slug: "kitchen", icon: "FaKitchenSet", isSearchable: true, isAmenity: true},
+                    { name: "Wifi", slug: "wifi", icon: "FaWifi", isSearchable: true, isAmenity: true},
+                    { name: "Water Gear", slug: "water-gear", icon: "TbScubaMask", isSearchable: true, isAmenity: true},
+
                 ],
             },
             {
@@ -202,9 +255,13 @@ const locations = [
                     {year: 2027, peak: false, price: 1250},
                 ],
                 tags: [
-                    { name: "Lānai", slug: "lanai"},
-                    { name: "pool", slug: "pool"},
-                    { name: "beach", slug: "beach"},
+                    { name: "Lānai", slug: "lanai", icon: "MdDeck", isSearchable: true, isAmenity: true},
+                    { name: "Pool", slug: "pool", icon: "FaSwimmingPool", isSearchable: true, isAmenity: true},
+                    { name: "Beach", slug: "beach", icon: "FaUmbrellaBeach", isSearchable: true, isAmenity: true},
+                    { name: "Kitchen", slug: "kitchen", icon: "FaKitchenSet", isSearchable: true, isAmenity: true},
+                    { name: "Wifi", slug: "wifi", icon: "FaWifi", isSearchable: true, isAmenity: true},
+                    { name: "Water Gear", slug: "water-gear", icon: "TbScubaMask", isSearchable: true, isAmenity: true},
+
                 ],
             },
         ],
@@ -237,7 +294,7 @@ const seed = async () => {
             password: process.env.TEDMIN,
             roles: ["super-admin"],
             username: "admin",
-        },
+        }
     });
 
     console.log("Created admin user");
@@ -357,6 +414,9 @@ const seed = async () => {
                             data: {
                                 name: tag.name,
                                 slug: tag.slug,
+                                icon: tag.icon,
+                                isSearchable: tag.isSearchable,
+                                isAmenity: tag.isAmenity,
                             },
                         });
                         payload.logger.info(`Tag ${tag.slug} created.`);

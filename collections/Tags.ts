@@ -4,6 +4,8 @@ import { isSuperAdmin } from "@/lib/access";
 
 export const Tags: CollectionConfig = {
     slug: "tags",
+    orderable: true,
+    defaultSort: "_order",
     access: {
         read: () => true,
         create: ({ req }) => isSuperAdmin(req.user),
@@ -26,6 +28,25 @@ export const Tags: CollectionConfig = {
             type: "text",
             required: true,
             unique: true,
+        },{
+            name: "icon",
+            type: "text",
+        },
+        {
+            name: "isSearchable",
+            defaultValue: false,
+            type: "checkbox",
+            admin: {
+                description: "If checked, this tag appears in search filters"
+            },
+        },
+        {
+            name: "isAmenity",
+            defaultValue: true,
+            type: "checkbox",
+            admin: {
+                description: "If checked, tag is an amenity"
+            },
         }
     ],
 };

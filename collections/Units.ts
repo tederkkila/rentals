@@ -1,7 +1,16 @@
 import type { CollectionConfig } from 'payload'
 
+import {
+    lexicalEditor,
+    FixedToolbarFeature,
+    HeadingFeature,
+    OrderedListFeature,
+    UnorderedListFeature,
+} from '@payloadcms/richtext-lexical'
+
 export const Units: CollectionConfig = {
     slug: "units",
+    orderable: true,
     admin: {
         useAsTitle: "name",
     },
@@ -17,6 +26,21 @@ export const Units: CollectionConfig = {
             required: true,
             unique: true,
             index: true,
+        },
+        {
+            name: "content",
+            type: "richText",
+            editor: lexicalEditor({
+                features: ({ defaultFeatures }) => [
+                    ...defaultFeatures,
+                    // Add a fixed toolbar
+                    FixedToolbarFeature(),
+                    // Add custom features
+                    HeadingFeature({}),
+                    OrderedListFeature(),
+                    UnorderedListFeature(),
+                ],
+            }),
         },
         {
             name: "isPrivate",
@@ -61,6 +85,10 @@ export const Units: CollectionConfig = {
             type: "relationship",
             relationTo: "tags",
             hasMany: true,
+            admin: {
+                description: "Tags for this unit",
+                isSortable: true,
+            }
         }
 
     ]

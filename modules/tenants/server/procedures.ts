@@ -25,11 +25,12 @@ export const tenantsRouter = createTRPCRouter({
             });
 
             const tenant = tenantsData.docs[0];
+            console.log(tenant)
 
             if (!tenant) {
                 throw new TRPCError({ code: "NOT_FOUND", message: "Tenant not found" });
             }
 
-            return tenant as Tenant & { icon: Media | null };
+            return tenant as Tenant & { icon: Media | null, image: Media | null };
         }),
 });

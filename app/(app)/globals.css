@@ -1,8 +1,13 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
+
+/*@theme {*/
+/*  --color-stroke: var(--border);*/
+/*}*/
 
 @theme {
   --font-geist-sans: "Geist Sans", sans-serif;

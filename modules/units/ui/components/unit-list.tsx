@@ -41,18 +41,12 @@ export const UnitList = ({ tenantSlug, narrowView }: Props) => {
     return (
         <>
             <div className={cn(
-                "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4",
-                narrowView && "lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3"
+                "grid grid-cols-1 gap-4"
             )}>
                 {data?.docs.map((unit) => (
                     <UnitCard
                         key={unit.id}
-                        id={unit.id}
-                        name={unit.name}
-                        imageUrl={unit.image?.url}
-                        tenantSlug={unit.tenant?.slug}
-                        tenantIconUrl={unit.tenant?.icon?.url}
-                        price={unit.price}
+                        unit={unit}
                     />
                 ))}
             </div>

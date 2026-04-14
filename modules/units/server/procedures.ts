@@ -9,7 +9,6 @@ import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 
 import { sortValues } from "../search-params";
 
-
 export const unitsRouter = createTRPCRouter({
     getMany: baseProcedure
         .input(
@@ -27,15 +26,15 @@ export const unitsRouter = createTRPCRouter({
         )
         .query(async ({ ctx, input }) => {
 
-            console.log(input.tags)
+            //console.log(input.tags)
 
             let where: Where = {};
 
             if (input.tags && input.tags.length > 0) {
-                console.log(input.tags)
+                //console.log(input.tags)
                 let andArray = [];
                 for (const tag of input.tags) {
-                    console.log(tag)
+                    // console.log(tag)
                     andArray.push({"tags.slug": {equals: tag}})
                 }
 
@@ -50,10 +49,10 @@ export const unitsRouter = createTRPCRouter({
                 not_equals: true,
             };
 
-            let sort: Sort = "-createdAt";
+            let sort: Sort = "_order";
 
             if (input.sort === "curated") {
-                sort = "-createdAt";
+                sort = "_order";
             }
 
             if (input.sort === "hot_and_new") {
@@ -149,6 +148,43 @@ export const unitsRouter = createTRPCRouter({
                 },
             });
 
+            //console.log(data)
+
+            const dataWithPrices = await Promise.all(
+                data.docs.map(async (doc) => {
+                    const peakPriceData = await ctx.db.find({
+                        collection: "rates",
+                        depth: 0,
+                        pagination: false,
+                        where: {
+                            year: {equals: 2026},
+                            unit: {equals: doc.id},
+                            peak: {equals: true},
+                        }
+                    });
+
+                    const offPriceData = await ctx.db.find({
+                        collection: "rates",
+                        depth: 0,
+                        pagination: false,
+                        where: {
+                            year: {equals: 2026},
+                            unit: {equals: doc.id},
+                            peak: {not_equals: true},
+                        }
+                    });
+
+                    // console.log(peakPriceData.docs)
+
+                    return {
+                        ...doc,
+                        peakRate: peakPriceData.docs[0]?.price,
+                        offRate: offPriceData.docs[0]?.price,
+
+                    }
+                })
+            )
+
             // const dataWithSummarizedReviews = await Promise.all(
             //     data.docs.map(async (doc) => {
             //         const reviewsData = await ctx.db.find({
@@ -173,12 +209,13 @@ export const unitsRouter = createTRPCRouter({
             // );
 
             return {
+
                 ...data,
-                // docs: dataWithSummarizedReviews.map((doc) => ({
-                //     ...doc,
+                docs: dataWithPrices.map((doc) => ({
+                     ...doc,
                 //     image: doc.image as Media | null,
                 //     tenant: doc.tenant as Tenant & { image: Media | null },
-                // }))
+                }))
             }
         }),
 });

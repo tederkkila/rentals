@@ -181,7 +181,21 @@ export interface Tenant {
   /**
    * This is the description of the location
    */
-  description?: string | null;
+  description?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -210,9 +224,11 @@ export interface Media {
  */
 export interface Unit {
   id: string;
+  _order?: string | null;
   tenant?: (string | null) | Tenant;
   name: string;
   slug: string;
+  description?: string | null;
   /**
    * If checked, you must be authenticated to view unit
    */
@@ -225,6 +241,9 @@ export interface Unit {
   coverImage?: (string | null) | Media;
   guests: number;
   bathrooms: number;
+  /**
+   * Tags for this unit
+   */
   tags?: (string | Tag)[] | null;
   updatedAt: string;
   createdAt: string;
@@ -235,8 +254,18 @@ export interface Unit {
  */
 export interface Tag {
   id: string;
+  _order?: string | null;
   name: string;
   slug: string;
+  icon?: string | null;
+  /**
+   * If checked, this tag appears in search filters
+   */
+  isSearchable?: boolean | null;
+  /**
+   * If checked, tag is an amenity
+   */
+  isAmenity?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -425,9 +454,11 @@ export interface TenantsSelect<T extends boolean = true> {
  * via the `definition` "units_select".
  */
 export interface UnitsSelect<T extends boolean = true> {
+  _order?: T;
   tenant?: T;
   name?: T;
   slug?: T;
+  description?: T;
   isPrivate?: T;
   isArchived?: T;
   image?: T;
@@ -494,8 +525,12 @@ export interface CategoriesSelect<T extends boolean = true> {
  * via the `definition` "tags_select".
  */
 export interface TagsSelect<T extends boolean = true> {
+  _order?: T;
   name?: T;
   slug?: T;
+  icon?: T;
+  isSearchable?: T;
+  isAmenity?: T;
   updatedAt?: T;
   createdAt?: T;
 }
