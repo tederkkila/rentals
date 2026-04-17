@@ -1,16 +1,45 @@
 import z from "zod";
 import { TRPCError } from "@trpc/server";
 import type { Sort, Where } from "payload";
-import { headers as getHeaders } from "next/headers";
 
 import { DEFAULT_LIMIT } from "@/constants";
-import { Category, Media, Tenant } from "@/payload-types";
+import { Media, Tenant, Unit } from "@/payload-types";
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 
 import { sortValues } from "../search-params";
 
-
 export const unitsRouter = createTRPCRouter({
+    getOne: baseProcedure
+        .input(
+            z.object({
+                slug: z.string(),
+            }),
+        )
+        .query(async ({ ctx, input }) => {
+
+            //console.log("unitsRouter getOne | slug: "  + input.slug)
+
+            const unitsData = await ctx.db.find({
+                collection: "units",
+                depth: 1, // "tenant.image" is a type of "Media"
+                where: {
+                    slug: {
+                        equals: input.slug,
+                    },
+                },
+                limit: 1,
+                pagination: false,
+            });
+
+            const unit = unitsData.docs[0];
+            //console.log(tenant)
+
+            if (!unit) {
+                throw new TRPCError({ code: "NOT_FOUND", message: "Unit not found" });
+            }
+
+            return unit as Unit & { coverImage: Media | null, image: Media | null };
+        }),
     getMany: baseProcedure
         .input(
             z.object({
@@ -27,15 +56,15 @@ export const unitsRouter = createTRPCRouter({
         )
         .query(async ({ ctx, input }) => {
 
-            console.log(input.tags)
+            //console.log("unitsRouter getMany | tenantSlug: "  + input.tenantSlug)
 
             let where: Where = {};
 
             if (input.tags && input.tags.length > 0) {
-                console.log(input.tags)
+                //console.log(input.tags)
                 let andArray = [];
                 for (const tag of input.tags) {
-                    console.log(tag)
+                    // console.log(tag)
                     andArray.push({"tags.slug": {equals: tag}})
                 }
 
@@ -50,10 +79,10 @@ export const unitsRouter = createTRPCRouter({
                 not_equals: true,
             };
 
-            let sort: Sort = "-createdAt";
+            let sort: Sort = "_order";
 
             if (input.sort === "curated") {
-                sort = "-createdAt";
+                sort = "_order";
             }
 
             if (input.sort === "hot_and_new") {
@@ -84,7 +113,7 @@ export const unitsRouter = createTRPCRouter({
                     equals: input.tenantSlug,
                 };
             } else {
-                // If we are loading products for public storefront (no tenantSlug)
+                // If we are loading products for public storefront (no tenantSlug),
                 // Make sure to not load products set to "isPrivate: true" (using reverse not_equals logic)
                 // These products are exclusively private to the tenant store
 
@@ -97,7 +126,7 @@ export const unitsRouter = createTRPCRouter({
             //     const categoriesData = await ctx.db.find({
             //         collection: "categories",
             //         limit: 1,
-            //         depth: 1, // Populate subcategories, subcategores.[0] will be a type of "Category"
+            //         depth: 1, // Populate subcategories, subcategories.[0] will be a type of "Category"
             //         pagination: false,
             //         where: {
             //             slug: {
@@ -144,10 +173,44 @@ export const unitsRouter = createTRPCRouter({
                 sort,
                 page: input.cursor,
                 limit: input.limit,
-                select: {
-                    content: false,
-                },
             });
+
+            //console.log(data)
+
+            const dataWithPrices = await Promise.all(
+                data.docs.map(async (doc) => {
+                    const peakPriceData = await ctx.db.find({
+                        collection: "rates",
+                        depth: 0,
+                        pagination: false,
+                        where: {
+                            year: {equals: 2026},
+                            unit: {equals: doc.id},
+                            peak: {equals: true},
+                        }
+                    });
+
+                    const offPriceData = await ctx.db.find({
+                        collection: "rates",
+                        depth: 0,
+                        pagination: false,
+                        where: {
+                            year: {equals: 2026},
+                            unit: {equals: doc.id},
+                            peak: {not_equals: true},
+                        }
+                    });
+
+                    // console.log(peakPriceData.docs)
+
+                    return {
+                        ...doc,
+                        peakRate: peakPriceData.docs[0]?.price,
+                        offRate: offPriceData.docs[0]?.price,
+
+                    }
+                })
+            )
 
             // const dataWithSummarizedReviews = await Promise.all(
             //     data.docs.map(async (doc) => {
@@ -173,12 +236,13 @@ export const unitsRouter = createTRPCRouter({
             // );
 
             return {
+
                 ...data,
-                // docs: dataWithSummarizedReviews.map((doc) => ({
-                //     ...doc,
+                docs: dataWithPrices.map((doc) => ({
+                     ...doc,
                 //     image: doc.image as Media | null,
                 //     tenant: doc.tenant as Tenant & { image: Media | null },
-                // }))
+                }))
             }
         }),
 });

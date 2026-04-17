@@ -1,7 +1,11 @@
 import type { CollectionConfig } from 'payload'
+import { isSuperAdmin } from "@/lib/access";
 
 export const Attractions: CollectionConfig = {
-    slug: "Attractions",
+    slug: "attractions",
+    admin: {
+        useAsTitle: "name",
+    },
     fields: [
         {
             name: "name",
@@ -9,16 +13,24 @@ export const Attractions: CollectionConfig = {
             required: true
         },
         {
-            name: "slug",
+            name: "url",
             type: "text",
             required: true,
-            unique: true,
-            index: true,
         },
         {
             name: "image",
             type: "upload",
             relationTo: "media",
-        }
+            required: true,
+        },
+        {
+            name: "isFavorite",
+            label: "Favorite",
+            defaultValue: false,
+            type: "checkbox",
+            admin: {
+                description: "If checked, this attraction will appear on unit view"
+            },
+        },
     ]
 };

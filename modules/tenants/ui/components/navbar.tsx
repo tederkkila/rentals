@@ -57,6 +57,8 @@ export const Navbar = ({slug}: NavbarProps) => {
     const trpc = useTRPC();
     const { data } = useSuspenseQuery(trpc.tenants.getOne.queryOptions({ slug }));
 
+    // console.log(data);
+
     const navbarItems = [
         {href: "", children: "Home"},
         {href: "/attractions", children: "Nearby Attractions"},
@@ -67,74 +69,58 @@ export const Navbar = ({slug}: NavbarProps) => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     return (
-        <nav className="h-16 border-b font-medium bg-white">
-            <div className="max-w-(--breakpoint-xl) mx-auto flex items-center h-full gap-2 px-4 py-6 lg:px-12" >
-            <Link href="/" className="flex items-center">
-                {data.icon?.url && (
-                    <Image
-                        alt={"tenantSlug"}
-                        src={data.icon.url}
-                        width={64}
-                        height={64}
-                        className="shrink-0 size-16"
-                    />
-                )}
-                <span className={cn("text-5xl font-semibold", poppins.className)}>
-                  {slug}
-                </span>
-            </Link>
+        <header className="h-16 border-b font-medium justity-between bg-white
+            max-w-full sm:max-w-[calc(100vw-2rem)] lg:max-w-7xl
+            sm:border-x
+            mx-auto">
+            <div className="max-w-(--breakpoint-xl) mx-auto flex items-center h-full gap-2 px-4 py-6" >
+                <Link href="/" className="flex items-center mr-8">
+                    {data.icon?.url && (
+                        <Image
+                            alt={"tenantSlug"}
+                            src={data.icon.url}
+                            width={48}
+                            height={48}
+                            className="shrink-0 size-12"
+                            style={{ filter: 'drop-shadow(0 60px 0 var(--primary)', transform: 'translateY(-60px)' }}
 
+                        />
+                    )}
+                    <span className={cn("text-primary text-4xl font-semibold", poppins.className)}>
+                      {slug}
+                    </span>
+                </Link>
 
+                <NavbarSidebar
+                    items={navbarItems}
+                    open={isSidebarOpen}
+                    onOpenChange={setIsSidebarOpen}
+                />
 
-            <NavbarSidebar
-                items={navbarItems}
-                open={isSidebarOpen}
-                onOpenChange={setIsSidebarOpen}
-            />
+                <nav className="items-center gap-4 hidden md:flex flex-aut ">
+                    {navbarItems.map((item, index) => (
+                        <NavbarItem
+                            key={index}
+                            href={'/tenants/' + slug + item.href}
+                            isActive={pathname === '/tenants/' + slug + item.href}
+                        >
+                            {item.children}
+                        </NavbarItem>
+                    ))}
+                </nav>
 
-            <div className="items-center gap-4 hidden lg:flex flex-auto justify-content-end">
-                {navbarItems.map((item, index) => (
-                    <NavbarItem
-                        key={index}
-                        href={'/tenants/' + slug + item.href}
-                        isActive={pathname === '/tenants/' + slug + item.href}
+                <div className="flex-auto justify-end flex md:hidden items-center ">
+                    <Button
+                        variant="ghost"
+                        className="size-12 border-transparent bg-white"
+                        onClick={() => setIsSidebarOpen(true)}
                     >
-                        {item.children}
-                    </NavbarItem>
-                ))}
-            </div>
+                        <MenuIcon/>
+                    </Button>
+                </div>
 
-            {/*<div className="hidden lg:flex">*/}
-            {/*    <Button*/}
-            {/*        asChild*/}
-            {/*        variant="secondary"*/}
-            {/*        className="border-l border-t-0 border-b-0 border-r-0 px-12 h-full rounded-none bg-white hover:bg-pink-400 transition-colors text-lg"*/}
-            {/*    >*/}
-            {/*        <Link prefetch href="/sign-in">*/}
-            {/*            Log in*/}
-            {/*        </Link>*/}
-            {/*    </Button>*/}
-            {/*    <Button*/}
-            {/*        asChild*/}
-            {/*        className="border-l border-t-0 border-b-0 border-r-0 px-12 h-full rounded-none bg-black text-white hover:bg-pink-400 hover:text-black transition-colors text-lg"*/}
-            {/*    >*/}
-            {/*        <Link prefetch href="/sign-up">*/}
-            {/*            Register*/}
-            {/*        </Link>*/}
-            {/*    </Button>*/}
-            {/*</div>*/}
-
-            <div className="flex-auto justify-end flex lg:hidden items-center ">
-                <Button
-                    variant="ghost"
-                    className="size-12 border-transparent bg-white"
-                    onClick={() => setIsSidebarOpen(true)}
-                >
-                    <MenuIcon/>
-                </Button>
             </div>
-            </div>
-        </nav>
+        </header>
     )
 }
 

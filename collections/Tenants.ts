@@ -1,5 +1,13 @@
 import type { CollectionConfig } from 'payload'
 
+import {
+    lexicalEditor,
+    FixedToolbarFeature,
+    HeadingFeature,
+    OrderedListFeature,
+    UnorderedListFeature,
+} from '@payloadcms/richtext-lexical'
+
 export const Tenants: CollectionConfig = {
     slug: 'tenants',
     admin: {
@@ -37,11 +45,50 @@ export const Tenants: CollectionConfig = {
             relationTo: "media",
         },
         {
-            name: "description",
-            type: "textarea",
+            name: "attractions",
+            type: "relationship",
+            relationTo: "attractions",
+            hasMany: true,
+            admin: {
+                description: "Attractions for this tenant",
+                isSortable: true,
+            }
+        },
+        {
+            name: "content",
+            type: "richText",
             admin: {
                 description: "This is the description of the location",
             },
+            editor: lexicalEditor({
+                features: ({ defaultFeatures }) => [
+                    ...defaultFeatures,
+                    // Add a fixed toolbar
+                    FixedToolbarFeature(),
+                    // Add custom features
+                    HeadingFeature({}),
+                    OrderedListFeature(),
+                    UnorderedListFeature(),
+                ],
+            }),
+        },
+        {
+            name: "contact",
+            type: "richText",
+            admin: {
+                description: "This Tenants contact information",
+            },
+            editor: lexicalEditor({
+                features: ({ defaultFeatures }) => [
+                    ...defaultFeatures,
+                    // Add a fixed toolbar
+                    FixedToolbarFeature(),
+                    // Add custom features
+                    HeadingFeature({}),
+                    OrderedListFeature(),
+                    UnorderedListFeature(),
+                ],
+            }),
         }
     ],
 }

@@ -13,17 +13,16 @@ import { useUnitFilters } from "../../hooks/use-unit-filters";
 interface Props {
     category?: string;
     tenantSlug?: string;
-    narrowView?: boolean;
 }
 
-export const UnitList = ({ tenantSlug, narrowView }: Props) => {
+export const UnitList = ({ tenantSlug }: Props) => {
     const [filters] = useUnitFilters();
 
     const trpc = useTRPC();
     const { data } = useSuspenseQuery(trpc.units.getMany.queryOptions(
         {
             ...filters,
-            tenantSlug,
+            tenantSlug: tenantSlug,
             limit: DEFAULT_LIMIT,
         }
     ));
@@ -41,32 +40,20 @@ export const UnitList = ({ tenantSlug, narrowView }: Props) => {
     return (
         <>
             <div className={cn(
-                "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4",
-                narrowView && "lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3"
+                "grid grid-cols-1 gap-4"
             )}>
                 {data?.docs.map((unit) => (
-                    <UnitCard
-                        key={unit.id}
-                        id={unit.id}
-                        name={unit.name}
-                        imageUrl={unit.image?.url}
-                        tenantSlug={unit.tenant?.slug}
-                        tenantIconUrl={unit.tenant?.icon?.url}
-                        price={unit.price}
-                    />
+                    <UnitCard key={unit.id} unit={unit} />
                 ))}
             </div>
         </>
     );
 };
 
-export const UnitListSkeleton = ({ narrowView }: Props) => {
+export const UnitListSkeleton = () => {
     return (
-        <div className={cn(
-            "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4",
-            narrowView && "lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3"
-        )}>
-            {Array.from({ length: DEFAULT_LIMIT }).map((_, index) => (
+        <div className={"grid grid-cols-1 gap-4"}>
+            {Array.from({ length: 3 }).map((_, index) => (
                 <UnitCardSkeleton key={index} />
             ))}
         </div>

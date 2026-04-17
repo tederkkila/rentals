@@ -4,6 +4,8 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import { useTRPC } from "@/trpc/client";
 import { DEFAULT_LIMIT } from "@/constants";
 import { Checkbox } from "@/components/ui/checkbox";
+import { IconSpan } from "@/modules/ui/icon-span";
+import React from "react";
 
 interface TagsFilterProps {
     value?: string[] | null;
@@ -48,11 +50,14 @@ export const TagsFilter = ({ value, onChange }: TagsFilterProps) => {
                     page.docs.map((tag) => (
                         <div
                             key={tag.id}
-                            className="flex items-center justify-between cursor-pointer"
+                            className="flex items-center justify-between cursor-pointer border bg-gray-100 rounded-sm p-1"
                             onClick={() => onClick(tag.slug)}
                         >
-                            <p className="font-medium">{tag.name}</p>
-                            <Checkbox
+                            <p className="text-sm text-gray-600">
+                                <IconSpan name={tag.icon} label={tag.name} size={15} index={tag.id} />
+                                {/*{tag.name}*/}
+                            </p>
+                            <Checkbox className="size-5 bg-white-300 border-gray-400"
                                 checked={value?.includes(tag.slug)}
                                 onCheckedChange={() => onClick(tag.slug)}
                             />
