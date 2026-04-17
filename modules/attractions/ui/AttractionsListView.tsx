@@ -3,10 +3,7 @@
 import { useTRPC } from "@/trpc/client";
 import { Tenant, Attraction } from "@/payload-types";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Box, Heading, Section, Avatar, Flex, Text } from "@radix-ui/themes";
-import { UnitImageGrid } from "@/modules/units/ui/components/UnitImageGrid";
-import { RichText } from "@payloadcms/richtext-lexical/react";
-import { IconSpan } from "@/modules/ui/icon-span";
+import { Box, Section, Avatar, Flex, Text } from "@radix-ui/themes";
 import React from "react";
 import { Card } from "@radix-ui/themes";
 import Link from "next/link";

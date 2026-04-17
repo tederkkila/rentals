@@ -1,7 +1,7 @@
 import { ErrorBoundary } from "react-error-boundary";
 import React, { Suspense } from "react";
 import { HydrateClient, prefetch, trpc } from "@/trpc/server";
-import { Section, Box, Heading } from "@radix-ui/themes";
+import { Box, Heading } from "@radix-ui/themes";
 import { AttractionsListView} from "@/modules/attractions/ui/AttractionsListView";
 
 interface Props {
