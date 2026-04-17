@@ -3,7 +3,7 @@
 import { useTRPC } from "@/trpc/client";
 import { Tenant } from "@/payload-types";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Box, Heading, Section, Avatar, Flex, Text } from "@radix-ui/themes";
+import { Box } from "@radix-ui/themes";
 import { RichText } from "@payloadcms/richtext-lexical/react";
 import React from "react";
 

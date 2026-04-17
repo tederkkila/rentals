@@ -9,7 +9,7 @@ interface Props {
     tenantSlug?: string;
 }
 
-export const UnitListView = ({ category, tenantSlug, narrowView }: Props) => {
+export const UnitListView = ({ category, tenantSlug }: Props) => {
     return (
         <div className="px-4 lg:px-8 py-4 flex flex-col gap-4">
 

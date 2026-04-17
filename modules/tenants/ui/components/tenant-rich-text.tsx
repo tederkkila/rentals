@@ -3,12 +3,9 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { useTRPC } from "@/trpc/client";
 import { RichText } from '@payloadcms/richtext-lexical/react'
-import type { SerializedEditorState } from '@payloadcms/richtext-lexical/lexical'
 import Image from "next/image";
 import React from "react";
 import { AspectRatio, Box, Grid } from "@radix-ui/themes";
-import DecorativeBox from "@/modules/ui/DecorativeBox";
-import { Theme } from "@radix-ui/themes";
 
 interface TenantProps {
     slug: string;
@@ -39,7 +36,7 @@ export const TenantRichText = ({slug}: TenantProps) => {
                 <div className="p-4 pt-0 md:p-8
                         md:col-span-1">
                     {data.image?.url && (
-                        <AspectRatio ratio={1 / 1}>
+                        <AspectRatio ratio={1}>
                             <Image
                                 loading="eager"
                                 alt={data.image?.alt}

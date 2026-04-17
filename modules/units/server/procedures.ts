@@ -3,7 +3,7 @@ import { TRPCError } from "@trpc/server";
 import type { Sort, Where } from "payload";
 
 import { DEFAULT_LIMIT } from "@/constants";
-import { Media, Tenant, Unit } from "@/payload-types";
+import { Media, Unit } from "@/payload-types";
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 
 import { sortValues } from "../search-params";
