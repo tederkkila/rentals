@@ -21,30 +21,31 @@ import { MdOutdoorGrill } from "react-icons/md";
 import { MdOutlineLocalLaundryService } from "react-icons/md";
 import { BiSolidWasher } from "react-icons/bi";
 import { TbScubaMask } from "react-icons/tb";
+import { IconType } from "react-icons";
 
 
 const icons = {
-    FaKitchenSet: {icon: FaKitchenSet},
-    FaUmbrellaBeach: {icon: FaUmbrellaBeach},
-    PiTowel: {icon: PiTowel},
-    MdFireplace: {icon: MdFireplace},
-    GiCanoe: {icon: GiCanoe},
-    FaWifi: {icon: FaWifi},
-    FaSailboat: {icon: FaSailboat},
-    MdDeck: {icon: MdDeck},
-    FaSwimmingPool: {icon: FaSwimmingPool},
-    LuSunSnow: {icon: LuSunSnow},
-    GiBoatFishing: {icon: GiBoatFishing},
-    RiDiamondLine: {icon: RiDiamondLine},
-    PiSunglassesFill: {icon: PiSunglassesFill},
-    ImBooks: {icon: ImBooks},
-    MdOutlineWaterDrop: {icon: MdOutlineWaterDrop},
-    MdCabin: {icon: MdCabin},
-    HiHomeModern: {icon: HiHomeModern},
-    MdOutdoorGrill: {icon: MdOutdoorGrill},
-    MdOutlineLocalLaundryService: {icon: MdOutlineLocalLaundryService},
-    BiSolidWasher: {icon: BiSolidWasher},
-    TbScubaMask: {icon: TbScubaMask},
+    FaKitchenSet: FaKitchenSet,
+    FaUmbrellaBeach: FaUmbrellaBeach,
+    PiTowel: PiTowel,
+    MdFireplace: MdFireplace,
+    GiCanoe: GiCanoe,
+    FaWifi: FaWifi,
+    FaSailboat: FaSailboat,
+    MdDeck: MdDeck,
+    FaSwimmingPool: FaSwimmingPool,
+    LuSunSnow: LuSunSnow,
+    GiBoatFishing: GiBoatFishing,
+    RiDiamondLine: RiDiamondLine,
+    PiSunglassesFill: PiSunglassesFill,
+    ImBooks: ImBooks,
+    MdOutlineWaterDrop: MdOutlineWaterDrop,
+    MdCabin: MdCabin,
+    HiHomeModern: HiHomeModern,
+    MdOutdoorGrill: MdOutdoorGrill,
+    MdOutlineLocalLaundryService: MdOutlineLocalLaundryService,
+    BiSolidWasher: BiSolidWasher,
+    TbScubaMask: TbScubaMask,
 }
 
 interface IconSpanProps {
@@ -56,7 +57,7 @@ interface IconSpanProps {
 
 export const IconSpan = ({name, label, size, index}: IconSpanProps) => {
 
-    const icon = icons[name].icon;
+    const icon: IconType = icons[name as keyof typeof icons];
 
     return (
         <span key={index} className="flex items-center gap-1 text-nowrap">

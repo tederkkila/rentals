@@ -31,6 +31,7 @@ export const Tags: CollectionConfig = {
         },{
             name: "icon",
             type: "text",
+            required: true,
         },
         {
             name: "isSearchable",

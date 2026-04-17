@@ -57,6 +57,8 @@ export const Navbar = ({slug}: NavbarProps) => {
     const trpc = useTRPC();
     const { data } = useSuspenseQuery(trpc.tenants.getOne.queryOptions({ slug }));
 
+    // console.log(data);
+
     const navbarItems = [
         {href: "", children: "Home"},
         {href: "/attractions", children: "Nearby Attractions"},
@@ -68,21 +70,23 @@ export const Navbar = ({slug}: NavbarProps) => {
 
     return (
         <header className="h-16 border-b font-medium justity-between bg-white
-            max-w-full sm:max-w-[calc(100vw-2rem)] lg:max-w-6xl
+            max-w-full sm:max-w-[calc(100vw-2rem)] lg:max-w-7xl
             sm:border-x
             mx-auto">
-            <div className="max-w-(--breakpoint-xl) mx-auto flex items-center h-full gap-2 px-4 py-6 lg:px-12" >
-                <Link href="/" className="flex items-center">
+            <div className="max-w-(--breakpoint-xl) mx-auto flex items-center h-full gap-2 px-4 py-6" >
+                <Link href="/" className="flex items-center mr-8">
                     {data.icon?.url && (
                         <Image
                             alt={"tenantSlug"}
                             src={data.icon.url}
-                            width={64}
-                            height={64}
-                            className="shrink-0 size-16"
+                            width={48}
+                            height={48}
+                            className="shrink-0 size-12"
+                            style={{ filter: 'drop-shadow(0 60px 0 var(--primary)', transform: 'translateY(-60px)' }}
+
                         />
                     )}
-                    <span className={cn("text-5xl font-semibold", poppins.className)}>
+                    <span className={cn("text-primary text-4xl font-semibold", poppins.className)}>
                       {slug}
                     </span>
                 </Link>
@@ -93,7 +97,7 @@ export const Navbar = ({slug}: NavbarProps) => {
                     onOpenChange={setIsSidebarOpen}
                 />
 
-                <nav className="items-center gap-4 hidden md:flex flex-auto ">
+                <nav className="items-center gap-4 hidden md:flex flex-aut ">
                     {navbarItems.map((item, index) => (
                         <NavbarItem
                             key={index}

@@ -89,6 +89,13 @@ export const Units: CollectionConfig = {
                 description: "Tags for this unit",
                 isSortable: true,
             }
+        },
+        {
+            name: 'gallery',
+            type: 'upload',
+            relationTo: 'media',
+            required: true,
+            hasMany: true // This enables multiple images
         }
 
     ]

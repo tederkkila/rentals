@@ -12,9 +12,12 @@ export const tenantsRouter = createTRPCRouter({
             }),
         )
         .query(async ({ ctx, input }) => {
+
+            //console.log("tenantsRouter getOne | slug: "  + input.slug)
+
             const tenantsData = await ctx.db.find({
                 collection: "tenants",
-                depth: 1, // "tenant.image" is a type of "Media"
+                depth: 2, // "tenant.image" is a type of "Media"
                 where: {
                     slug: {
                         equals: input.slug,
@@ -25,7 +28,7 @@ export const tenantsRouter = createTRPCRouter({
             });
 
             const tenant = tenantsData.docs[0];
-            console.log(tenant)
+            //console.log(tenant)
 
             if (!tenant) {
                 throw new TRPCError({ code: "NOT_FOUND", message: "Tenant not found" });

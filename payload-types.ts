@@ -71,7 +71,7 @@ export interface Config {
     tenants: Tenant;
     units: Unit;
     rates: Rate;
-    Attractions: Attraction;
+    attractions: Attraction;
     media: Media;
     Categories: Category;
     tags: Tag;
@@ -86,7 +86,7 @@ export interface Config {
     tenants: TenantsSelect<false> | TenantsSelect<true>;
     units: UnitsSelect<false> | UnitsSelect<true>;
     rates: RatesSelect<false> | RatesSelect<true>;
-    Attractions: AttractionsSelect<false> | AttractionsSelect<true>;
+    attractions: AttractionsSelect<false> | AttractionsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     Categories: CategoriesSelect<false> | CategoriesSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
@@ -179,9 +179,31 @@ export interface Tenant {
   icon?: (string | null) | Media;
   image?: (string | null) | Media;
   /**
+   * Attractions for this tenant
+   */
+  attractions?: (string | Attraction)[] | null;
+  /**
    * This is the description of the location
    */
-  description?: {
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * This Tenants contact information
+   */
+  contact?: {
     root: {
       type: string;
       children: {
@@ -220,6 +242,22 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "attractions".
+ */
+export interface Attraction {
+  id: string;
+  name: string;
+  url: string;
+  image: string | Media;
+  /**
+   * If checked, this attraction will appear on unit view
+   */
+  isFavorite?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "units".
  */
 export interface Unit {
@@ -228,7 +266,21 @@ export interface Unit {
   tenant?: (string | null) | Tenant;
   name: string;
   slug: string;
-  description?: string | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   /**
    * If checked, you must be authenticated to view unit
    */
@@ -245,6 +297,7 @@ export interface Unit {
    * Tags for this unit
    */
   tags?: (string | Tag)[] | null;
+  gallery: (string | Media)[];
   updatedAt: string;
   createdAt: string;
 }
@@ -257,7 +310,7 @@ export interface Tag {
   _order?: string | null;
   name: string;
   slug: string;
-  icon?: string | null;
+  icon: string;
   /**
    * If checked, this tag appears in search filters
    */
@@ -282,18 +335,6 @@ export interface Rate {
   peak?: boolean | null;
   unit: string | Unit;
   price: number;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Attractions".
- */
-export interface Attraction {
-  id: string;
-  name: string;
-  slug: string;
-  image?: (string | null) | Media;
   updatedAt: string;
   createdAt: string;
 }
@@ -349,7 +390,7 @@ export interface PayloadLockedDocument {
         value: string | Rate;
       } | null)
     | ({
-        relationTo: 'Attractions';
+        relationTo: 'attractions';
         value: string | Attraction;
       } | null)
     | ({
@@ -445,7 +486,9 @@ export interface TenantsSelect<T extends boolean = true> {
   slug?: T;
   icon?: T;
   image?: T;
-  description?: T;
+  attractions?: T;
+  content?: T;
+  contact?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -458,7 +501,7 @@ export interface UnitsSelect<T extends boolean = true> {
   tenant?: T;
   name?: T;
   slug?: T;
-  description?: T;
+  content?: T;
   isPrivate?: T;
   isArchived?: T;
   image?: T;
@@ -466,6 +509,7 @@ export interface UnitsSelect<T extends boolean = true> {
   guests?: T;
   bathrooms?: T;
   tags?: T;
+  gallery?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -483,12 +527,13 @@ export interface RatesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "Attractions_select".
+ * via the `definition` "attractions_select".
  */
 export interface AttractionsSelect<T extends boolean = true> {
   name?: T;
-  slug?: T;
+  url?: T;
   image?: T;
+  isFavorite?: T;
   updatedAt?: T;
   createdAt?: T;
 }

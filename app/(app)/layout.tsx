@@ -36,7 +36,7 @@ export default function RootLayout({
           <TRPCReactProvider>
               <Theme radius="full">
                   {children}
-                  <ThemePanel />
+                  {/*<ThemePanel />*/}
               </Theme>
           </TRPCReactProvider>
       </NuqsAdapter>
