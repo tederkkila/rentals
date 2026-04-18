@@ -77,7 +77,7 @@ export const Navbar = ({slug}: NavbarProps) => {
             sm:border-x
             mx-auto">
             <div className="max-w-(--breakpoint-xl) mx-auto flex items-center h-full gap-2 px-4 py-6" >
-                <Link href="/" className="flex items-center mr-8">
+                <Link href={`/tenants/${slug}`} className="flex items-center mr-8">
                     {data.icon?.url && (
                         <Image
                             alt={"tenantSlug"}
