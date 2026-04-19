@@ -39,6 +39,7 @@ export const UnitView = ({ unit }: UnitViewProps) => {
                 <Heading as="h2" size="4">Amenities</Heading>
                 {data.tags && (
                     <div className="flex flex-wrap gap-2">
+                        //TODO Only display tags with isAmenity = true
                         {data.tags.map((tag: Tag, index: number) => (
                             <div key={tag.id} className="bg-gray-100 rounded-full px-3 py-1 text-sm font-medium text-gray-700">
                                 <IconSpan name={tag.icon} label={tag.name} size={15} index={index} />

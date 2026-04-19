@@ -37,7 +37,11 @@ const UnitFilter = ({ title, className, children }:UnitFilterProps) => {
     );
 };
 
-export const UnitFilters = () => {
+interface UnitFiltersProps {
+    tenantSlug: string;
+}
+
+export const UnitFilters = ({ tenantSlug }):UnitFiltersProps => {
     const [filters, setFilters] = useUnitFilters();
 
     const hasAnyFilters = Object.entries(filters).some(([key, value]) => {
@@ -86,6 +90,7 @@ export const UnitFilters = () => {
             </UnitFilter>
             <UnitFilter title="Tags" className="border-b-0">
                 <TagsFilter
+                    tenantSlug={tenantSlug}
                     value={filters.tags}
                     onChange={(value) => onChange("tags", value)}
                 />

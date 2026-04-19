@@ -19,7 +19,7 @@ const locations = [
         units : [
             {
                 name: "The Four Season House",
-                slug: "gray",
+                slug: "four-season-house",
                 description: "Enjoy Caspian Lake year round",
                 bathrooms: 2,
                 guests: 6,
@@ -62,7 +62,7 @@ const locations = [
             },
             {
                 name: "The Lakeside Cottage",
-                slug: "green",
+                slug: "lakeside-cottage",
                 description: "Caspian Lake on your doorstep",
                 bathrooms: 1,
                 guests: 5,
@@ -98,7 +98,7 @@ const locations = [
             },
             {
                 name: "The Red Cabin",
-                slug: "red",
+                slug: "red-cabin",
                 description: "This unit will only show to tenantAdmin and superAdmin is it is 'private'",
                 bathrooms: 1,
                 guests: 4,

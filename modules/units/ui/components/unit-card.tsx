@@ -39,6 +39,7 @@ export const UnitCard = ({unit}: UnitCardProps) => {
             flex flex-col md:flex-row ">
                 <div className="relative aspect-square">
                     <Image
+                        loading="eager"
                         alt={unit.name}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

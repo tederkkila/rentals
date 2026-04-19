@@ -8,11 +8,12 @@ import { IconSpan } from "@/modules/ui/icon-span";
 import React from "react";
 
 interface TagsFilterProps {
+    tenantSlug: string;
     value?: string[] | null;
     onChange: (value: string[]) => void;
 }
 
-export const TagsFilter = ({ value, onChange }: TagsFilterProps) => {
+export const TagsFilter = ({ tenantSlug, value, onChange }: TagsFilterProps) => {
     const trpc = useTRPC();
     const {
         data,
@@ -20,8 +21,10 @@ export const TagsFilter = ({ value, onChange }: TagsFilterProps) => {
         fetchNextPage,
         hasNextPage,
         isFetchingNextPage
-    } = useInfiniteQuery(trpc.tags.getMany.infiniteQueryOptions(
+    } = useInfiniteQuery(trpc.tenants.getInfiniteUnitTags.infiniteQueryOptions(
+    // } = useInfiniteQuery(trpc.tags.getMany.infiniteQueryOptions(
         {
+            slug: tenantSlug,
             limit: DEFAULT_LIMIT,
         },
         {
