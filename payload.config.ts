@@ -19,6 +19,8 @@ import { Categories } from "@/collections/Categories";
 import { Attractions } from "@/collections/Attractions";
 import { Rates } from "@/collections/Rates";
 import { Tags } from "@/collections/Tags";
+import { Customers } from "@/collections/Customers";
+import { Reservations } from "@/collections/Reservations";
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -30,7 +32,7 @@ export default buildConfig({
             baseDir: path.resolve(dirname),
         },
     },
-    collections: [Users, Tenants, Units, Rates, Attractions, Media, Categories, Tags],
+    collections: [Users,Customers, Reservations, Tenants, Units, Rates, Attractions, Media, Categories, Tags],
     editor: lexicalEditor(),
     secret: process.env.PAYLOAD_SECRET || '',
     typescript: {

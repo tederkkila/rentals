@@ -4,11 +4,12 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 
 import { useTRPC } from "@/trpc/client";
 import { Unit, Tag, Media } from "@/payload-types"
-import { Section, Box, Heading } from "@radix-ui/themes";
+import { Section, Box, Heading, Flex } from "@radix-ui/themes";
 import { RichText } from "@payloadcms/richtext-lexical/react";
 import React from "react";
 import { IconSpan } from "@/modules/ui/icon-span";
 import { UnitImageGrid } from '@/modules/units/ui/components/UnitImageGrid'
+import { ReservationPicker } from '@/modules/units/ui/components/ReservationPicker'
 
 interface UnitViewProps {
     unit: string;
@@ -17,7 +18,6 @@ interface UnitViewProps {
 export const UnitView = ({ unit }: UnitViewProps) => {
 
     const trpc = useTRPC();
-    //console.log("UnitView unit:" + unit);
 
     const {data}: Unit = useSuspenseQuery(trpc.units.getOne.queryOptions({ slug: unit }));
 
@@ -29,11 +29,21 @@ export const UnitView = ({ unit }: UnitViewProps) => {
 
             <UnitImageGrid unit={data} />
 
-            <Box className="prose lg:prose-lg max-w-none prose-stone">
-                {data.content && (
-                    <RichText data={data.content}/>
-                )}
-            </Box>
+            <Flex direction={{ initial: "column", sm: "row" }}>
+                <Box className="flex-6">
+                    <Box className="prose lg:prose-lg max-w-none prose-stone">
+                        {data.content && (
+                            <RichText data={data.content}/>
+                        )}
+                    </Box>
+                </Box>
+                <Box className="flex-4">
+                    <Box ml={{ initial: "0", sm: "5" }} mt="25px">
+                        <ReservationPicker unit={data} />
+                    </Box>
+                </Box>
+            </Flex>
+
 
             <Section size="1" >
                 <Heading as="h2" size="4">Amenities</Heading>

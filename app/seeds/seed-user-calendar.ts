@@ -66,7 +66,7 @@ const reservations = [
     },
     {
         user: "tederkkila+red@gmail.com",
-        unit: red, //this is variable to find unit with stub "red-cabin"
+        unit: red, //this is a variable to find the unit with the stub "red-cabin"
         startDate: "2026-07-21",
         endDate: "2024-07-28",
         status: "pending", // "confirmed", "pending", "cancelled"

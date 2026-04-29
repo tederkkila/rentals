@@ -21,7 +21,7 @@ export const unitsRouter = createTRPCRouter({
 
             const unitsData = await ctx.db.find({
                 collection: "units",
-                depth: 1, // "tenant.image" is a type of "Media"
+                depth: 1,
                 where: {
                     slug: {
                         equals: input.slug,
@@ -32,7 +32,7 @@ export const unitsRouter = createTRPCRouter({
             });
 
             const unit = unitsData.docs[0];
-            //console.log(tenant)
+             console.log("unit.name: " + unit.name)
 
             if (!unit) {
                 throw new TRPCError({ code: "NOT_FOUND", message: "Unit not found" });
@@ -122,44 +122,6 @@ export const unitsRouter = createTRPCRouter({
                 }
             }
 
-            // if (input.category) {
-            //     const categoriesData = await ctx.db.find({
-            //         collection: "categories",
-            //         limit: 1,
-            //         depth: 1, // Populate subcategories, subcategories.[0] will be a type of "Category"
-            //         pagination: false,
-            //         where: {
-            //             slug: {
-            //                 equals: input.category,
-            //             }
-            //         }
-            //     });
-            //
-            //     const formattedData = categoriesData.docs.map((doc) => ({
-            //         ...doc,
-            //         subcategories: (doc.subcategories?.docs ?? []).map((doc) => ({
-            //             // Because of "depth: 1" we are confident "doc" will be a type of "Category"
-            //             ...(doc as Category),
-            //             subcategories: undefined,
-            //         }))
-            //     }));
-            //
-            //     const subcategoriesSlugs = [];
-            //     const parentCategory = formattedData[0];
-            //
-            //     if (parentCategory) {
-            //         subcategoriesSlugs.push(
-            //             ...parentCategory.subcategories.map((subcategory) => subcategory.slug)
-            //         )
-            //
-            //         where["category.slug"] = {
-            //             in: [parentCategory.slug, ...subcategoriesSlugs]
-            //         }
-            //     }
-            // }
-
-
-
             if (input.search) {
                 where["name"] = {
                     like: input.search,
@@ -211,29 +173,6 @@ export const unitsRouter = createTRPCRouter({
                     }
                 })
             )
-
-            // const dataWithSummarizedReviews = await Promise.all(
-            //     data.docs.map(async (doc) => {
-            //         const reviewsData = await ctx.db.find({
-            //             collection: "reviews",
-            //             pagination: false,
-            //             where: {
-            //                 product: {
-            //                     equals: doc.id,
-            //                 },
-            //             },
-            //         });
-            //
-            //         return {
-            //             ...doc,
-            //             reviewCount: reviewsData.totalDocs,
-            //             reviewRating:
-            //                 reviewsData.docs.length === 0
-            //                     ? 0
-            //                     : reviewsData.docs.reduce((acc, review) => acc + review.rating, 0) / reviewsData.totalDocs
-            //         }
-            //     })
-            // );
 
             return {
 

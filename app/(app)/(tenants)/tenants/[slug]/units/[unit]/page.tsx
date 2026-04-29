@@ -27,7 +27,9 @@ const Page = async ({ params }: Props) => {
 
             <HydrateClient>
                 <ErrorBoundary fallback={<div>Something went wrong</div>}>
+                    <Suspense>
                         <UnitView unit={ unit } />
+                    </Suspense>
                 </ErrorBoundary>
             </HydrateClient>
 

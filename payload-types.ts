@@ -68,6 +68,8 @@ export interface Config {
   blocks: {};
   collections: {
     users: User;
+    customers: Customer;
+    reservations: Reservation;
     tenants: Tenant;
     units: Unit;
     rates: Rate;
@@ -83,6 +85,8 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
+    customers: CustomersSelect<false> | CustomersSelect<true>;
+    reservations: ReservationsSelect<false> | ReservationsSelect<true>;
     tenants: TenantsSelect<false> | TenantsSelect<true>;
     units: UnitsSelect<false> | UnitsSelect<true>;
     rates: RatesSelect<false> | RatesSelect<true>;
@@ -258,6 +262,41 @@ export interface Attraction {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customers".
+ */
+export interface Customer {
+  id: string;
+  email: string;
+  nme?: string | null;
+  phone?: string | null;
+  addressStreet?: string | null;
+  addressState?: string | null;
+  addressPostalCode?: string | null;
+  addressCountry?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reservations".
+ */
+export interface Reservation {
+  id: string;
+  customer: string | Customer;
+  unit: string | Unit;
+  startDate: string;
+  EndDate: string;
+  notes?: string | null;
+  quote: number;
+  amountPaid: number;
+  depositPaid: number;
+  cleaningDate?: string | null;
+  cleaningNotes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "units".
  */
 export interface Unit {
@@ -378,6 +417,14 @@ export interface PayloadLockedDocument {
         value: string | User;
       } | null)
     | ({
+        relationTo: 'customers';
+        value: string | Customer;
+      } | null)
+    | ({
+        relationTo: 'reservations';
+        value: string | Reservation;
+      } | null)
+    | ({
         relationTo: 'tenants';
         value: string | Tenant;
       } | null)
@@ -476,6 +523,40 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customers_select".
+ */
+export interface CustomersSelect<T extends boolean = true> {
+  email?: T;
+  nme?: T;
+  phone?: T;
+  addressStreet?: T;
+  addressState?: T;
+  addressPostalCode?: T;
+  addressCountry?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reservations_select".
+ */
+export interface ReservationsSelect<T extends boolean = true> {
+  customer?: T;
+  unit?: T;
+  startDate?: T;
+  EndDate?: T;
+  undefined?: T;
+  notes?: T;
+  quote?: T;
+  amountPaid?: T;
+  depositPaid?: T;
+  cleaningDate?: T;
+  cleaningNotes?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

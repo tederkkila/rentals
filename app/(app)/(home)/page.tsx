@@ -2,12 +2,15 @@ import Image from "next/image";
 import {cn} from "@/lib/utils";
 import DecorativeBox from "@/modules/ui/DecorativeBox"
 import {Flex, Box, Card, Text, TextArea, Switch, Button, Inset, Strong, Grid, AspectRatio} from '@radix-ui/themes';
+import { DatePickerWithRange } from "@/modules/ui/DatePickerWithRange";
 
 
 export default function Home() {
     return (
         <div className="px-4 lg:px-12 py-8 flex flex-col gap-4">
             Home page
+
+            <DatePickerWithRange title={"Select Reservation Dates"} />
 
             <Grid columns="8" gap="4" className="bg-green-300 gap-4">
                 <div className="col-span-2">
@@ -113,21 +116,9 @@ export default function Home() {
                     </Flex>
                 </Card>
             </Box>
-            {/*<Grid rows="0" columns={{ initial: '1', sm: '2', md: '2', lg: '6', xl: '8'  }} gap="3">
-                <div className="lg:col-span-2 xl:col-span-2">
-                    <Box>
-                        <DecorativeBox/>
-                        <Card>
-                            filters
-                        </Card>
 
-                    </Box>
-                </div>
-                <div className="lg:col-span-4 xl:col-span-6">
-                    <div className="grid grid-cols-1 gap-4">
-                    </div>
-                </div>
-            </Grid>*/}
+
+
         </div>
     )
 }

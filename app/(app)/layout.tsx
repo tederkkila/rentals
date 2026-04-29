@@ -5,6 +5,7 @@ import { NuqsAdapter} from 'nuqs/adapters/next/app'
 import { TRPCReactProvider } from "@/trpc/client";
 import "./globals.css";
 import "@radix-ui/themes/styles.css";
+import "react-day-picker/style.css";
 import "./hm.css"
 
 import { Theme, ThemePanel } from "@radix-ui/themes";
@@ -34,7 +35,7 @@ export default function RootLayout({
       <body className={`${geistSans.variable} antialiased`}>
       <NuqsAdapter>
           <TRPCReactProvider>
-              <Theme radius="full">
+              <Theme radius="medium">
                   {children}
                   {/*<ThemePanel />*/}
               </Theme>
