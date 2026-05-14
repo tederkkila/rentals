@@ -1,0 +1,466 @@
+"use client"
+
+import React, { useState, useMemo, useRef } from "react"
+import { addDays, subDays, eachWeekOfInterval, format, isAfter, isBefore, isSameDay } from "date-fns"
+import { differenceInDays, startOfDay } from 'date-fns';
+import { CalendarIcon } from "lucide-react"
+import { DateRange, rangeIncludesDate, rangeOverlaps, TZDate, Matcher, Day  } from "react-day-picker"
+
+import { Button } from "@/components/ui/button"
+import { Calendar } from "@/components/ui/calendar"
+import { Field, FieldLabel } from "@/components/ui/field"
+
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
+import { ToolTipDayButton } from "@/modules/units/ui/components/ToolTipDayButton";
+import { Discount, Media, Peakseason, Rate, Reservation, Tenant, Unit } from "@/payload-types";
+
+const rangeContainsBookingRange = (range: DateRange, bookingRanges: DateRange[]) => {
+
+    let bookingsOverlap = false;
+
+    bookingRanges.forEach(bookingRange => {
+        if (range?.from && range?.to) {
+            //compares two objects with from and to properties
+            if (rangeOverlaps(range as { from: Date; to: Date }, bookingRange as { from: Date; to: Date })) bookingsOverlap = true;
+        } else if (range?.from) {
+            //compares DateRange with Date
+            if (rangeIncludesDate(bookingRange, range.from)) bookingsOverlap = true;
+        }
+    })
+
+    return bookingsOverlap
+}
+
+const processBookedRanges = (bookedRanges: DateRange[], peakSeasonRanges: DateRange[], minimumNights): [DateRange[], DateRange[], DateRange[], DateRange[]] => {
+
+    let effectiveBookedRanges: DateRange[] = []
+    let checkOutOnlyRanges: DateRange[] = []
+    let initialMinimumStayRanges: DateRange[] = []
+    let notPeakSundays: DateRange[] = []
+
+    bookedRanges.forEach((bookedRange: DateRange) => {
+
+        if (bookedRange.from && bookedRange.to) {
+
+            effectiveBookedRanges.push({
+                from: addDays(bookedRange.from as TZDate, 1) as TZDate,
+                to:   subDays(bookedRange.to as TZDate, 1) as TZDate
+            });
+
+            checkOutOnlyRanges.push({
+                from: bookedRange.from as TZDate,
+                to: bookedRange.from as TZDate
+            });
+        }
+
+        peakSeasonRanges.forEach(peakSeasonRange => {
+            // console.log("peakSeasonRange: ", peakSeasonRange);
+            bookedRanges.forEach(bookedRange => {
+
+                const nights = calculateNights(bookedRange, peakSeasonRange, minimumNights)
+
+                const minimumStayRange = {
+                    from: addDays(bookedRange.from as TZDate, -1 * (nights - 1)) as TZDate,
+                    to: addDays(bookedRange.from as TZDate, -1),
+                }
+
+                const exists = initialMinimumStayRanges.some(
+                    (r) =>
+                        r.from &&
+                        r.to &&
+                        minimumStayRange.from &&
+                        minimumStayRange.to &&
+                        isSameDay(r.from, minimumStayRange.from) &&
+                        isSameDay(r.to, minimumStayRange.to)
+                );
+
+                if (!exists) {
+                    initialMinimumStayRanges.push(minimumStayRange);
+                }
+
+            })
+
+            // Get every Sunday within the peak range
+            const WEEK_STARTS_ON_SUNDAY = 0 as 0 //date-fns expects weekStartsOn to be a specific union type (0 | 1 | 2 | 3 | 4 | 5 | 6) rather than a general number
+            const sundays = eachWeekOfInterval(
+                { start: peakSeasonRange.from as TZDate, end: peakSeasonRange.to as TZDate },
+                { weekStartsOn: WEEK_STARTS_ON_SUNDAY }
+            );
+
+            sundays.forEach((sunday) => {
+                const friday = addDays(sunday, 5);
+
+                if (isAfter(sunday, peakSeasonRange.from as TZDate) && isBefore(friday, peakSeasonRange.to as TZDate)) {
+                    notPeakSundays.push({
+                        from: sunday,
+                        to: friday,
+                    });
+                }
+
+            });
+
+        })
+    })
+
+    return [effectiveBookedRanges, checkOutOnlyRanges, initialMinimumStayRanges, notPeakSundays]
+}
+
+const calculateNights = (bookedRange: DateRange, peakSeasonRange: DateRange, minimumNights) => {
+    let nights = minimumNights.offPeak
+
+    let fromIsPeakSeason = undefined;
+    let toIsPeakSeason = undefined;
+
+    if (rangeIncludesDate(peakSeasonRange, bookedRange.from as TZDate)) {
+        fromIsPeakSeason = true;
+    }
+    if (rangeIncludesDate(peakSeasonRange, bookedRange.to as TZDate)) {
+        toIsPeakSeason = true;
+    }
+
+    if (fromIsPeakSeason && (toIsPeakSeason || !toIsPeakSeason)) {
+        nights = minimumNights.peak;
+    }
+
+    return nights
+}
+
+const useDateRangeMap = (sourceRanges: DateRange[]) => {
+
+    const dateMap = new Map();
+    if (!sourceRanges) return dateMap;
+
+    sourceRanges.forEach((sourceRange: DateRange) => {
+            if (sourceRange.from && sourceRange.to) {
+                const currentDate = new TZDate(sourceRange.from);
+                const endDate = new TZDate(sourceRange.to);
+
+                while (currentDate <= endDate) {
+                    // Use ISO string or similar formatted string as map key
+                    dateMap.set(currentDate.toISOString().split('T')[0], true);
+                    currentDate.setDate(currentDate.getDate() + 1);
+                }
+            }
+        });
+        // console.log("dateMap: ", dateMap);
+
+    return dateMap;
+}
+
+const getNextChronological = (map: Map<string, any>, targetDate: string): string | undefined => {
+    let nextDate: string | undefined;
+
+    for (const date of map.keys()) {
+        if (date > targetDate) {
+            if (nextDate === undefined || date < nextDate) {
+                nextDate = date;
+            }
+        }
+    }
+    return nextDate;
+}
+
+interface handleStateProperties {
+    selectedRange: DateRange | undefined,
+    minimumStayRanges: DateRange[],
+    firstAvailableBookingDate: TZDate,
+    lastAvailableBookingDate: TZDate,
+    disableCheckOutOnly: boolean,
+}
+
+interface DatePickerWithRangeProps {
+    title: string,
+    unit: Unit & {
+        tenant: Tenant[] | null,
+        reservations: Reservation[] | null,
+        rates: Rate[] | null,
+        peakseasons: Peakseason[] | null,
+        discount: Discount[] | null,
+    },
+    selected: DateRange | undefined,
+    setSelectedDateRange: (range: DateRange | undefined) => void,
+}
+
+export const DatePickerWithRange = ( { title, unit, selected, setSelectedDateRange }: DatePickerWithRangeProps ) => {
+    //TODO Set calendar timezone to tenants timezone
+
+    // console.log("DatePickerWithRange Re-Rendered");
+    // console.log("unit imported: ", unit);
+
+    const timeZone = useMemo (() => {
+        return unit.tenant?.timezone ?? 'America/New_York';
+    }, [])
+    // console.log("timeZone: ", timeZone);
+    const minimumNights = {offPeak: 2, peak: 7};
+
+    //production will have no range selected to start
+    const bookedRanges: DateRange[] = useMemo(() => {
+        let data: DateRange[] = [];
+
+        if (unit.reservations && unit.reservations.length > 0) {
+            unit.reservations.map ((reservation: Reservation) => {
+                data.push({
+                    from: new TZDate(reservation.startDate, reservation.startDate_tz),
+                    to: new TZDate(reservation.endDate, reservation.endDate_tz),
+                })
+            })
+        } /*else {
+            data = [
+                { from: new TZDate(2026, 4, 10, timeZone), to: new TZDate(2026, 4, 13, timeZone) },
+                { from: new TZDate(2026, 4, 2, timeZone), to: new TZDate(2026, 4, 9, timeZone) },
+                { from: new TZDate(2026, 4, 15, timeZone), to: new TZDate(2026, 4, 17, timeZone) },
+                { from: new TZDate(2026, 5, 13, timeZone), to: new TZDate(2026, 5, 20, timeZone) },
+                { from: new TZDate(2026, 6, 11, timeZone), to: new TZDate(2026, 6, 18, timeZone) },
+                { from: new TZDate(2026, 6, 18, timeZone), to: new TZDate(2026, 6, 22, timeZone) },
+            ]
+        }*/
+
+        return data
+    }, [unit.reservations])
+    // console.log("bookedRanges: ", bookedRanges);
+
+    //will be retrieved from the database for each unit for all years moving forward
+    const peakSeasonRanges: DateRange[] = useMemo(() => {
+        let data: DateRange[] = [];
+
+        if (unit.peakseasons && unit.peakseasons.length > 0) {
+            unit.peakseasons.map((peakseason: Peakseason) => {
+                data.push({
+                    from: new TZDate(peakseason.startDate, peakseason.startDate_tz),
+                    to: new TZDate(peakseason.endDate, peakseason.endDate_tz),
+                })
+            })
+        }
+
+        /*[{ from: new TZDate(2026, 5, 20, timeZone), to: new TZDate(2026, 8, 7, timeZone) }];*/
+
+        return data
+    }, [unit.peakseasons])
+
+
+    const [effectiveBookedRanges, checkOutOnlyRanges, initialMinimumStayRanges, notPeakSundays] = useMemo(() => {
+        return processBookedRanges(bookedRanges, peakSeasonRanges, minimumNights)
+    }, [bookedRanges]); // Only compute once
+
+    // console.log("effectiveBookedRanges: ", [...effectiveBookedRanges]);
+    // console.log("result effectiveBookedRanges calculation", JSON.stringify(effectiveBookedRanges, null, 2))
+
+
+    //TODO create function to calculate first available check-in date (weekend preferred)
+    const [currentCalendarValues, setCurrentCalendarValues ] = useState<handleStateProperties>(
+        {
+            selectedRange: selected,
+            minimumStayRanges: initialMinimumStayRanges,
+            firstAvailableBookingDate: startOfDay(TZDate.tz(timeZone)),
+            lastAvailableBookingDate: startOfDay(addDays(TZDate.tz(timeZone),365)),
+            disableCheckOutOnly: true,
+        },
+    )
+
+    //console.log("currentCalendarValues: ", currentCalendarValues);
+
+    const handleSelect = (newRange: DateRange | undefined) => {
+        console.log("newRange: ", newRange);
+        //TODO extract current year peakSeasonRange from database
+        if (!newRange) return;
+
+        if (newRange?.from && newRange?.to) {
+            //both dates selected
+            console.log("newRange", newRange);
+
+            //check if multiple days are not selected
+            if (!isSameDay(newRange.from, newRange.to)) {
+                setSelectedDateRange(newRange);
+                setCurrentCalendarValues( prevState => ({
+                    ...prevState,
+                    selectedRange: newRange,
+                    firstAvailableBookingDate: startOfDay(TZDate.tz(timeZone)), //reset date to today
+                    lastAvailableBookingDate: startOfDay(addDays(TZDate.tz(timeZone),365)), //reset to one year from today
+                    minimumStayRanges: initialMinimumStayRanges, //reset to initial values
+                    disableCheckOutOnly: true,
+                }));
+            } else {
+                //if the same day is selected, clear the selection
+                clearSelection();
+            }
+
+        } else {
+            //partial range selected
+
+            const nights = calculateNights(newRange, peakSeasonRanges[0], minimumNights)
+            //find next effective booking date from set of dates
+
+            const newMinimumStayRange: DateRange = {
+                from: addDays(newRange.from as TZDate, 1),
+                to: addDays(newRange.from as TZDate, (nights - 1)) as TZDate,
+            }
+
+            const nextEffectiveBookedDate = getNextChronological(
+                effectiveBookedDaysSetSorted,
+                (newRange.from as TZDate).toISOString().split('T')[0]
+            )
+
+            console.log("nextEffectiveBookedDate: ", nextEffectiveBookedDate);
+            const nextEffectiveBookedDateInSelection = rangeIncludesDate(newRange, TZDate.tz(nextEffectiveBookedDate as string, timeZone))
+            console.log("nextEffectiveBookedDateInSelection: ", nextEffectiveBookedDateInSelection);
+
+            const lastAvailableBookingDate = nextEffectiveBookedDate as TZDate;
+
+            setCurrentCalendarValues( prevState => ({
+                ...prevState,
+                selectedRange: newRange,
+                minimumStayRanges: [newMinimumStayRange],
+                firstAvailableBookingDate: newRange.from as TZDate,
+                lastAvailableBookingDate: lastAvailableBookingDate,
+                disableCheckOutOnly: false,
+            }));
+
+        }
+
+
+        /*performance.mark('end-handleSelect');
+        performance.measure('Total handleSelect', 'start-handleSelect', 'end-handleSelect');
+
+        const measure = performance.getEntriesByName('Total handleSelect')[0];
+        console.log("handleSelect: ", measure.duration); // Duration in ms*/
+    };
+
+    const clearSelection = () => {
+
+        setCurrentCalendarValues( prevState => ({
+            ...prevState,
+            selectedRange: undefined,
+            minimumStayRanges: initialMinimumStayRanges,
+            firstAvailableBookingDate: startOfDay(TZDate.tz(timeZone)),
+            lastAvailableBookingDate: startOfDay(addDays(TZDate.tz(timeZone),365)),
+            disableCheckOutOnly: true,
+        }));
+
+    }
+
+    const effectiveBookedDaysSet: Map<string, any> = useDateRangeMap(effectiveBookedRanges);
+
+    const effectiveBookedDaysSetSorted = useMemo(() => {
+        const keysSorted = Array.from(effectiveBookedDaysSet.keys()).sort();
+
+        const sortedMap  = new Map();
+        keysSorted.forEach(key => {
+            sortedMap .set(key, effectiveBookedDaysSet.get(key));
+        });
+
+        return sortedMap ;
+    }, [effectiveBookedDaysSet])
+
+    // console.log("effectiveBookedDaysSet: ", effectiveBookedDaysSet);
+    // console.log("effectiveBookedDaysSetSorted: ", effectiveBookedDaysSetSorted);
+    const checkOutOnlyDaySet = useDateRangeMap(checkOutOnlyRanges);
+    // console.log("checkOutOnlyDaySet: ", checkOutOnlyDaySet);
+    const notPeakSundaysSet = useDateRangeMap(notPeakSundays);
+    // console.log("notPeakSundaysSet: ", notPeakSundaysSet);
+    const minimumStaySet = useDateRangeMap(currentCalendarValues.minimumStayRanges);
+    //console.log("minimumStaySet: ", minimumStaySet);
+    const peakSeasonSet = useDateRangeMap(peakSeasonRanges);
+    // console.log("peakSeasonSet: ", peakSeasonSet);
+
+    const isDayDisabled = useMemo(() => (day) => {
+
+        if (isBefore(day, startOfDay(currentCalendarValues.firstAvailableBookingDate))) return true
+        if (isAfter(day, startOfDay(currentCalendarValues.lastAvailableBookingDate))) return true
+
+        const dateString = format(day, 'yyyy-MM-dd');
+
+        if (effectiveBookedDaysSetSorted.has(dateString)) return true;
+        if (currentCalendarValues.disableCheckOutOnly &&
+            checkOutOnlyDaySet.has(dateString)) return true;
+        if (notPeakSundaysSet.has(dateString)) return true;
+        if (minimumStaySet.has(dateString)) return true;
+
+        return false;
+
+    }, [effectiveBookedDaysSetSorted, checkOutOnlyDaySet, notPeakSundaysSet, minimumStaySet, currentCalendarValues]);
+
+    const modifiers = useMemo(() => ({
+        booked: (day) => effectiveBookedDaysSetSorted.has(format(day, 'yyyy-MM-dd')),
+        checkOutOnly: (day) => checkOutOnlyDaySet.has(format(day, 'yyyy-MM-dd')),
+        saturdayCheckOutOnly: (day) => notPeakSundaysSet.has(format(day, 'yyyy-MM-dd')),
+        minimumStay: (day) => minimumStaySet.has(format(day, 'yyyy-MM-dd')),
+        peak: (day) => peakSeasonSet.has(format(day, 'yyyy-MM-dd')),
+    }), [effectiveBookedDaysSetSorted, checkOutOnlyDaySet, notPeakSundaysSet, minimumStaySet, peakSeasonSet]);
+
+    const prices = {
+        "2026-05-08": "$120",
+        "2026-05-09": "$150",
+        "2026-05-10": "$150",
+    };
+
+    return (
+        <Field className="/*w-60*/ mb-2">
+            <FieldLabel htmlFor="date-picker-range">{title}</FieldLabel>
+            <Popover>
+                <PopoverTrigger asChild>
+                    <Button
+                        variant="outline"
+                        id="date-picker-range"
+                        className="justify-start px-2.5 font-normal"
+                    >
+                        <CalendarIcon />
+                        {currentCalendarValues.selectedRange?.from ? (
+                            currentCalendarValues.selectedRange.to ? (
+                                <>
+                                    {format(currentCalendarValues.selectedRange.from, "LLL dd, y")} -{" "}
+                                    {format(currentCalendarValues.selectedRange.to, "LLL dd, y")}
+                                </>
+                            ) : (
+                                format(currentCalendarValues.selectedRange.from, "LLL dd, y")
+                            )
+                        ) : (
+                            <span>Pick a date</span>
+                        )}
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="center">
+                    <Calendar
+                        mode="range"
+                        fixedWeeks
+                        resetOnSelect
+                        timeZone={timeZone}
+                        startMonth={new Date()}
+                        defaultMonth={currentCalendarValues.selectedRange?.from}
+                        selected={currentCalendarValues.selectedRange}
+                        disabled={isDayDisabled}
+                        modifiers={modifiers}
+                        // modifiers={{
+                        //     booked: effectiveBookedRanges,
+                        //     peak: peakSeasonRanges,
+                        //     checkOutOnly: checkOutOnlyRanges,
+                        //     minimumStay: currentCalendarValues.minimumStayRanges,
+                        //     saturdayCheckOutOnly: notPeakSundays,
+                        // }}
+                        modifiersClassNames={{
+                            booked: "[&_button]:line-through opacity-50 text-gray-500 booked",
+                            peak: "text-medium bg-red-100 text-red-600 peak",
+                            checkOutOnly: "checkOutOnly ",
+                            minimumStay: "text-green-700 text-small minimumStay",
+                            saturdayCheckOutOnly: "saturdayCheckOutOnly",
+                        }}
+                        numberOfMonths={1}
+                        onSelect={handleSelect}
+                        showOutsideDays={false}
+                        components={{
+                            DayButton: ToolTipDayButton
+                        }}
+                    />
+                    <div className="flex justify-center gap-2 m-2">
+                        <Button variant="outline" size="sm" onClick={clearSelection}>
+                            Clear Selection
+                        </Button>
+                    </div>
+                </PopoverContent>
+            </Popover>
+        </Field>
+    )
+}

@@ -18,8 +18,11 @@ const Page = async ({ params }: Props) => {
 
     console.log(`[unit]page.tsx | unit: ${unit}`);
 
-    prefetch(
+    /*prefetch(
         trpc.units.getOne.queryOptions({ slug: unit }),
+    );*/
+    prefetch(
+        trpc.units.getUnitWithCalendar.queryOptions({ slug: unit }),
     );
 
     return (
@@ -27,7 +30,9 @@ const Page = async ({ params }: Props) => {
 
             <HydrateClient>
                 <ErrorBoundary fallback={<div>Something went wrong</div>}>
+                    <Suspense>
                         <UnitView unit={ unit } />
+                    </Suspense>
                 </ErrorBoundary>
             </HydrateClient>
 

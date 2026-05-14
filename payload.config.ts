@@ -19,9 +19,19 @@ import { Categories } from "@/collections/Categories";
 import { Attractions } from "@/collections/Attractions";
 import { Rates } from "@/collections/Rates";
 import { Tags } from "@/collections/Tags";
+import { Customers } from "@/collections/Customers";
+import { Reservations } from "@/collections/Reservations";
+import { PeakSeasons } from "@/collections/PeakSeasons";
+import { Discounts } from "@/collections/Discounts";
+
+import dns from 'node:dns';
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+
+//TODO add CSRF protection
+//https://payloadcms.com/docs/authentication/cookies#csrf-attacks
 
 export default buildConfig({
     admin: {
@@ -29,8 +39,25 @@ export default buildConfig({
         importMap: {
             baseDir: path.resolve(dirname),
         },
+        timezones: {
+            supportedTimezones: [
+                {
+                    label: 'Vermont',
+                    value: 'America/New_York',
+                },
+                {
+                    label: 'Whistler',
+                    value: 'America/Vancouver',
+                },
+                {
+                    label: 'Maui',
+                    value: 'Pacific/Honolulu',
+                },
+            ],
+            //defaultTimezone: 'America/New_York',
+        },
     },
-    collections: [Users, Tenants, Units, Rates, Attractions, Media, Categories, Tags],
+    collections: [Users,Customers, Reservations, Tenants, Units, Rates, Attractions, PeakSeasons, Discounts, Media, Categories, Tags],
     editor: lexicalEditor(),
     secret: process.env.PAYLOAD_SECRET || '',
     typescript: {
@@ -43,7 +70,12 @@ export default buildConfig({
     plugins: [
         multiTenantPlugin<Config>({
             collections: {
-                units: {}
+                units: {},
+                rates: {},
+                peakseasons: {},
+                reservations: {},
+                attractions: {},
+                media: {},
             },
             tenantField: {
                 access: {

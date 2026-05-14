@@ -12,54 +12,7 @@
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "supportedTimezones".
  */
-export type SupportedTimezones =
-  | 'Pacific/Midway'
-  | 'Pacific/Niue'
-  | 'Pacific/Honolulu'
-  | 'Pacific/Rarotonga'
-  | 'America/Anchorage'
-  | 'Pacific/Gambier'
-  | 'America/Los_Angeles'
-  | 'America/Tijuana'
-  | 'America/Denver'
-  | 'America/Phoenix'
-  | 'America/Chicago'
-  | 'America/Guatemala'
-  | 'America/New_York'
-  | 'America/Bogota'
-  | 'America/Caracas'
-  | 'America/Santiago'
-  | 'America/Buenos_Aires'
-  | 'America/Sao_Paulo'
-  | 'Atlantic/South_Georgia'
-  | 'Atlantic/Azores'
-  | 'Atlantic/Cape_Verde'
-  | 'Europe/London'
-  | 'Europe/Berlin'
-  | 'Africa/Lagos'
-  | 'Europe/Athens'
-  | 'Africa/Cairo'
-  | 'Europe/Moscow'
-  | 'Asia/Riyadh'
-  | 'Asia/Dubai'
-  | 'Asia/Baku'
-  | 'Asia/Karachi'
-  | 'Asia/Tashkent'
-  | 'Asia/Calcutta'
-  | 'Asia/Dhaka'
-  | 'Asia/Almaty'
-  | 'Asia/Jakarta'
-  | 'Asia/Bangkok'
-  | 'Asia/Shanghai'
-  | 'Asia/Singapore'
-  | 'Asia/Tokyo'
-  | 'Asia/Seoul'
-  | 'Australia/Brisbane'
-  | 'Australia/Sydney'
-  | 'Pacific/Guam'
-  | 'Pacific/Noumea'
-  | 'Pacific/Auckland'
-  | 'Pacific/Fiji';
+export type SupportedTimezones = 'America/New_York' | 'America/Vancouver' | 'Pacific/Honolulu';
 
 export interface Config {
   auth: {
@@ -68,10 +21,14 @@ export interface Config {
   blocks: {};
   collections: {
     users: User;
+    customers: Customer;
+    reservations: Reservation;
     tenants: Tenant;
     units: Unit;
     rates: Rate;
     attractions: Attraction;
+    peakseasons: Peakseason;
+    discounts: Discount;
     media: Media;
     Categories: Category;
     tags: Tag;
@@ -80,13 +37,23 @@ export interface Config {
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    units: {
+      rates: 'rates';
+      peakseasons: 'peakseasons';
+      discounts: 'discounts';
+    };
+  };
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
+    customers: CustomersSelect<false> | CustomersSelect<true>;
+    reservations: ReservationsSelect<false> | ReservationsSelect<true>;
     tenants: TenantsSelect<false> | TenantsSelect<true>;
     units: UnitsSelect<false> | UnitsSelect<true>;
     rates: RatesSelect<false> | RatesSelect<true>;
     attractions: AttractionsSelect<false> | AttractionsSelect<true>;
+    peakseasons: PeakseasonsSelect<false> | PeakseasonsSelect<true>;
+    discounts: DiscountsSelect<false> | DiscountsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     Categories: CategoriesSelect<false> | CategoriesSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
@@ -176,6 +143,10 @@ export interface Tenant {
    * This is the subdomain for the location (e.g. [slug].henrymitchell.net)
    */
   slug: string;
+  /**
+   * This is the timezone for the location
+   */
+  timezone: 'America/New_York' | 'America/Vancouver' | 'Pacific/Honolulu';
   icon?: (string | null) | Media;
   image?: (string | null) | Media;
   /**
@@ -227,6 +198,7 @@ export interface Tenant {
  */
 export interface Media {
   id: string;
+  tenant?: (string | null) | Tenant;
   alt: string;
   updatedAt: string;
   createdAt: string;
@@ -246,6 +218,7 @@ export interface Media {
  */
 export interface Attraction {
   id: string;
+  tenant?: (string | null) | Tenant;
   name: string;
   url: string;
   image: string | Media;
@@ -253,6 +226,46 @@ export interface Attraction {
    * If checked, this attraction will appear on unit view
    */
   isFavorite?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customers".
+ */
+export interface Customer {
+  id: string;
+  email: string;
+  name: string;
+  phone?: string | null;
+  addressStreet?: string | null;
+  addressState?: string | null;
+  addressPostalCode?: string | null;
+  addressCountry?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reservations".
+ */
+export interface Reservation {
+  id: string;
+  tenant?: (string | null) | Tenant;
+  customer: string | Customer;
+  unit: string | Unit;
+  startDate: string;
+  startDate_tz: SupportedTimezones;
+  endDate: string;
+  endDate_tz: SupportedTimezones;
+  status: 'pending' | 'confirmed' | 'cancelled';
+  quote: number;
+  amountPaid: number;
+  depositPaid: number;
+  notes?: string | null;
+  cleaningDate?: string | null;
+  cleaningDate_tz?: SupportedTimezones;
+  cleaningNotes?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -294,10 +307,36 @@ export interface Unit {
   guests: number;
   bathrooms: number;
   /**
+   * Size in square feet
+   */
+  size?: number | null;
+  /**
    * Tags for this unit
    */
   tags?: (string | Tag)[] | null;
   gallery: (string | Media)[];
+  rates?: {
+    docs?: (string | Rate)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  peakseasons?: {
+    docs?: (string | Peakseason)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  /**
+   * Note: Discounts are not yet implemented
+   */
+  discounts?: {
+    docs?: (string | Discount)[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  /**
+   * This text is displayed under the calendar on a unit
+   */
+  taxInfo?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -323,18 +362,60 @@ export interface Tag {
   createdAt: string;
 }
 /**
+ * The default rate for a unit before peak rate and/or discount is applied
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "rates".
  */
 export interface Rate {
   id: string;
-  year: number;
-  /**
-   * If checked, this is a peak rate
-   */
-  peak?: boolean | null;
+  tenant?: (string | null) | Tenant;
+  name: string;
   unit: string | Unit;
   price: number;
+  priceType: 'night' | 'week' | 'month';
+  minimumNights: number;
+  startDate: string;
+  startDate_tz: SupportedTimezones;
+  endDate: string;
+  endDate_tz: SupportedTimezones;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "peakseasons".
+ */
+export interface Peakseason {
+  id: string;
+  tenant?: (string | null) | Tenant;
+  name: string;
+  unit: string | Unit;
+  price: number;
+  priceType: 'night' | 'week' | 'month';
+  minimumNights: number;
+  startDate: string;
+  startDate_tz: SupportedTimezones;
+  endDate: string;
+  endDate_tz: SupportedTimezones;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "discounts".
+ */
+export interface Discount {
+  id: string;
+  name: string;
+  unit: string | Unit;
+  price: number;
+  priceType: 'night' | 'week' | 'month';
+  minimumNights: number;
+  startDate: string;
+  startDate_tz: SupportedTimezones;
+  endDate: string;
+  endDate_tz: SupportedTimezones;
   updatedAt: string;
   createdAt: string;
 }
@@ -378,6 +459,14 @@ export interface PayloadLockedDocument {
         value: string | User;
       } | null)
     | ({
+        relationTo: 'customers';
+        value: string | Customer;
+      } | null)
+    | ({
+        relationTo: 'reservations';
+        value: string | Reservation;
+      } | null)
+    | ({
         relationTo: 'tenants';
         value: string | Tenant;
       } | null)
@@ -392,6 +481,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'attractions';
         value: string | Attraction;
+      } | null)
+    | ({
+        relationTo: 'peakseasons';
+        value: string | Peakseason;
+      } | null)
+    | ({
+        relationTo: 'discounts';
+        value: string | Discount;
       } | null)
     | ({
         relationTo: 'media';
@@ -479,11 +576,50 @@ export interface UsersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customers_select".
+ */
+export interface CustomersSelect<T extends boolean = true> {
+  email?: T;
+  name?: T;
+  phone?: T;
+  addressStreet?: T;
+  addressState?: T;
+  addressPostalCode?: T;
+  addressCountry?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reservations_select".
+ */
+export interface ReservationsSelect<T extends boolean = true> {
+  tenant?: T;
+  customer?: T;
+  unit?: T;
+  startDate?: T;
+  startDate_tz?: T;
+  endDate?: T;
+  endDate_tz?: T;
+  status?: T;
+  quote?: T;
+  amountPaid?: T;
+  depositPaid?: T;
+  notes?: T;
+  cleaningDate?: T;
+  cleaningDate_tz?: T;
+  cleaningNotes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "tenants_select".
  */
 export interface TenantsSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
+  timezone?: T;
   icon?: T;
   image?: T;
   attractions?: T;
@@ -508,8 +644,13 @@ export interface UnitsSelect<T extends boolean = true> {
   coverImage?: T;
   guests?: T;
   bathrooms?: T;
+  size?: T;
   tags?: T;
   gallery?: T;
+  rates?: T;
+  peakseasons?: T;
+  discounts?: T;
+  taxInfo?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -518,10 +659,16 @@ export interface UnitsSelect<T extends boolean = true> {
  * via the `definition` "rates_select".
  */
 export interface RatesSelect<T extends boolean = true> {
-  year?: T;
-  peak?: T;
+  tenant?: T;
+  name?: T;
   unit?: T;
   price?: T;
+  priceType?: T;
+  minimumNights?: T;
+  startDate?: T;
+  startDate_tz?: T;
+  endDate?: T;
+  endDate_tz?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -530,6 +677,7 @@ export interface RatesSelect<T extends boolean = true> {
  * via the `definition` "attractions_select".
  */
 export interface AttractionsSelect<T extends boolean = true> {
+  tenant?: T;
   name?: T;
   url?: T;
   image?: T;
@@ -539,9 +687,45 @@ export interface AttractionsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "peakseasons_select".
+ */
+export interface PeakseasonsSelect<T extends boolean = true> {
+  tenant?: T;
+  name?: T;
+  unit?: T;
+  price?: T;
+  priceType?: T;
+  minimumNights?: T;
+  startDate?: T;
+  startDate_tz?: T;
+  endDate?: T;
+  endDate_tz?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "discounts_select".
+ */
+export interface DiscountsSelect<T extends boolean = true> {
+  name?: T;
+  unit?: T;
+  price?: T;
+  priceType?: T;
+  minimumNights?: T;
+  startDate?: T;
+  startDate_tz?: T;
+  endDate?: T;
+  endDate_tz?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
+  tenant?: T;
   alt?: T;
   updatedAt?: T;
   createdAt?: T;

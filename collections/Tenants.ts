@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, Field } from 'payload'
 
 import {
     lexicalEditor,
@@ -32,6 +32,20 @@ export const Tenants: CollectionConfig = {
             admin: {
                 description:
                     "This is the subdomain for the location (e.g. [slug].henrymitchell.net)",
+            },
+        },
+        {
+            name: "timezone",
+            type: "select",
+            options: [
+                {label: 'Vermont', value: 'America/New_York'},
+                {label: 'Whistler', value: 'America/Vancouver'},
+                {label: 'Maui', value: 'Pacific/Honolulu'},
+            ],
+            defaultValue: 'America/New_York',
+            required: true,
+            admin: {
+                description: "This is the timezone for the location",
             },
         },
         {
@@ -90,5 +104,5 @@ export const Tenants: CollectionConfig = {
                 ],
             }),
         }
-    ],
+    ] as Field[],
 }

@@ -1,4 +1,5 @@
 import {IconElement} from "@/modules/ui/icon-element";
+import { IconType } from "react-icons";
 
 import { FaKitchenSet } from "react-icons/fa6"
 import { FaUmbrellaBeach } from "react-icons/fa6"
@@ -21,31 +22,66 @@ import { MdOutdoorGrill } from "react-icons/md";
 import { MdOutlineLocalLaundryService } from "react-icons/md";
 import { BiSolidWasher } from "react-icons/bi";
 import { TbScubaMask } from "react-icons/tb";
-import { IconType } from "react-icons";
+import { FaBed } from "react-icons/fa6";
+import { PiBathtub } from "react-icons/pi";
+import { PiToilet } from "react-icons/pi";
+import { FaDice } from "react-icons/fa6";
+import { GiPlantsAndAnimals } from "react-icons/gi";
+import { MdOutlineForest } from "react-icons/md";
+import { PiMountains } from "react-icons/pi";
+import { FaFishFins } from "react-icons/fa6";
+import { LuMicrowave } from "react-icons/lu";
+import { FaHotTubPerson } from "react-icons/fa6";
+import { MdOutlineKingBed } from "react-icons/md";
+import { FaTv } from "react-icons/fa6";
+import { LuCircleParking } from "react-icons/lu";
+import { PiTennisBall } from "react-icons/pi";
+import { BsBuildingSlash } from "react-icons/bs";
+
 
 
 const icons = {
+    MdCabin: MdCabin,
+    HiHomeModern: HiHomeModern,
+
+    MdOutlineWaterDrop: MdOutlineWaterDrop,
+    LuSunSnow: LuSunSnow,
+
     FaKitchenSet: FaKitchenSet,
-    FaUmbrellaBeach: FaUmbrellaBeach,
-    PiTowel: PiTowel,
-    MdFireplace: MdFireplace,
-    GiCanoe: GiCanoe,
+    LuMicrowave: LuMicrowave,
     FaWifi: FaWifi,
+    FaUmbrellaBeach: FaUmbrellaBeach,
+    BiSolidWasher: BiSolidWasher,
+    MdOutlineLocalLaundryService: MdOutlineLocalLaundryService,
+    PiTowel: PiTowel,
+    PiToilet: PiToilet,
+    FaBed: FaBed,
+    MdOutdoorGrill: MdOutdoorGrill,
+    PiBathtub: PiBathtub,
+    MdFireplace: MdFireplace,
+
+    GiCanoe: GiCanoe,
     FaSailboat: FaSailboat,
     MdDeck: MdDeck,
     FaSwimmingPool: FaSwimmingPool,
-    LuSunSnow: LuSunSnow,
     GiBoatFishing: GiBoatFishing,
     RiDiamondLine: RiDiamondLine,
     PiSunglassesFill: PiSunglassesFill,
+
     ImBooks: ImBooks,
-    MdOutlineWaterDrop: MdOutlineWaterDrop,
-    MdCabin: MdCabin,
-    HiHomeModern: HiHomeModern,
-    MdOutdoorGrill: MdOutdoorGrill,
-    MdOutlineLocalLaundryService: MdOutlineLocalLaundryService,
-    BiSolidWasher: BiSolidWasher,
     TbScubaMask: TbScubaMask,
+    FaDice: FaDice,
+    GiPlantsAndAnimals: GiPlantsAndAnimals,
+    MdOutlineForest: MdOutlineForest,
+    PiMountains: PiMountains,
+    FaFishFins: FaFishFins,
+
+    FaHotTubPerson: FaHotTubPerson,
+    MdOutlineKingBed: MdOutlineKingBed,
+    FaTv: FaTv,
+    LuCircleParking: LuCircleParking,
+    PiTennisBall: PiTennisBall,
+    BsBuildingSlash: BsBuildingSlash,
 }
 
 interface IconSpanProps {

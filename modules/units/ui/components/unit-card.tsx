@@ -20,7 +20,7 @@ interface UnitCardProps {
     unit: Unit,
 }
 
-export const UnitCard = ({unit}: UnitCardProps) => {
+export const UnitCard = ({ unit }: UnitCardProps) => {
     const router = useRouter();
 
     const handleUserClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -39,6 +39,7 @@ export const UnitCard = ({unit}: UnitCardProps) => {
             flex flex-col md:flex-row ">
                 <div className="relative aspect-square">
                     <Image
+                        loading="eager"
                         alt={unit.name}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -53,9 +54,11 @@ export const UnitCard = ({unit}: UnitCardProps) => {
                     <div className="flex text-md text-bold text-gray-600">
 
                         <div className="columns-1 flex-auto">
-                            <span className="text-nowrap flex">Guest(s): {unit.guests}</span>
-                            <span className="text-nowrap flex">Bathroom(s): {unit.bathrooms}</span>
-                            <IconSpan name={'FaWifi'} label={'Test'} size={15}/>
+                            <span className="text-nowrap flex">{unit.guests} Guest(s)</span>
+                            <span className="text-nowrap flex">{unit.bathrooms} Bathroom(s)</span>
+                            {unit.size &&
+                                <span className="text-nowrap flex">{unit.size} sq. ft.</span>
+                            }
                         </div>
 
                         <div className="flex-1 columns-2 ">

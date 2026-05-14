@@ -1,29 +1,53 @@
-/*.wrapper--ticks:before,.tick-left:before {*/
-/*    content: "";*/
-/*    border-top: 5px solid #0000;*/
-/*    border-bottom: 5px solid #0000;*/
-/*    border-right: 5px solid #0000;*/
-/*    border-left: 5px solid var(--color-stroke);*/
-/*    width: 0;*/
-/*    height: 0;*/
-/*    position: absolute;*/
-/*    top: -5px;*/
-/*    left: 0*/
-/*}*/
+.rdp-root {
+    --rdp-accent-color: blue; /* Change the accent color to indigo. */
+    --rdp-accent-background-color: #f0f0f0; /* Change the accent background color. */
+    /* Add more CSS variables here. */
+    --rdp-disabled-opacity: 0.5; /* The opacity of the disabled days. */
+    --rdp-outside-opacity: 0.3; /* The opacity of the days outside the current month. */
+    /*--rdp-selected-border: 2px solid var(--rdp-accent-color); !* The border of the selected days. *!*/
+}
 
-/*.wrapper--ticks:after,.tick-right:after {*/
-/*    content: "";*/
-/*    border-top: 5px solid #0000;*/
-/*    border-right: 5px solid var(--color-stroke);*/
-/*    border-bottom: 5px solid #0000;*/
-/*    border-left: 5px solid #0000;*/
-/*    width: 0;*/
-/*    height: 0;*/
-/*    position: absolute;*/
-/*    top: -5px;*/
-/*    right: 0*/
-/*}*/
+.checkOutOnly:not(.booked) {
+    opacity: 1.0 !important;
+}
 
-/*.wrapper--ticks:after, .tick-right:after {*/
-/*    border-right-color:var(--color-stroke);*/
-/*}*/
+.rdp-disabled.rdp-selected {
+    opacity: 1.0;
+}
+
+.rdp-range_start.peak .rdp-day_button {
+    /*background-color: var(--rdp-range_start-date-background-color);*/
+    background-color: darkred;
+    color: var(--rdp-range_start-color);
+}
+
+.rdp-range_end.peak .rdp-day_button  {
+    color: var(--rdp-range_start-color);
+    /*background-color: var(--rdp-range_end-date-background-color);*/
+    background-color: darkred;
+}
+
+.rdp-selected.peak .rdp-day_button {
+    border: red;
+}
+
+.rdp-range_middle {
+    border:red
+}
+
+.rdp-day_button {
+    font-weight: 700;
+}
+
+.rdp-disabled.checkOutOnly .rdp-day_button {
+    font-weight: 500;
+}
+.booked .rdp-day_button {
+    font-weight: 500;
+}
+
+.disabled\:opacity-50 {
+    &:disabled {
+        opacity: 90%;
+    }
+}

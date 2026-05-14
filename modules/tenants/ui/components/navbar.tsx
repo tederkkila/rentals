@@ -13,6 +13,9 @@ import {Button} from "@/components/ui/button";
 import {NavbarSidebar} from "./navbar-sidebar";
 import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
+import DecorativeBox from "@/modules/ui/DecorativeBox";
+import { Box, Flex } from '@radix-ui/themes';
+
 
 const poppins = Poppins({
     subsets: ["latin"],
@@ -74,7 +77,7 @@ export const Navbar = ({slug}: NavbarProps) => {
             sm:border-x
             mx-auto">
             <div className="max-w-(--breakpoint-xl) mx-auto flex items-center h-full gap-2 px-4 py-6" >
-                <Link href="/" className="flex items-center mr-8">
+                <Link href={`/tenants/${slug}`} className="flex items-center mr-8">
                     {data.icon?.url && (
                         <Image
                             alt={"tenantSlug"}
@@ -87,7 +90,7 @@ export const Navbar = ({slug}: NavbarProps) => {
                         />
                     )}
                     <span className={cn("text-primary text-4xl font-semibold", poppins.className)}>
-                      {slug}
+                      {data.name?.toLowerCase()}
                     </span>
                 </Link>
 
@@ -126,13 +129,33 @@ export const Navbar = ({slug}: NavbarProps) => {
 
 export const NavbarSkeleton = () => {
     return (
-        <nav className="h-20 border-b font-medium bg-white">
-            <div className="max-w-(--breakpoint-xl) mx-auto flex justify-between items-center h-full px-4 lg:px-12">
-                <div/>
-                <Button disabled className="bg-white">
-                    {/*<ShoppingCartIcon className="text-black" />*/}
-                </Button>
+        <header className="h-16 border-b font-medium justity-between bg-white
+            max-w-full sm:max-w-[calc(100vw-2rem)] lg:max-w-7xl
+            sm:border-x
+            mx-auto">
+            <div className="max-w-(--breakpoint-xl) mx-auto flex items-center h-full gap-2 px-4 py-6" >
+
+                <Flex direction="row" gap="2" align="center">
+                    <Box className="w-12 h-12 rounded-full animate-pulse">
+                        <DecorativeBox/>
+                    </Box>
+                    <Box className="w-48 h-12 rounded-full animate-pulse">
+                        <DecorativeBox/>
+                    </Box>
+
+                    <Box className="w-48 h-8 rounded-full animate-pulse">
+                        <DecorativeBox/>
+                    </Box>
+
+                    <Box className="w-48 h-8 rounded-full animate-pulse">
+                        <DecorativeBox/>
+                    </Box>
+
+                    <Box className="w-48 h-8 rounded-full animate-pulse">
+                        <DecorativeBox/>
+                    </Box>
+                </Flex>
             </div>
-        </nav>
+        </header>
     );
 };

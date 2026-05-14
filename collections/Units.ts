@@ -81,6 +81,13 @@ export const Units: CollectionConfig = {
             required: true,
         },
         {
+            name: "size",
+            type: "number",
+            admin: {
+                description: "Size in square feet",
+            }
+        },
+        {
             name: "tags",
             type: "relationship",
             relationTo: "tags",
@@ -96,7 +103,35 @@ export const Units: CollectionConfig = {
             relationTo: 'media',
             required: true,
             hasMany: true // This enables multiple images
-        }
+        },
+        {
+            name: 'rates',
+            type: "join",
+            collection: "rates",
+            on: "unit",
+        },
+        {
+            name: 'peakseasons',
+            type: "join",
+            collection: "peakseasons",
+            on: "unit",
+        },
+        {
+            name: 'discounts',
+            type: "join",
+            collection: "discounts",
+            on: "unit",
+            admin: {
+                description: "Note: Discounts are not yet implemented"
+            },
+        },
+        {
+            name: 'taxInfo',
+            type: 'text',
+            admin: {
+                description: "This text is displayed under the calendar on a unit"
+            },
+        },
 
     ]
 };

@@ -3,7 +3,7 @@ import { TRPCError } from "@trpc/server";
 import type { Sort, Where } from "payload";
 
 import { DEFAULT_LIMIT } from "@/constants";
-import { Media, Unit } from "@/payload-types";
+import { Discount, Media, Peakseason, Rate, Reservation, Unit } from "@/payload-types";
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 
 import { sortValues } from "../search-params";
@@ -21,7 +21,7 @@ export const unitsRouter = createTRPCRouter({
 
             const unitsData = await ctx.db.find({
                 collection: "units",
-                depth: 1, // "tenant.image" is a type of "Media"
+                depth: 1,
                 where: {
                     slug: {
                         equals: input.slug,
@@ -32,7 +32,7 @@ export const unitsRouter = createTRPCRouter({
             });
 
             const unit = unitsData.docs[0];
-            //console.log(tenant)
+             console.log("unit.name: " + unit.name)
 
             if (!unit) {
                 throw new TRPCError({ code: "NOT_FOUND", message: "Unit not found" });
@@ -122,44 +122,6 @@ export const unitsRouter = createTRPCRouter({
                 }
             }
 
-            // if (input.category) {
-            //     const categoriesData = await ctx.db.find({
-            //         collection: "categories",
-            //         limit: 1,
-            //         depth: 1, // Populate subcategories, subcategories.[0] will be a type of "Category"
-            //         pagination: false,
-            //         where: {
-            //             slug: {
-            //                 equals: input.category,
-            //             }
-            //         }
-            //     });
-            //
-            //     const formattedData = categoriesData.docs.map((doc) => ({
-            //         ...doc,
-            //         subcategories: (doc.subcategories?.docs ?? []).map((doc) => ({
-            //             // Because of "depth: 1" we are confident "doc" will be a type of "Category"
-            //             ...(doc as Category),
-            //             subcategories: undefined,
-            //         }))
-            //     }));
-            //
-            //     const subcategoriesSlugs = [];
-            //     const parentCategory = formattedData[0];
-            //
-            //     if (parentCategory) {
-            //         subcategoriesSlugs.push(
-            //             ...parentCategory.subcategories.map((subcategory) => subcategory.slug)
-            //         )
-            //
-            //         where["category.slug"] = {
-            //             in: [parentCategory.slug, ...subcategoriesSlugs]
-            //         }
-            //     }
-            // }
-
-
-
             if (input.search) {
                 where["name"] = {
                     like: input.search,
@@ -184,9 +146,9 @@ export const unitsRouter = createTRPCRouter({
                         depth: 0,
                         pagination: false,
                         where: {
-                            year: {equals: 2026},
+                            name: {equals: 2026},
                             unit: {equals: doc.id},
-                            peak: {equals: true},
+                            // peak: {equals: true},
                         }
                     });
 
@@ -195,9 +157,9 @@ export const unitsRouter = createTRPCRouter({
                         depth: 0,
                         pagination: false,
                         where: {
-                            year: {equals: 2026},
+                            name: {equals: 2026},
                             unit: {equals: doc.id},
-                            peak: {not_equals: true},
+                            // peak: {not_equals: true},
                         }
                     });
 
@@ -212,29 +174,6 @@ export const unitsRouter = createTRPCRouter({
                 })
             )
 
-            // const dataWithSummarizedReviews = await Promise.all(
-            //     data.docs.map(async (doc) => {
-            //         const reviewsData = await ctx.db.find({
-            //             collection: "reviews",
-            //             pagination: false,
-            //             where: {
-            //                 product: {
-            //                     equals: doc.id,
-            //                 },
-            //             },
-            //         });
-            //
-            //         return {
-            //             ...doc,
-            //             reviewCount: reviewsData.totalDocs,
-            //             reviewRating:
-            //                 reviewsData.docs.length === 0
-            //                     ? 0
-            //                     : reviewsData.docs.reduce((acc, review) => acc + review.rating, 0) / reviewsData.totalDocs
-            //         }
-            //     })
-            // );
-
             return {
 
                 ...data,
@@ -245,4 +184,94 @@ export const unitsRouter = createTRPCRouter({
                 }))
             }
         }),
+    getUnitWithCalendar: baseProcedure
+        .input(
+            z.object({
+                slug: z.string(),
+            }),
+        )
+        .query(async ({ ctx, input }) => {
+
+            const now = new Date()
+            const endOfCurrentMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
+            const firstDayOfMonth = new Date();
+            firstDayOfMonth.setDate(1);
+            firstDayOfMonth.setHours(0, 0, 0, 0);
+
+            const unitsData = await ctx.db.find({
+                collection: "units",
+                depth: 2,
+                where: {
+                    slug: {
+                        equals: input.slug,
+                    },
+                },
+                limit: 1,
+                pagination: false,
+            });
+
+            const unit = unitsData.docs[0] as Unit;
+            // console.log("unit:", unit)
+
+            const reservations = await ctx.db.find({
+                collection: "reservations",
+                depth: 0,
+                pagination: false,
+                where: {
+                    unit: {equals: unit.id},
+                    status: {equals: 'confirmed'},
+                    endDate: {
+                        greater_than_equal: firstDayOfMonth.toISOString(),
+                    },
+                }
+            });
+
+            const rates = await ctx.db.find({
+                collection: "rates",
+                depth: 0,
+                pagination: false,
+                where: {
+                    unit: {equals: unit.id},
+                    endDate: {
+                        greater_than_equal: firstDayOfMonth.toISOString(),
+                    },
+                }
+            });
+
+            const peakseasons = await ctx.db.find({
+                collection: "peakseasons",
+                depth: 0,
+                pagination: false,
+                where: {
+                    unit: {equals: unit.id},
+                    endDate: {
+                        greater_than_equal: firstDayOfMonth.toISOString(),
+                    },
+                }
+            });
+
+            const discounts = await ctx.db.find({
+                collection: "discounts",
+                depth: 0,
+                pagination: false,
+                where: {
+                    unit: {equals: unit.id},
+                    endDate: {
+                        greater_than_equal: firstDayOfMonth.toISOString(),
+                    },
+                }
+            });
+
+
+            return {
+
+                ...unit,
+                reservations: reservations.docs as Reservation[],
+                rates: rates.docs as Rate[],
+                peakseasons: peakseasons.docs as Peakseason[],
+                discounts: discounts.docs as Discount[],
+
+            }
+
+        })
 });

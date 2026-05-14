@@ -1,5 +1,4 @@
 import type { SearchParams } from "nuqs/server";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
 import { DEFAULT_LIMIT } from "@/constants";
 import { HydrateClient, prefetch, trpc } from "@/trpc/server";
@@ -9,8 +8,6 @@ import { TenantRichText } from "@/modules/tenants/ui/components/tenant-rich-text
 import { loadUnitFilters } from "@/modules/units/search-params";
 import { ErrorBoundary } from "react-error-boundary";
 import React, { Suspense } from "react";
-import { Navbar, NavbarSkeleton } from "@/modules/tenants/ui/components/navbar";
-
 
 interface Props {
     searchParams: Promise<SearchParams>;
@@ -40,7 +37,7 @@ const Page = async ({ params, searchParams }: Props) => {
 
             <HydrateClient>
                 <ErrorBoundary fallback={<div>Something went wrong</div>}>
-                    <Suspense fallback={<NavbarSkeleton />}>
+                    <Suspense>
                         <TenantRichText slug={slug} />
                         <UnitListView tenantSlug={slug} />
                     </Suspense>
