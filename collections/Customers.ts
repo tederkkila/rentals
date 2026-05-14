@@ -12,8 +12,9 @@ export const Customers: CollectionConfig = {
             required: true,
         },
         {
-            name: "nme",
+            name: "name",
             type: "text",
+            required: true,
         },
         {
             name: "phone",

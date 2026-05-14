@@ -31,6 +31,12 @@ import { MdOutlineForest } from "react-icons/md";
 import { PiMountains } from "react-icons/pi";
 import { FaFishFins } from "react-icons/fa6";
 import { LuMicrowave } from "react-icons/lu";
+import { FaHotTubPerson } from "react-icons/fa6";
+import { MdOutlineKingBed } from "react-icons/md";
+import { FaTv } from "react-icons/fa6";
+import { LuCircleParking } from "react-icons/lu";
+import { PiTennisBall } from "react-icons/pi";
+import { BsBuildingSlash } from "react-icons/bs";
 
 
 
@@ -69,6 +75,13 @@ const icons = {
     MdOutlineForest: MdOutlineForest,
     PiMountains: PiMountains,
     FaFishFins: FaFishFins,
+
+    FaHotTubPerson: FaHotTubPerson,
+    MdOutlineKingBed: MdOutlineKingBed,
+    FaTv: FaTv,
+    LuCircleParking: LuCircleParking,
+    PiTennisBall: PiTennisBall,
+    BsBuildingSlash: BsBuildingSlash,
 }
 
 interface IconSpanProps {

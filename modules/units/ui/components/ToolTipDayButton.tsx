@@ -1,11 +1,30 @@
 import { DayPicker, DayButton, DayButtonProps, } from "react-day-picker"
 import { Calendar, CalendarDayButton  } from "@/components/ui/calendar"
-import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip"
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/modules/units/ui/components/tooltip"
 import { children } from "happy-dom/lib/PropertySymbol";
 
 export const ToolTipDayButton = ({ children, modifiers, day, ...buttonProps }) => {
-    // const { day, modifiers, ...buttonProps } = props;
-    const { disabled, booked, checkOutOnly, minimumStay, peak, saturdayCheckOutOnly } = modifiers;
+    const { booked, checkOutOnly, minimumStay, peak, saturdayCheckOutOnly } = modifiers;
+
+    let tooltipText = "";
+    if (booked) {
+        tooltipText = "Booked";
+    } else {
+        if (checkOutOnly) {
+            tooltipText = "Checkout Only";
+        } else {
+            if (saturdayCheckOutOnly) {
+                tooltipText = "Sat. Check in/out";
+            } else  if (minimumStay) {
+                if (peak) {
+                    tooltipText = "< peak night min";
+                } else {
+                    tooltipText = "< night min";
+                }
+            }
+        }
+
+    }
 
     return (
         <TooltipProvider>
@@ -13,35 +32,20 @@ export const ToolTipDayButton = ({ children, modifiers, day, ...buttonProps }) =
                 <TooltipTrigger asChild>
                 <span className="inline-block w-fit">
                   <CalendarDayButton day={day} modifiers={modifiers} {...buttonProps}>
-                  {children}
+                  {/*{children}*/}
+                      <div className="day-number">{day.date.getDate()}</div>
+      {/*<div className="day-price" style={{ fontSize: '0.7em', color: 'green', marginTop: '-8px' }}>*/}
+      {/*  {"$375"}*/}
+      {/*</div>*/}
                 </CalendarDayButton>
                 </span>
                 </TooltipTrigger>
-                    {booked && (
-                        <TooltipContent>
-                        <p>Booked</p>
-                        </TooltipContent>
-                    )}
-                    {checkOutOnly && !booked && (
-                        <TooltipContent>
-                        <p>Checkout Only</p>
-                        </TooltipContent>
-                    )}
-                    {minimumStay && (
-                        <TooltipContent>
-                            <p>2-night min</p>
-                        </TooltipContent>
-                    )}
-                    {minimumStay && peak && (
-                        <TooltipContent>
-                            <p>7-night min</p>
-                        </TooltipContent>
-                    )}
-                    {saturdayCheckOutOnly && peak && !booked && (
-                        <TooltipContent>
-                            <p>Saturday Checkin/out</p>
-                        </TooltipContent>
-                    )}
+                {tooltipText &&
+                    <TooltipContent>
+                        <p>{tooltipText}</p>
+                    </TooltipContent>
+                }
+
             </Tooltip>
         </TooltipProvider>
     );

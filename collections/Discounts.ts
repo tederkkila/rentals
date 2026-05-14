@@ -1,11 +1,8 @@
-import type { CollectionConfig, Field } from "payload"
+import type { CollectionConfig, Field } from 'payload'
 
-export const Rates: CollectionConfig = {
-    slug: "rates",
-    admin: {
-        description: "The default rate for a unit before peak rate and/or discount is applied",
-        defaultColumns: ["name", "tenant", "unit", "price", "priceType", "startDate", "endDate"],
-    },
+export const Discounts: CollectionConfig = {
+    slug: "discounts",
+
     fields: [
         {
             name: "name",
@@ -16,8 +13,8 @@ export const Rates: CollectionConfig = {
             name: "unit",
             type: "relationship",
             relationTo: "units",
-            required: true,
             hasMany: false,
+            required: true,
         },
         {
             name: "price",
@@ -44,7 +41,14 @@ export const Rates: CollectionConfig = {
             name: "startDate",
             type: "date",
             required: true,
-            timezone: true,
+            timezone: {
+                defaultTimezone: 'America/New_York',
+                supportedTimezones: [
+                    {label: 'Vermont', value: 'America/New_York'},
+                    {label: 'Whistler', value: 'America/Vancouver'},
+                    {label: 'Maui', value: 'Pacific/Honolulu'},
+                ],
+            },
             admin: {
                 date: {
                     pickerAppearance: 'dayAndTime',
@@ -57,15 +61,20 @@ export const Rates: CollectionConfig = {
             name: "endDate",
             type: "date",
             required: true,
-            timezone: true,
+            timezone: {
+                defaultTimezone: 'America/New_York',
+                supportedTimezones: [
+                    {label: 'Vermont', value: 'America/New_York'},
+                    {label: 'Whistler', value: 'America/Vancouver'},
+                    {label: 'Maui', value: 'Pacific/Honolulu'},
+                ],
+            },
             admin: {
                 date: {
                     pickerAppearance: 'dayAndTime',
                     displayFormat: 'd MMM yyyy, HH:mm',
                 },
             },
-
         },
-
-    ] as Field[],
-};
+    ] as Field[]
+}

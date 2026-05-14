@@ -4,3 +4,4 @@ import type { AppRouter } from "@/trpc/routers/_app";
 
 export type UnitsGetManyOutput = inferRouterOutputs<AppRouter>["units"]["getMany"];
 export type UnitsGetOneOutput = inferRouterOutputs<AppRouter>["units"]["getOne"];
+export type UnitsGetUnitCalendarOutput = inferRouterOutputs<AppRouter>["units"]["getUnitCalendar"];

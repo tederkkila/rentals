@@ -1,11 +1,12 @@
-import type { CollectionConfig, Field } from "payload"
+import type { CollectionConfig, Field } from 'payload'
 
-export const Rates: CollectionConfig = {
-    slug: "rates",
+export const PeakSeasons: CollectionConfig = {
+    slug: "peakseasons",
     admin: {
-        description: "The default rate for a unit before peak rate and/or discount is applied",
         defaultColumns: ["name", "tenant", "unit", "price", "priceType", "startDate", "endDate"],
+        useAsTitle: "name",
     },
+
     fields: [
         {
             name: "name",
@@ -16,8 +17,8 @@ export const Rates: CollectionConfig = {
             name: "unit",
             type: "relationship",
             relationTo: "units",
-            required: true,
             hasMany: false,
+            required: true,
         },
         {
             name: "price",
@@ -64,8 +65,6 @@ export const Rates: CollectionConfig = {
                     displayFormat: 'd MMM yyyy, HH:mm',
                 },
             },
-
         },
-
-    ] as Field[],
-};
+    ] as Field[]
+}

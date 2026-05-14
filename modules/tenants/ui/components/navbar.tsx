@@ -90,7 +90,7 @@ export const Navbar = ({slug}: NavbarProps) => {
                         />
                     )}
                     <span className={cn("text-primary text-4xl font-semibold", poppins.className)}>
-                      {slug}
+                      {data.name?.toLowerCase()}
                     </span>
                 </Link>
 

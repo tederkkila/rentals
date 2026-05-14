@@ -6,7 +6,7 @@ import { useTRPC } from "@/trpc/client";
 import { Unit, Tag, Media } from "@/payload-types"
 import { Section, Box, Heading, Flex } from "@radix-ui/themes";
 import { RichText } from "@payloadcms/richtext-lexical/react";
-import React from "react";
+import React, { Suspense } from "react";
 import { IconSpan } from "@/modules/ui/icon-span";
 import { UnitImageGrid } from '@/modules/units/ui/components/UnitImageGrid'
 import { ReservationPicker } from '@/modules/units/ui/components/ReservationPicker'
@@ -19,17 +19,18 @@ export const UnitView = ({ unit }: UnitViewProps) => {
 
     const trpc = useTRPC();
 
-    const {data}: Unit = useSuspenseQuery(trpc.units.getOne.queryOptions({ slug: unit }));
+    const {data}: Unit = useSuspenseQuery(trpc.units.getUnitWithCalendar.queryOptions({ slug: unit }));
 
     //console.log("unit:" + JSON.stringify(data));
+    const amenities = data.tags.filter( (tag) => tag.isAmenity === true);
 
     return (
         <Box className="p-8">
-            <Heading className="pb-4" as="h1" size={{ initial: '6', sm: '8' }}>{data.name}</Heading>
+            <Heading className="pb-4" as="h1" size={{ initial: '6', sm: '8' } as const}>{data.name}</Heading>
 
             <UnitImageGrid unit={data} />
 
-            <Flex direction={{ initial: "column", sm: "row" }}>
+            <Flex direction={{ initial: "column", sm: "row" } as const}>
                 <Box className="flex-6">
                     <Box className="prose lg:prose-lg max-w-none prose-stone">
                         {data.content && (
@@ -39,7 +40,9 @@ export const UnitView = ({ unit }: UnitViewProps) => {
                 </Box>
                 <Box className="flex-4">
                     <Box ml={{ initial: "0", sm: "5" }} mt="25px">
-                        <ReservationPicker unit={data} />
+                        <Suspense fallback={"loading calendar..."}>
+                            <ReservationPicker unit={data} />
+                        </Suspense>
                     </Box>
                 </Box>
             </Flex>
@@ -47,10 +50,9 @@ export const UnitView = ({ unit }: UnitViewProps) => {
 
             <Section size="1" >
                 <Heading as="h2" size="4">Amenities</Heading>
-                {data.tags && (
+                {amenities && (
                     <div className="flex flex-wrap gap-2">
-                        //TODO Only display tags with isAmenity = true
-                        {data.tags.map((tag: Tag, index: number) => (
+                        {amenities.map((tag: Tag, index: number) => (
                             <div key={tag.id} className="bg-gray-100 rounded-full px-3 py-1 text-sm font-medium text-gray-700">
                                 <IconSpan name={tag.icon} label={tag.name} size={15} index={index} />
                             </div>

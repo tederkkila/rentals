@@ -28,14 +28,14 @@ const locations = [
                     filename: "gray_map.jpg",
                     mimetype: "image/jpeg",
                 },
-                rates: [
-                    {year: 2025, peak: true, price: 1800},
-                    {year: 2025, peak: false, price: 1100},
+                /*rates: [
+
+
                     {year: 2026, peak: true, price: 2200},
                     {year: 2026, peak: false, price: 1500},
                     {year: 2027, peak: true, price: 2500},
                     {year: 2027, peak: false, price: 1800},
-                ],
+                ],*/
                 tags: [
                     //special tags
                     { name: "Winterized", slug: "winterized", icon: "LuSunSnow", isSearchable: true, isAmenity: true},
@@ -71,14 +71,14 @@ const locations = [
                     filename: "green_map.jpg",
                     mimetype: "image/jpeg",
                 },
-                rates: [
-                    {year: 2025, peak: true, price: 1800},
-                    {year: 2025, peak: false, price: 900},
+                /*rates: [
+
+
                     {year: 2026, peak: true, price: 2200},
                     {year: 2026, peak: false, price: 1100},
                     {year: 2027, peak: true, price: 2500},
                     {year: 2027, peak: false, price: 1250},
-                ],
+                ],*/
                 tags: [
                     { name: "Lake View", slug: "lake-view", icon: "MdOutlineWaterDrop", isSearchable: true, isAmenity: false},
                     { name: "Lakeside", slug: "lakeside", icon: "GiBoatFishing", isSearchable: true, isAmenity: false},
@@ -107,14 +107,14 @@ const locations = [
                     filename: "red_map.jpg",
                     mimetype: "image/jpeg",
                 },
-                rates: [
-                    {year: 2025, peak: true, price: 900},
-                    {year: 2025, peak: false, price: 450},
+                /*rates: [
+
+
                     {year: 2026, peak: true, price: 1100},
                     {year: 2026, peak: false, price: 550},
                     {year: 2027, peak: true, price: 1300},
                     {year: 2027, peak: false, price: 650},
-                ],
+                ],*/
                 tags: [
                     { name: "Rustic", slug: "rustic", icon: "MdCabin", isSearchable: true, isAmenity: true},
 
@@ -217,20 +217,30 @@ const locations = [
                 guests: 4,
                 isPrivate: false,
                 isArchived: false,
-                rates: [
-                    {year: 2025, peak: true, price: 1800},
-                    {year: 2025, peak: false, price: 900},
+                /*rates: [
+
+
                     {year: 2026, peak: true, price: 2200},
                     {year: 2026, peak: false, price: 1100},
                     {year: 2027, peak: true, price: 2500},
                     {year: 2027, peak: false, price: 1250},
-                ],
+                ],*/
                 tags: [
                     { name: "Lānai", slug: "lanai", icon: "MdDeck", isSearchable: true, isAmenity: true},
                     { name: "Beach", slug: "beach", icon: "FaUmbrellaBeach", isSearchable: true, isAmenity: true},
                     { name: "Kitchen", slug: "kitchen", icon: "FaKitchenSet", isSearchable: true, isAmenity: true},
                     { name: "Wifi", slug: "wifi", icon: "FaWifi", isSearchable: true, isAmenity: true},
                     { name: "Water Gear", slug: "water-gear", icon: "TbScubaMask", isSearchable: true, isAmenity: true},
+
+                    { name: "Hot Tub", slug: "hot-tub", icon: "TbScubaMask", isSearchable: true, isAmenity: true},
+                    { name: "King Bed", slug: "king-bed", icon: "MdOutlineKingBed", isSearchable: false, isAmenity: true},
+                    { name: "Private Lānai", slug: "private-lanai", icon: "MdDeck", isSearchable: false, isAmenity: true},
+                    { name: "Garden Lānai", slug: "garden-lanai", icon: "MdDeck", isSearchable: false, isAmenity: true},
+                    { name: "High Speed Internet", slug: "high-speed-internet", icon: "FaWifi", isSearchable: true, isAmenity: true},
+                    { name: "Cable TV", slug: "cable-tv", icon: "FaTv", isSearchable: true, isAmenity: true},
+                    { name: "Free Parking", slug: "free-parking", icon: "LuCircleParking", isSearchable: true, isAmenity: true},
+                    { name: "Tennis Court", slug: "tennis-court", icon: "PiTennisBall", isSearchable: true, isAmenity: true},
+                    { name: "No Resort Fee", slug: "no-resort-fee", icon: "BsBuildingSlash", isSearchable: true, isAmenity: true},
 
                 ],
             },
@@ -246,14 +256,14 @@ const locations = [
                 guests: 4,
                 isPrivate: false,
                 isArchived: false,
-                rates: [
-                    {year: 2025, peak: true, price: 1800},
-                    {year: 2025, peak: false, price: 900},
+                /*rates: [
+
+
                     {year: 2026, peak: true, price: 2200},
                     {year: 2026, peak: false, price: 1100},
                     {year: 2027, peak: true, price: 2500},
                     {year: 2027, peak: false, price: 1250},
-                ],
+                ],*/
                 tags: [
                     { name: "Lānai", slug: "lanai", icon: "MdDeck", isSearchable: true, isAmenity: true},
                     { name: "Pool", slug: "pool", icon: "FaSwimmingPool", isSearchable: true, isAmenity: true},
