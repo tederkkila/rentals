@@ -22,7 +22,7 @@ export default async function proxy(req: NextRequest) {
 
     if (hostname.endsWith(`.${rootDomain}`)) {
         const tenantSlug = hostname.replace(`.${rootDomain}`, "");
-        return NextResponse.rewrite(new URL(`/tenants/${tenantSlug}${url.pathname}`, req.url));
+        return NextResponse.rewrite(new URL(`/tenants/${tenantSlug}${url.pathname}`, req.url) as any);
     }
 
     return NextResponse.next();

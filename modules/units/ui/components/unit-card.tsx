@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-import { cn, formatCurrency, generateTenantURL } from "@/lib/utils";
+import { cn, generateTenantURL } from "@/lib/utils";
 import type { Unit, Tenant } from "@/payload-types";
 
 import { AmenitiesList } from "@/modules/units/ui/components/amenities-list"

@@ -3,7 +3,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 
 import { useTRPC } from "@/trpc/client";
-import { Unit, Tag, Media } from "@/payload-types"
+import { Unit, Tag } from "@/payload-types"
 import { Section, Box, Heading, Flex } from "@radix-ui/themes";
 import { RichText } from "@payloadcms/richtext-lexical/react";
 import React, { Suspense } from "react";
@@ -52,7 +52,7 @@ export const UnitView = ({ unit }: UnitViewProps) => {
                 <Heading as="h2" size="4">Amenities</Heading>
                 {amenities && (
                     <div className="flex flex-wrap gap-2">
-                        {amenities.map((tag: Tag, index: number) => (
+                        {amenities.map((tag: Tag) => (
                             <div className="bg-gray-100 rounded-full px-3 py-1 text-sm font-medium text-gray-700">
                                 <IconSpan name={tag.icon} label={tag.name} size={15} key={tag.id} />
                             </div>
