@@ -4,7 +4,7 @@ export const Rates: CollectionConfig = {
     slug: "rates",
     admin: {
         description: "The default rate for a unit before peak rate and/or discount is applied",
-        defaultColumns: ["name", "tenant", "unit", "price", "priceType", "startDate", "endDate"],
+        defaultColumns: ["name", "unit", "price", "priceType", "startDate", "endDate"],
     },
     fields: [
         {

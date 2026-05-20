@@ -92,6 +92,7 @@ export const reservationsRouter = createTRPCRouter({
             unitId: z.string(),
             startDate: z.coerce.date(),
             endDate: z.coerce.date(),
+            timeZone: z.string(),
             quote: z.number().nonnegative(),
             token: z.string(),
             honeyPot: z.string().optional(),
@@ -200,7 +201,7 @@ export const reservationsRouter = createTRPCRouter({
                 if (elapsedMs > FORM_SESSION_TTL_MS) {
                     throw new TRPCError({
                         code: "BAD_REQUEST",
-                        message: "Form session expired. Please refresh.",
+                        message: "Form session expired. We just refreshed it for you.",
                     });
                 }
             } catch (error) {
@@ -218,7 +219,7 @@ export const reservationsRouter = createTRPCRouter({
         validateSubmissionToken(input.token);
 
 
-        const reservationTimezone: SupportedTimezones = "America/New_York";
+        const reservationTimezone: SupportedTimezones = input.timeZone;
         const initialReservationStatus: Reservation["status"] = "pending";
 
         const newReservation: Reservation = await ctx.db.create({

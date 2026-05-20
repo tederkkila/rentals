@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { ChevronDownIcon, ChevronRightIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -60,6 +60,7 @@ export const UnitFilters = ({ tenantSlug }):UnitFiltersProps => {
 
     const onClear = () => {
         setFilters({
+            search: "",
             minPrice: "",
             maxPrice: "",
             tags: [],

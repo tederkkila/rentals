@@ -29,7 +29,7 @@ const updateMediaTenants = async () => {
                     data: {
                         tenant: targetTenantId, // Assign the tenant ObjectId
                     },
-                });
+                } as Parameters<typeof payload.update>[0]);
             } catch (err) {
                 console.error(`Failed to update media ID: ${doc.id}`, err.message);
             }

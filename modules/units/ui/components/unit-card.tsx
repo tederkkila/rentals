@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 import { cn, formatCurrency, generateTenantURL } from "@/lib/utils";
-import type { Unit } from "@/payload-types";
+import type { Unit, Tenant } from "@/payload-types";
 
 import { IconSpan } from "@/modules/ui/icon-span"
 import { AmenitiesList } from "@/modules/units/ui/components/amenities-list"
@@ -18,9 +18,10 @@ const poppins = Poppins({
 
 interface UnitCardProps {
     unit: Unit,
+    key?: React.Key,
 }
 
-export const UnitCard = ({ unit }: UnitCardProps) => {
+export const UnitCard = ({ unit, index }: UnitCardProps) => {
     const router = useRouter();
 
     const handleUserClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -97,7 +98,11 @@ export const UnitCard = ({ unit }: UnitCardProps) => {
     )
 };
 
-export const UnitCardSkeleton = () => {
+interface UnitCardSkeletonProps {
+    key?: React.Key,
+}
+
+export const UnitCardSkeleton = ({index}: UnitCardSkeletonProps) => {
     return (
         <div className="w-full aspect-4/1 bg-neutral-200 rounded-lg animate-pulse"/>
     );

@@ -246,6 +246,8 @@ export interface Customer {
   createdAt: string;
 }
 /**
+ * Listing of Reservations by TENANT (Select from the dropdown if required)
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "reservations".
  */
@@ -407,6 +409,7 @@ export interface Peakseason {
  */
 export interface Discount {
   id: string;
+  tenant?: (string | null) | Tenant;
   name: string;
   unit: string | Unit;
   price: number;
@@ -708,6 +711,7 @@ export interface PeakseasonsSelect<T extends boolean = true> {
  * via the `definition` "discounts_select".
  */
 export interface DiscountsSelect<T extends boolean = true> {
+  tenant?: T;
   name?: T;
   unit?: T;
   price?: T;

@@ -30,6 +30,8 @@ dns.setServers(['8.8.8.8', '8.8.4.4']);
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+import { resendAdapter } from '@payloadcms/email-resend'
+
 //TODO add CSRF protection
 //https://payloadcms.com/docs/authentication/cookies#csrf-attacks
 
@@ -73,6 +75,7 @@ export default buildConfig({
                 units: {},
                 rates: {},
                 peakseasons: {},
+                discounts: {},
                 reservations: {},
                 attractions: {},
                 media: {},
@@ -94,4 +97,9 @@ export default buildConfig({
             userHasAccessToAllTenants: (user) => isSuperAdmin(user),
         })
     ],
+    email: resendAdapter({
+        defaultFromAddress: 'onboarding@resend.dev', //for dev
+        defaultFromName: 'Local Dev Bot', //for dev
+        apiKey: process.env.RESEND_API_KEY || '', // Grabbed from your Resend dashboard
+    }),
 })

@@ -24,6 +24,7 @@ interface NavbarItemProps {
     href: string,
     children: React.ReactNode,
     isActive?: boolean,
+    key?: React.Key,
 }
 
 const NavbarItem = ({

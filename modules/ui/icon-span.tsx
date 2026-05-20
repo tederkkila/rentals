@@ -37,6 +37,7 @@ import { FaTv } from "react-icons/fa6";
 import { LuCircleParking } from "react-icons/lu";
 import { PiTennisBall } from "react-icons/pi";
 import { BsBuildingSlash } from "react-icons/bs";
+import React from "react";
 
 
 
@@ -88,7 +89,7 @@ interface IconSpanProps {
     name: string;
     label: string;
     size?: number;
-    index?: number;
+    key?: React.Key;
 }
 
 export const IconSpan = ({name, label, size, index}: IconSpanProps) => {
@@ -96,7 +97,7 @@ export const IconSpan = ({name, label, size, index}: IconSpanProps) => {
     const icon: IconType = icons[name as keyof typeof icons];
 
     return (
-        <span key={index} className="flex items-center gap-1 text-nowrap">
+        <span className="flex items-center gap-1 text-nowrap">
             <IconElement icon={icon} size={size}/> {label}
         </span>
     )

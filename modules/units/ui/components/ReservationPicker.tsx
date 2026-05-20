@@ -13,36 +13,26 @@ import { DatePickerWithRange } from "@/modules/ui/DatePickerWithRange";
 import { useTRPC } from "@/trpc/client";
 import { useQuery, useSuspenseQuery, useMutation } from "@tanstack/react-query";
 import { DateRange } from "react-day-picker"
-import { env } from "use-sidecar/dist/es5/env";
 
-
-interface UnitCardProps {
+interface UnitProps {
     unit: Unit,
 }
 
-export const ReservationPicker = ({unit}: UnitCardProps) => {
-
-    const rates = 0;
-    const peakseasons = 0;
-    //TODO Add discounts
-    //const discounts = 0;
+export const ReservationPicker = ({unit}: UnitProps) => {
 
     const trpc = useTRPC();
-
     const {data} = useSuspenseQuery(trpc.units.getUnitWithCalendar.queryOptions({ slug: unit.slug }));
 
     const [selectedDateRange, setSelectedDateRange] = React.useState<DateRange | undefined>();
-
+    const [open, setOpen] = React.useState(false)
+    const [nickName, setNickname] = useState('');
     const { data: tokenData, refetch: refreshToken } = useQuery(trpc.reservations.getFormToken.queryOptions(
         undefined,
         { refetchOnWindowFocus: false }
     ))
-
-    const [nickName, setNickname] = useState('');
-
     const mutation = useMutation(trpc.reservations.createReservation.mutationOptions({
         onSuccess: (data) => {
-            alert(`Successfully saved record ID: ${data.recordId}`);
+            console.log(`Successfully saved record ID: ${data.recordId}`);
         },
         onError: (error) => {
             console.log('Submission failed:', error.message);
@@ -51,7 +41,23 @@ export const ReservationPicker = ({unit}: UnitCardProps) => {
     }));
 
     const [ state, submitAction, isPending ] = useActionState(async (prevState: any, formData: FormData) => {
+
+        const startDate = formData.get("startDate")?.toString()
+        const endDate = formData.get("endDate")?.toString()
+
+        // Strict Validation: Required check manually executed inside the action
+        if (!startDate || !endDate) {
+            return {
+                success: false,
+                recordId: null,
+                error: "Please pick a complete date range before submitting.",
+            }
+        }
+
         try {
+
+            const timeZone = unit.tenant?.timezone ?? 'America/New_York';
+            console.log("Reservation timeZone:" + timeZone);
             // Execute tRPC mutation asynchronously
             const result = await mutation.mutateAsync({
                 name: formData.get('name') as string,
@@ -59,6 +65,7 @@ export const ReservationPicker = ({unit}: UnitCardProps) => {
                 unitId: formData.get('unit') as string,
                 startDate: formData.get('startDate') as string,
                 endDate: formData.get('endDate') as string,
+                timeZone: timeZone,
                 quote: 100,
                 token: tokenData?.token || "",
                 honeyPot: formData.get('nickname') as string,
@@ -82,6 +89,9 @@ export const ReservationPicker = ({unit}: UnitCardProps) => {
                         unit={ data }
                         selected={selectedDateRange}
                         setSelectedDateRange={setSelectedDateRange}
+                        open={open}
+                        setOpen={setOpen}
+
                     />
 
                     {unit.taxInfo && <p className="text-xs text-gray-600 mb-2 ml-2 mt-0">{unit.taxInfo}</p>}
@@ -122,35 +132,19 @@ export const ReservationPicker = ({unit}: UnitCardProps) => {
                                 Reset
                             </Button>
                             <Button type="submit" disabled={isPending || !tokenData}>
-                                {isPending ? 'Saving via tRPC...' : 'Check Availability'}
+                                {isPending ? 'Saving your Request...' : 'Request Reservation'}
                             </Button>
-                            <Text size="1" color={"gray"}>(You will not be charged yet)</Text>
+
 
                         </Field>
-
+                        {/*<Text size="1" color={"gray"}>(You will not be charged yet)</Text>*/}
 
                     </FieldGroup>
 
-                    <Grid gap="2" p={"4"} style={{backgroundColor: "var(--gray-a2)"}}>
-                        {state.success && <p style={{ color: 'green' }}>Saved! ID: {state.recordId}</p>}
+                    <Grid gap="2" p={"4"} className="mt-2" style={{backgroundColor: "var(--gray-a2)"}}>
+                        {state.success && <p style={{ color: 'green' }}>Reservation ID: {state.recordId}</p>}
                         {state.error && <p style={{ color: 'red' }}>Error: {state.error}</p>}
                     </Grid>
-
-
-
-                    {/*<Input name="name" type="text" placeholder="Your Name" required />*/}
-                    {/* Email Field */}
-                    {/*<div className="grid w-full items-center gap-1.5">
-                        <Input name="email" id="email" type="email" placeholder="email@example.com" required />
-                    </div>*/}
-
-                    {/* Phone Field */}
-                    {/*<div className="grid w-full items-center gap-1.5">
-                        <Input name="phone" id="phone" type="tel" placeholder="+1 (555) 000-0000" />
-                    </div>*/}
-
-
-
 
                 </form>
 

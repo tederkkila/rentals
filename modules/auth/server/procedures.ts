@@ -10,9 +10,7 @@ export const authRouter = createTRPCRouter({
     session: baseProcedure.query(async ({ ctx }) => {
         const headers = await getHeaders();
 
-        const session = await ctx.db.auth({ headers });
-
-        return session;
+        return await ctx.db.auth({headers});
     }),
     register: baseProcedure
         .input(registerSchema)

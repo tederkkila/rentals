@@ -30,6 +30,7 @@ interface NavbarItemProps {
     href: string,
     children: React.ReactNode,
     isActive?: boolean,
+    key?: React.Key,
 }
 
 const NavbarItem = ({
@@ -38,7 +39,6 @@ const NavbarItem = ({
                         isActive,
                     }: NavbarItemProps) => {
     return (
-
         <Button
             asChild
             variant="outline"

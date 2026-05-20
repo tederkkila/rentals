@@ -4,6 +4,7 @@ import path from "path";
 import fs from "fs";
 
 import dns from "node:dns/promises";
+import { Tenant, Unit } from "@/payload-types";
 dns.setServers(["1.1.1.1"]);
 
 const locations = [
@@ -305,7 +306,7 @@ const seed = async () => {
             roles: ["super-admin"],
             username: "admin",
         }
-    });
+    } as Parameters<typeof payload.create>[0]);
 
     console.log("Created admin user");
 
@@ -325,18 +326,18 @@ const seed = async () => {
                 name: location.icon.filename,
                 mimetype: location.icon.mimetype,
             },
-        })
+        } as Parameters<typeof payload.create>[0])
 
         await wait(100)
 
-        const tenant = await payload.create({
+        const tenant: Tenant = await payload.create({
             collection: "tenants",
             data: {
                 name: location.name,
                 slug: location.slug,
                 icon: tenantIcon.id,
             },
-        });
+        } as Parameters<typeof payload.create>[0]);
 
         await wait(100)
         console.log(`Created tenant: ${tenant.slug}`);
@@ -356,11 +357,11 @@ const seed = async () => {
                     name: unit.image.filename,
                     mimetype: unit.image.mimetype,
                 },
-            })
+            } as Parameters<typeof payload.create>[0])
 
             await wait(500)
 
-            const currentUnit = await payload.create({
+            const currentUnit: Unit = await payload.create({
                 collection: 'units',
                 data: {
                     tenant: tenant.id,
@@ -372,11 +373,11 @@ const seed = async () => {
                     isArchived: unit.isArchived,
                     image: unitImage.id,
                 },
-            })
+            } as Parameters<typeof payload.create>[0])
 
             await wait(500)
 
-            if (unit.rates && unit.rates.length > 0) {
+            /*if (unit.rates && unit.rates.length > 0) {
                 for (const rate of unit.rates) {
                     await payload.create({
                         collection: "rates",
@@ -386,12 +387,12 @@ const seed = async () => {
                             peak: rate.peak,
                             price: rate.price,
                         }
-                    })
+                    } as Parameters<typeof payload.create>[0])
                 }
             }
 
             console.log(`Created rates for unit ${unit.name}`);
-            await wait(500)
+            await wait(500)*/
 
             if (unit.tags && unit.tags.length > 0) {
                 for (const tag of unit.tags) {
@@ -401,7 +402,7 @@ const seed = async () => {
                         collection: 'units',
                         id: currentUnit.id,
                         depth: 0, // Keep depth 0 to get only IDs
-                    });
+                    } as Parameters<typeof payload.findByID>[0]);
 
                     // console.log(updateUnit)
                     // console.log(updateUnit.tags)
@@ -440,7 +441,7 @@ const seed = async () => {
                                 // Assumes 'tags' is an array field
                                 tags: [...(updateUnit.tags || []), newTag.id ],
                             },
-                        });
+                        } as Parameters<typeof payload.update>[0]);
 
                     } else {
                         payload.logger.info(`Tag ${tag.slug} already exists.`);
@@ -452,7 +453,7 @@ const seed = async () => {
                                 // Assumes 'tags' is an array field
                                 tags: [...(updateUnit.tags || []), existingDocs.docs[0].id ],
                             },
-                        });
+                        } as Parameters<typeof payload.update>[0]);
                     }
 
 
