@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { cn, formatCurrency, generateTenantURL } from "@/lib/utils";
 import type { Unit, Tenant } from "@/payload-types";
 
-import { IconSpan } from "@/modules/ui/icon-span"
 import { AmenitiesList } from "@/modules/units/ui/components/amenities-list"
 
 import { Poppins } from "next/font/google";
@@ -17,12 +16,16 @@ const poppins = Poppins({
 });
 
 interface UnitCardProps {
-    unit: Unit,
+    unit: Unit & {
+        tenant: Tenant[] | null
+        },
     key?: React.Key,
 }
 
-export const UnitCard = ({ unit, index }: UnitCardProps) => {
+export const UnitCard = ({ unit }: UnitCardProps) => {
     const router = useRouter();
+
+    unit = unit as Unit & { tenant: Tenant[] | null };
 
     const handleUserClick = (e: React.MouseEvent<HTMLDivElement>) => {
         e.preventDefault();
@@ -50,7 +53,7 @@ export const UnitCard = ({ unit, index }: UnitCardProps) => {
                 </div>
                 <div className="p-4 gap-3 flex-1 border-y md:border-none">
                     <h2 className={cn("text-xl font-bold leading-none", poppins.className)}>{unit.name}</h2>
-                    <h3 className="font-light mb-2 text-gray-600 md:line-clamp-1">{unit.description}</h3>
+                    <h3 className="font-light mb-2 text-gray-600 md:line-clamp-1">{unit.quickDescription}</h3>
 
                     <div className="flex text-md text-bold text-gray-600">
 
@@ -85,14 +88,14 @@ export const UnitCard = ({ unit, index }: UnitCardProps) => {
                     </div>
 
                 </div>
-                <div className="p-4">
-                    <div className="w-fit">
-                        <p className="text-sm font-medium text-right">
-                            <span>Peak: {formatCurrency(unit.peakRate)}/week</span><br/>
-                            <span>{formatCurrency(unit.offRate)}/week</span>
-                        </p>
-                    </div>
-                </div>
+                {/*<div className="p-4">*/}
+                {/*    <div className="w-fit">*/}
+                {/*        <p className="text-sm font-medium text-right">*/}
+                {/*            <span>Peak: {formatCurrency(unit.peakRate)}/week</span><br/>*/}
+                {/*            <span>{formatCurrency(unit.offRate)}/week</span>*/}
+                {/*        </p>*/}
+                {/*    </div>*/}
+                {/*</div>*/}
             </div>
         </Link>
     )
@@ -102,7 +105,7 @@ interface UnitCardSkeletonProps {
     key?: React.Key,
 }
 
-export const UnitCardSkeleton = ({index}: UnitCardSkeletonProps) => {
+export const UnitCardSkeleton = ({}: UnitCardSkeletonProps) => {
     return (
         <div className="w-full aspect-4/1 bg-neutral-200 rounded-lg animate-pulse"/>
     );

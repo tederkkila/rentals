@@ -281,6 +281,10 @@ export interface Unit {
   tenant?: (string | null) | Tenant;
   name: string;
   slug: string;
+  /**
+   * This is the quick description of the unit used on the unit listing page
+   */
+  quickDescription: string;
   content?: {
     root: {
       type: string;
@@ -640,6 +644,7 @@ export interface UnitsSelect<T extends boolean = true> {
   tenant?: T;
   name?: T;
   slug?: T;
+  quickDescription?: T;
   content?: T;
   isPrivate?: T;
   isArchived?: T;

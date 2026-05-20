@@ -41,7 +41,7 @@ interface UnitFiltersProps {
     tenantSlug: string;
 }
 
-export const UnitFilters = ({ tenantSlug }):UnitFiltersProps => {
+export const UnitFilters = ({ tenantSlug }:UnitFiltersProps ) => {
     const [filters, setFilters] = useUnitFilters();
 
     const hasAnyFilters = Object.entries(filters).some(([key, value]) => {
@@ -81,14 +81,14 @@ export const UnitFilters = ({ tenantSlug }):UnitFiltersProps => {
                     </button>
                 )}
             </div>
-            <UnitFilter title="Price">
+            {/*<UnitFilter title="Price">
                 <PriceFilter
                     minPrice={filters.minPrice}
                     maxPrice={filters.maxPrice}
                     onMinPriceChange={(value) => onChange("minPrice", value)}
                     onMaxPriceChange={(value) => onChange("maxPrice", value)}
                 />
-            </UnitFilter>
+            </UnitFilter>*/}
             <UnitFilter title="Tags" className="border-b-0">
                 <TagsFilter
                     tenantSlug={tenantSlug}

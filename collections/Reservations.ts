@@ -5,6 +5,7 @@ const RESERVATION_STATUS_OPTIONS = [
     {label: 'Pending', value: 'pending'},
     {label: 'Confirmed', value: 'confirmed'},
     {label: 'Cancelled', value: 'cancelled'},
+    {label: 'Archived', value: 'archived'},
 ] as const
 
 export const Reservations: CollectionConfig = {

@@ -53,8 +53,8 @@ export const UnitView = ({ unit }: UnitViewProps) => {
                 {amenities && (
                     <div className="flex flex-wrap gap-2">
                         {amenities.map((tag: Tag, index: number) => (
-                            <div key={tag.id} className="bg-gray-100 rounded-full px-3 py-1 text-sm font-medium text-gray-700">
-                                <IconSpan name={tag.icon} label={tag.name} size={15} index={index} />
+                            <div className="bg-gray-100 rounded-full px-3 py-1 text-sm font-medium text-gray-700">
+                                <IconSpan name={tag.icon} label={tag.name} size={15} key={tag.id} />
                             </div>
                         ))}
                     </div>

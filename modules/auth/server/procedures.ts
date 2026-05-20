@@ -41,7 +41,7 @@ export const authRouter = createTRPCRouter({
                     slug: input.username,
                     // stripeAccountId: account.id,
                 }
-            })
+            } as Parameters<typeof ctx.db.create>[0])
 
             await ctx.db.create({
                 collection: "users",
@@ -55,7 +55,7 @@ export const authRouter = createTRPCRouter({
                         },
                     ],
                 },
-            });
+            } as Parameters<typeof ctx.db.create>[0]);
 
             const data = await ctx.db.login({
                 collection: "users",

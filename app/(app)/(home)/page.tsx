@@ -1,9 +1,3 @@
-import Image from "next/image";
-import {cn} from "@/lib/utils";
-import DecorativeBox from "@/modules/ui/DecorativeBox"
-import {Flex, Box, Card, Text, TextArea, Switch, Button, Inset, Strong, Grid, AspectRatio} from '@radix-ui/themes';
-import { DatePickerWithRange } from "@/modules/ui/DatePickerWithRange";
-
 
 export default function Home() {
     return (

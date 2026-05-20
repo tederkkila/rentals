@@ -10,7 +10,7 @@ export const AmenitiesList = ({unit}) => {
     return (
         <div className="grow">
             {amenities.map((amenity) => (
-                <IconSpan name={amenity.icon} label={amenity.name} size={15} index={amenity.id} />
+                <IconSpan name={amenity.icon} label={amenity.name} size={15} />
             ))}
 
         </div>

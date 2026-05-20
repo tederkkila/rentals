@@ -28,6 +28,14 @@ export const Units: CollectionConfig = {
             index: true,
         },
         {
+            name: "quickDescription",
+            type: "text",
+            required: true,
+            admin: {
+                description: "This is the quick description of the unit used on the unit listing page",
+            },
+        },
+        {
             name: "content",
             type: "richText",
             editor: lexicalEditor({

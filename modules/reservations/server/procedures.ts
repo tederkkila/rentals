@@ -3,7 +3,7 @@ import { Customer, Reservation, SupportedTimezones, Unit } from "@/payload-types
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 import crypto, { BinaryLike } from 'crypto';
 import { TRPCError } from "@trpc/server";
-import { CipherGCMTypes, CipherCCMTypes } from 'crypto';
+import { CipherCCMTypes } from 'crypto';
 
 const algorithm = 'aes-256-gcm';
 const IV_LENGTH = 12;  // 12-byte IV is standard for GCM

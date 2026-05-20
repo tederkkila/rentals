@@ -7,7 +7,7 @@ import {Poppins} from "next/font/google";
 import Image from "next/image";
 import {usePathname} from "next/navigation";
 
-import {cn} from "@/lib/utils";
+import { cn, generateTenantURL } from "@/lib/utils";
 import {Button} from "@/components/ui/button";
 
 import {NavbarSidebar} from "./navbar-sidebar";
@@ -15,6 +15,7 @@ import { useTRPC } from "@/trpc/client";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import DecorativeBox from "@/modules/ui/DecorativeBox";
 import { Box, Flex } from '@radix-ui/themes';
+import { Media, Tenant } from "@/payload-types";
 
 
 const poppins = Poppins({
@@ -60,7 +61,7 @@ export const Navbar = ({slug}: NavbarProps) => {
     const trpc = useTRPC();
     const { data } = useSuspenseQuery(trpc.tenants.getOne.queryOptions({ slug }));
 
-    // console.log(data);
+    const tenant = data as Tenant & { icon: Media | null, image: Media | null }
 
     const navbarItems = [
         {href: "", children: "Home"},
@@ -77,11 +78,12 @@ export const Navbar = ({slug}: NavbarProps) => {
             sm:border-x
             mx-auto">
             <div className="max-w-(--breakpoint-xl) mx-auto flex items-center h-full gap-2 px-4 py-6" >
-                <Link href={`/tenants/${slug}`} className="flex items-center mr-8">
-                    {data.icon?.url && (
+                {/*<Link href={`/tenants/${slug}`} className="flex items-center mr-8">*/}
+                <Link href={`/`} className="flex items-center mr-8">
+                    {tenant.icon?.url && (
                         <Image
                             alt={"tenantSlug"}
-                            src={data.icon.url}
+                            src={tenant.icon.url}
                             width={48}
                             height={48}
                             className="shrink-0 size-12"
@@ -90,7 +92,7 @@ export const Navbar = ({slug}: NavbarProps) => {
                         />
                     )}
                     <span className={cn("text-primary text-4xl font-semibold", poppins.className)}>
-                      {data.name?.toLowerCase()}
+                      {tenant.name?.toLowerCase()}
                     </span>
                 </Link>
 
@@ -104,8 +106,8 @@ export const Navbar = ({slug}: NavbarProps) => {
                     {navbarItems.map((item, index) => (
                         <NavbarItem
                             key={index}
-                            href={'/tenants/' + slug + item.href}
-                            isActive={pathname === '/tenants/' + slug + item.href}
+                            href={generateTenantURL(slug) + item.href}
+                            isActive={pathname === generateTenantURL(slug) + item.href}
                         >
                             {item.children}
                         </NavbarItem>

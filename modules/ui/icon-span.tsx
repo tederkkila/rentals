@@ -92,7 +92,7 @@ interface IconSpanProps {
     key?: React.Key;
 }
 
-export const IconSpan = ({name, label, size, index}: IconSpanProps) => {
+export const IconSpan = ({name, label, size }: IconSpanProps) => {
 
     const icon: IconType = icons[name as keyof typeof icons];
 
