@@ -16,9 +16,11 @@ export const AttractionsListView = ({ tenantSlug }: Props) => {
 
     const trpc = useTRPC();
 
-    const { data }: Tenant = useSuspenseQuery(trpc.tenants.getOne.queryOptions({ slug: tenantSlug }));
+    const { data } = useSuspenseQuery(trpc.tenants.getOne.queryOptions({ slug: tenantSlug }));
 
     //console.log("AttractionsListView tenant:" + JSON.stringify(data));
+
+    const tenant = data as Tenant & { attractions: Attraction[] }
 
     return (
         <Box className="">
@@ -27,7 +29,7 @@ export const AttractionsListView = ({ tenantSlug }: Props) => {
                 {data.attractions && (
 
                     <div className="flex flex-wrap gap-2">
-                        {data.attractions.map((attraction: Attraction) => (
+                        {tenant.attractions.map((attraction: Attraction) => (
 
                             <Box key={attraction.id} className="min-w-full" >
                                 <Link href={(attraction.url) ? attraction.url : ''} target="_blank">

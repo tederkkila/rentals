@@ -5,7 +5,8 @@ import { NuqsAdapter} from 'nuqs/adapters/next/app'
 import { TRPCReactProvider } from "@/trpc/client";
 import "./globals.css";
 import "@radix-ui/themes/styles.css";
-import "react-day-picker/style.css";
+// import "react-day-picker/style.css";
+import "@daypicker/react/style.css"
 import "./hm.css"
 
 import { Theme, ThemePanel } from "@radix-ui/themes";

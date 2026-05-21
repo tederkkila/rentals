@@ -12,7 +12,7 @@ import { Grid } from "@radix-ui/themes/dist/esm";
 import { DatePickerWithRange } from "@/modules/ui/DatePickerWithRange";
 import { useTRPC } from "@/trpc/client";
 import { useQuery, useSuspenseQuery, useMutation } from "@tanstack/react-query";
-import { DateRange } from "react-day-picker"
+import { DateRange } from "@daypicker/react"
 
 interface UnitProps {
     unit: Unit,

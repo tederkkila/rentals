@@ -1,6 +1,6 @@
 import z from "zod";
 import { TRPCError } from "@trpc/server";
-import { Attraction, Media, Tenant } from "@/payload-types";
+import { Attraction, Media, Tenant, Tag } from "@/payload-types";
 
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 import { DEFAULT_LIMIT } from "@/constants";
@@ -42,8 +42,8 @@ export const tenantsRouter = createTRPCRouter({
         .input(
             z.object({
                 slug: z.string(),
-                cursor: z.number().default(1),
-                limit: z.number().default(DEFAULT_LIMIT)
+                cursor: z.number().int().min(1).default(1),
+                limit: z.number().int().min(1).max(200).default(DEFAULT_LIMIT)
             })
         )
         .query(async ({ ctx, input }) => {
@@ -51,6 +51,7 @@ export const tenantsRouter = createTRPCRouter({
             // 1. Fetch all units for this tenant
             const result  = await ctx.db.find({
                 collection: 'units',
+                depth: 2,
                 where: {
                     'tenant.slug': {
                         equals: input.slug,
@@ -61,19 +62,36 @@ export const tenantsRouter = createTRPCRouter({
                 select: { tags: true },
             });
 
-            // Flatten and deduplicate tags for this specific batch
-            let pageTags = [...new Set(result.docs.flatMap((u) => u.tags || []))];
-            //remove tags that are not searchable
-            pageTags = [...pageTags].filter(tag => tag.isSearchable === true);
-            //sort tags by order from payload
-            pageTags.sort((a, b) => a._order.localeCompare(b._order));
+            const isTag = (tag: unknown): tag is Tag => {
+                //confirm that the tag results are tags and not strings
+                return typeof tag === "object" && tag !== null && "id" in tag;
+            };
+
+            //put all the tags into a single array
+            let pageTags = [
+                ...new Map(
+                    result.docs
+                        .flatMap((unit) => unit.tags ?? [])
+                        .filter(isTag)
+                        .map((tag) => [tag.id, tag]),
+                ).values(),
+            ];
+
+            //filter out tags that are not searchable
+            pageTags = pageTags.filter((tag) => tag.isSearchable === true);
+
+            //sort the tags by their order (from payload tag listing)
+            pageTags.sort((a, b) => {
+                return String(a._order ?? "").localeCompare(String(b._order ?? ""));
+            });
+
             const totalPages = Math.ceil(pageTags.length / input.limit);
 
             //only return input.limit number of tags extra per page
             const returnMin = (input.limit * (input.cursor - 1));
             const returnMax = (input.limit * input.cursor);
             const returnLimit = returnMax >= pageTags.length ? pageTags.length : returnMax;
-            const currentPageTags = [...pageTags].slice(returnMin, returnLimit).map(item => item as Tag);
+            const currentPageTags = pageTags.slice(returnMin, returnLimit);
 
             // console.log(returnMin)
             // console.log(returnMax)
@@ -91,7 +109,7 @@ export const tenantsRouter = createTRPCRouter({
                 page: input.cursor,
                 pagingCounter: input.limit * (input.cursor - 1) + 1,
                 hasPrevPage: input.cursor !== 1,
-                hasNextPage: input.cursor !== totalPages,
+                hasNextPage: input.cursor < totalPages,
                 prevPage: input.cursor > 1 ? input.cursor - 1 : null,
                 nextPage: input.cursor < totalPages ? input.cursor + 1 : null,
             };

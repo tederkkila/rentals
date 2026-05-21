@@ -4,7 +4,7 @@ import React, { useState, useMemo } from "react"
 import { addDays, subDays, eachWeekOfInterval, format, isAfter, isBefore, isSameDay } from "date-fns"
 import { startOfDay } from 'date-fns';
 import { CalendarIcon } from "lucide-react"
-import { DateRange, rangeIncludesDate, TZDate  } from "react-day-picker"
+import { DateRange, rangeIncludesDate, TZDate  } from "@daypicker/react"
 
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
@@ -57,8 +57,8 @@ const processBookedRanges = (bookedRanges: DateRange[], peakSeasonRanges: DateRa
             });
         }
 
+
         peakSeasonRanges.forEach(peakSeasonRange => {
-            // console.log("peakSeasonRange: ", peakSeasonRange);
             bookedRanges.forEach(bookedRange => {
 
                 const nights = calculateNights(bookedRange, peakSeasonRange, minimumNights)
@@ -84,27 +84,32 @@ const processBookedRanges = (bookedRanges: DateRange[], peakSeasonRanges: DateRa
 
             })
 
-            // Get every Sunday within the peak range
-            const WEEK_STARTS_ON_SUNDAY = 0 as 0 //date-fns expects weekStartsOn to be a specific union type (0 | 1 | 2 | 3 | 4 | 5 | 6) rather than a general number
-            const sundays = eachWeekOfInterval(
-                { start: peakSeasonRange.from as TZDate, end: peakSeasonRange.to as TZDate },
-                { weekStartsOn: WEEK_STARTS_ON_SUNDAY }
-            );
+        });
 
-            sundays.forEach((sunday) => {
-                const friday = addDays(sunday, 5);
 
-                if (isAfter(sunday, peakSeasonRange.from as TZDate) && isBefore(friday, peakSeasonRange.to as TZDate)) {
-                    notPeakSundays.push({
-                        from: sunday,
-                        to: friday,
-                    });
-                }
-
-            });
-
-        })
     })
+
+    peakSeasonRanges.forEach(peakSeasonRange => {
+        // Get every Sunday within the peak range
+        const WEEK_STARTS_ON_SUNDAY = 0 as 0 //date-fns expects weekStartsOn to be a specific union type (0 | 1 | 2 | 3 | 4 | 5 | 6) rather than a general number
+        const sundays = eachWeekOfInterval(
+            { start: peakSeasonRange.from as TZDate, end: peakSeasonRange.to as TZDate },
+            { weekStartsOn: WEEK_STARTS_ON_SUNDAY }
+        );
+
+        sundays.forEach((sunday) => {
+            const friday = addDays(sunday, 5);
+
+            if (isAfter(sunday, peakSeasonRange.from as TZDate) && isBefore(friday, peakSeasonRange.to as TZDate)) {
+                notPeakSundays.push({
+                    from: sunday,
+                    to: friday,
+                });
+            }
+
+        });
+
+    });
 
     return [effectiveBookedRanges, checkOutOnlyRanges, initialMinimumStayRanges, notPeakSundays]
 }
@@ -195,7 +200,7 @@ export const DatePickerWithRange = ( { title, unit, selected, setSelectedDateRan
         return unit.tenant?.timezone ?? 'America/New_York';
     }, [])
     //console.log("timeZone: ", timeZone);
-    const minimumNights = {offPeak: 2, peak: 7};
+    const minimumNights: Record<string, number> = {offPeak: 2, peak: 7};
 
     //production will have no range selected to start
     const bookedRanges: DateRange[] = useMemo(() => {
@@ -363,7 +368,7 @@ export const DatePickerWithRange = ( { title, unit, selected, setSelectedDateRan
     const peakSeasonSet = useDateRangeMap(peakSeasonRanges);
     // console.log("peakSeasonSet:", peakSeasonSet);
 
-    const isDayDisabled = useMemo(() => (day) => {
+    const isDayDisabled = useMemo(() => (day: Date) => {
 
         if (isBefore(day, startOfDay(currentCalendarValues.firstAvailableBookingDate))) return true
         if (isAfter(day, startOfDay(currentCalendarValues.lastAvailableBookingDate))) return true
@@ -380,11 +385,11 @@ export const DatePickerWithRange = ( { title, unit, selected, setSelectedDateRan
     }, [effectiveBookedDaysSetSorted, checkOutOnlyDaySet, notPeakSundaysSet, minimumStaySet, currentCalendarValues]);
 
     const modifiers = useMemo(() => ({
-        booked: (day) => effectiveBookedDaysSetSorted.has(format(day, 'yyyy-MM-dd')),
-        checkOutOnly: (day) => checkOutOnlyDaySet.has(format(day, 'yyyy-MM-dd')),
-        saturdayCheckOutOnly: (day) => notPeakSundaysSet.has(format(day, 'yyyy-MM-dd')),
-        minimumStay: (day) => minimumStaySet.has(format(day, 'yyyy-MM-dd')),
-        peak: (day) => peakSeasonSet.has(format(day, 'yyyy-MM-dd')),
+        booked: (day: Date) => effectiveBookedDaysSetSorted.has(format(day, 'yyyy-MM-dd')),
+        checkOutOnly: (day: Date) => checkOutOnlyDaySet.has(format(day, 'yyyy-MM-dd')),
+        saturdayCheckOutOnly: (day: Date) => notPeakSundaysSet.has(format(day, 'yyyy-MM-dd')),
+        minimumStay: (day: Date) => minimumStaySet.has(format(day, 'yyyy-MM-dd')),
+        peak: (day: Date) => peakSeasonSet.has(format(day, 'yyyy-MM-dd')),
     }), [effectiveBookedDaysSetSorted, checkOutOnlyDaySet, notPeakSundaysSet, minimumStaySet, peakSeasonSet]);
 
     return (

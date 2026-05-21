@@ -216,7 +216,7 @@ export const unitsRouter = createTRPCRouter({
                 depth: 2,
                 pagination: false,
                 where: {
-                    id: {equals: unit.tenant.id},
+                    id: {equals: unit.tenant?.id},
 
                 }
             });

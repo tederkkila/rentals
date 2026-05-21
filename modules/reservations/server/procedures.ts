@@ -5,6 +5,12 @@ import crypto, { BinaryLike } from 'crypto';
 import { TRPCError } from "@trpc/server";
 import { CipherCCMTypes } from 'crypto';
 
+const supportedTimezones = [
+    "America/New_York",
+    "America/Vancouver",
+    "Pacific/Honolulu",
+] as const satisfies readonly SupportedTimezones[];
+
 const algorithm = 'aes-256-gcm';
 const IV_LENGTH = 12;  // 12-byte IV is standard for GCM
 
@@ -88,11 +94,11 @@ export const reservationsRouter = createTRPCRouter({
     .input(
         z.object({
             email: z.email(),
-            name: z.string().optional(),
+            name: z.string(),
             unitId: z.string(),
             startDate: z.coerce.date(),
             endDate: z.coerce.date(),
-            timeZone: z.string(),
+            timeZone: z.enum(supportedTimezones),
             quote: z.number().nonnegative(),
             token: z.string(),
             honeyPot: z.string().optional(),
@@ -218,8 +224,8 @@ export const reservationsRouter = createTRPCRouter({
 
         validateSubmissionToken(input.token);
 
+        const reservationTimezone = input.timeZone;
 
-        const reservationTimezone: SupportedTimezones = input.timeZone;
         const initialReservationStatus: Reservation["status"] = "pending";
 
         const newReservation: Reservation = await ctx.db.create({

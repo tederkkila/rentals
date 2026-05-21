@@ -1,7 +1,5 @@
-import { DayPicker, DayButton, DayButtonProps, } from "react-day-picker"
-import { Calendar, CalendarDayButton  } from "@/components/ui/calendar"
+import { CalendarDayButton  } from "@/components/ui/calendar"
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/modules/units/ui/components/tooltip"
-import { children } from "happy-dom/lib/PropertySymbol";
 
 export const ToolTipDayButton = ({ children, modifiers, day, ...buttonProps }) => {
     const { booked, checkOutOnly, minimumStay, peak, saturdayCheckOutOnly } = modifiers;

@@ -9,7 +9,8 @@ import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
 import { isSuperAdmin } from './lib/access';
-import { getUserTenantIDs } from './lib/getUserTenantIDs'
+// import { getUserTenantIDs } from './lib/getUserTenantIDs'
+import { getUserTenantIDs } from '@payloadcms/plugin-multi-tenant/utilities';
 
 import { Users } from './collections/Users'
 import { Tenants } from "@/collections/Tenants";
