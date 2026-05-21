@@ -29,7 +29,12 @@ const updateMediaTenants = async () => {
                     },
                 } as Parameters<typeof payload.update>[0]);
             } catch (err) {
-                console.error(`Failed to update media ID: ${doc.id}`, err.message);
+                if (err instanceof Error) {
+                    console.error(`Failed to update media ID: ${doc.id}`, err.message);
+                } else {
+                    console.log("An unexpected error occurred", err);
+                }
+
             }
         });
 
