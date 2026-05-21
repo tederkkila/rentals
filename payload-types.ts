@@ -260,7 +260,7 @@ export interface Reservation {
   startDate_tz: SupportedTimezones;
   endDate: string;
   endDate_tz: SupportedTimezones;
-  status: 'pending' | 'confirmed' | 'cancelled';
+  status: 'pending' | 'confirmed' | 'cancelled' | 'archived';
   quote: number;
   amountPaid: number;
   depositPaid: number;

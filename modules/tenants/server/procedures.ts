@@ -1,6 +1,6 @@
 import z from "zod";
 import { TRPCError } from "@trpc/server";
-import { Media, Tenant } from "@/payload-types";
+import { Attraction, Media, Tenant } from "@/payload-types";
 
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 import { DEFAULT_LIMIT } from "@/constants";
@@ -36,7 +36,7 @@ export const tenantsRouter = createTRPCRouter({
                 throw new TRPCError({ code: "NOT_FOUND", message: "Tenant not found" });
             }
 
-            return tenant as Tenant & { icon: Media | null, image: Media | null };
+            return tenant as Tenant & { icon: Media | null, image: Media | null, attractions: Attraction[] | null };
         }),
     getInfiniteUnitTags: baseProcedure
         .input(

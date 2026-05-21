@@ -35,9 +35,12 @@ export const AttractionsListView = ({ tenantSlug }: Props) => {
                                     <Flex gap="3" align="center">
                                         <Avatar
                                             size="8"
-                                            src={attraction.image?.url}
+                                            src={typeof attraction.image === 'object'
+                                                ? attraction.image?.url ?? undefined
+                                                : undefined}
                                             radius="medium"
                                             fallback="O"
+                                            alt={attraction.name}
                                         />
                                         <Box>
                                             <Text as="div" size="3" weight="bold">

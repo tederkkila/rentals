@@ -152,7 +152,7 @@ const useDateRangeMap = (sourceRanges: DateRange[]) => {
 }
 
 const getNextChronological = (map: Map<string, any>, targetDate: string): string | undefined => {
-    let nextDate: string | undefined;
+    let nextDate: string | undefined = undefined;
 
     for (const date of map.keys()) {
         if (date > targetDate) {
@@ -175,7 +175,7 @@ interface handleStateProperties {
 interface DatePickerWithRangeProps {
     title: string,
     unit: Unit & {
-        tenant: Tenant[] | null,
+        tenant: Tenant | null,
         reservations: Reservation[] | null,
         rates: Rate[] | null,
         peakseasons: Peakseason[] | null,
@@ -416,7 +416,7 @@ export const DatePickerWithRange = ( { title, unit, selected, setSelectedDateRan
                     <Calendar
                         mode="range"
                         fixedWeeks
-                        resetOnSelect
+                        resetOnSelect={true}
                         timeZone={timeZone}
                         startMonth={new Date()}
                         defaultMonth={currentCalendarValues.selectedRange?.from}

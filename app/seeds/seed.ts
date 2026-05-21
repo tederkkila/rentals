@@ -4,10 +4,52 @@ import path from "path";
 import fs from "fs";
 
 import dns from "node:dns/promises";
-import { Tenant, Unit } from "@/payload-types";
+import { SupportedTimezones, Unit } from "@/payload-types";
 dns.setServers(["1.1.1.1"]);
 
-const locations = [
+type SeedTag = {
+    name: string;
+    slug: string;
+    icon: string;
+    isSearchable: boolean;
+    isAmenity: boolean;
+};
+
+type SeedImage = {
+    alt: string;
+    filename: string;
+    mimetype: string;
+};
+
+type SeedUnit = {
+    name: string;
+    slug: string;
+    description?: string;
+    bathrooms: number;
+    guests: number;
+    image: SeedImage;
+    tags?: SeedTag[];
+    isPrivate?: boolean;
+    isArchived?: boolean;
+};
+
+type SeedLocation = {
+    name: string;
+    slug: string;
+    icon: SeedImage;
+    timezone: SupportedTimezones;
+    description?: string;
+    units: SeedUnit[];
+    attractions?: {
+        name: string;
+        slug: string;
+        url: string;
+        image: SeedImage;
+        favorite: boolean;
+    }[];
+};
+
+const locations: SeedLocation[] = [
     {
         name: "Caspian",
         slug: "caspian",
@@ -298,17 +340,34 @@ const seed = async () => {
     const payload = await getPayload({ config });
     const wait = (ms: number) => new Promise((res) => setTimeout(res, ms))
 
+    const getSeedFile = (image: SeedImage) => {
+        const filePath = path.resolve(__dirname, "seedMedia", image.filename);
+
+        return {
+            data: fs.readFileSync(filePath) as Buffer,
+            name: image.filename,
+            mimetype: image.mimetype,
+            size: fs.statSync(filePath).size,
+        };
+    };
+
     await wait(1000)
     // Create admin user
+
+    const adminPassword = process.env.TEDMIN;
+
+    if (!adminPassword) {
+        throw new Error("Missing TEDMIN environment variable");
+    }
     await payload.create({
         collection: "users",
         data: {
             email: "tederkkila@gmail.com",
-            password: process.env.TEDMIN,
-            roles: ["super-admin"],
+            password: adminPassword,
+            roles: ["super-admin" as const],
             username: "admin",
         }
-    } as Parameters<typeof payload.create>[0]);
+    } );
 
     console.log("Created admin user");
 
@@ -316,23 +375,17 @@ const seed = async () => {
 
     for (const location of locations) {
 
-        const iconPath = path.resolve(__dirname, "seedMedia", location.icon.filename);
-
         const tenantIcon = await payload.create({
             collection: "media",
             data: {
                 alt: location.icon.alt,
             },
-            file: {
-                data: fs.readFileSync(iconPath),
-                name: location.icon.filename,
-                mimetype: location.icon.mimetype,
-            },
-        } as Parameters<typeof payload.create>[0])
+            file: getSeedFile(location.icon),
+        })
 
         await wait(100)
 
-        const tenant: Tenant = await payload.create({
+        const tenant = await payload.create({
             collection: "tenants",
             data: {
                 name: location.name,
@@ -340,7 +393,7 @@ const seed = async () => {
                 timezone: location.timezone,
                 icon: tenantIcon.id,
             },
-        } as Parameters<typeof payload.create>[0]);
+        });
 
         await wait(100)
         console.log(`Created tenant: ${tenant.slug}`);
@@ -349,18 +402,13 @@ const seed = async () => {
 
             console.log(`Creating unit: ${unit.slug} for tenant: ${tenant.id}`);
 
-            const unitImagePath = path.resolve(__dirname, "seedMedia", unit.image.filename);
             const unitImage = await payload.create({
                 collection: "media",
                 data: {
                     alt: unit.image.alt,
                 },
-                file: {
-                    data: fs.readFileSync(unitImagePath),
-                    name: unit.image.filename,
-                    mimetype: unit.image.mimetype,
-                },
-            } as Parameters<typeof payload.create>[0])
+                file: getSeedFile(unit.image),
+            })
 
             await wait(500)
 
@@ -370,45 +418,45 @@ const seed = async () => {
                     tenant: tenant.id,
                     name: unit.name,
                     slug: unit.slug,
+                    quickDescription: unit.description ?? unit.name,
                     bathrooms: unit.bathrooms,
                     guests: unit.guests,
                     isPrivate: unit.isPrivate,
                     isArchived: unit.isArchived,
                     image: unitImage.id,
+                    gallery: [unitImage.id],
                 },
-            } as Parameters<typeof payload.create>[0])
+            })
 
             await wait(500)
-
-            /*if (unit.rates && unit.rates.length > 0) {
-                for (const rate of unit.rates) {
-                    await payload.create({
-                        collection: "rates",
-                        data: {
-                            unit: currentUnit.id,
-                            year: rate.year,
-                            peak: rate.peak,
-                            price: rate.price,
-                        }
-                    } as Parameters<typeof payload.create>[0])
-                }
-            }
-
-            console.log(`Created rates for unit ${unit.name}`);
-            await wait(500)*/
 
             if (unit.tags && unit.tags.length > 0) {
                 for (const tag of unit.tags) {
 
                     //get properties of the unit
-                    const updateUnit = await payload.findByID({
+                    const updateUnitResult = await payload.find({
                         collection: 'units',
-                        id: currentUnit.id,
-                        depth: 0, // Keep depth 0 to get only IDs
-                    } as Parameters<typeof payload.findByID>[0]);
+                        depth: 0,
+                        limit: 1,
+                        where: {
+                            id: {
+                                equals: currentUnit.id,
+                            },
+                        },
+                    });
+
+                    const updateUnit = updateUnitResult.docs[0];
+
+                    if (!updateUnit) {
+                        throw new Error(`Could not find unit with id ${currentUnit.id}`);
+                    }
 
                     // console.log(updateUnit)
                     // console.log(updateUnit.tags)
+
+                    const existingTagIDs = (updateUnit.tags ?? []).map((tag) =>
+                        typeof tag === "string" ? tag : tag.id
+                    );
 
                     //check if the tag already exists
                     const existingDocs = await payload.find({
@@ -439,24 +487,32 @@ const seed = async () => {
                         //add the tag to the unit
                         await payload.update({
                             collection: 'units',
-                            id: updateUnit.id,
+                            where: {
+                                id: {
+                                    equals: updateUnit.id,
+                                },
+                            },
                             data: {
                                 // Assumes 'tags' is an array field
-                                tags: [...(updateUnit.tags || []), newTag.id ],
+                                tags: [...existingTagIDs, newTag.id],
                             },
-                        } as Parameters<typeof payload.update>[0]);
+                        });
 
                     } else {
                         payload.logger.info(`Tag ${tag.slug} already exists.`);
                         //add the tag to the unit
                         await payload.update({
                             collection: 'units',
-                            id: updateUnit.id,
+                            where: {
+                                id: {
+                                    equals: updateUnit.id,
+                                },
+                            },
                             data: {
                                 // Assumes 'tags' is an array field
-                                tags: [...(updateUnit.tags || []), existingDocs.docs[0].id ],
+                                tags: [...existingTagIDs, existingDocs.docs[0].id],
                             },
-                        } as Parameters<typeof payload.update>[0]);
+                        });
                     }
 
 

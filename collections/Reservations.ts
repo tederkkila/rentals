@@ -108,11 +108,18 @@ export const Reservations: CollectionConfig = {
 
                             const customerId = doc.customer as unknown as string;
 
-                            customer = await req.payload.findByID({
-                                collection: 'customers',
-                                id: customerId,
-                                depth: 2,
-                            } as Parameters<typeof req.payload.findByID>[0]);
+                            customer = (
+                                await req.payload.find({
+                                    collection: 'customers',
+                                    depth: 2,
+                                    limit: 1,
+                                    where: {
+                                        id: {
+                                            equals: customerId,
+                                        },
+                                    },
+                                })
+                            ).docs[0];
                             console.log(customer.email);
                         } else {
                             // If it was already populated via depth

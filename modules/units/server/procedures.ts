@@ -3,7 +3,7 @@ import { TRPCError } from "@trpc/server";
 import type { Sort, Where } from "payload";
 
 import { DEFAULT_LIMIT } from "@/constants";
-import { Discount, Media, Peakseason, Rate, Reservation, Unit } from "@/payload-types";
+import { Discount, Media, Peakseason, Rate, Reservation, Tenant, Unit } from "@/payload-types";
 import { baseProcedure, createTRPCRouter } from "@/trpc/init";
 
 import { sortValues } from "../search-params";
@@ -192,8 +192,6 @@ export const unitsRouter = createTRPCRouter({
         )
         .query(async ({ ctx, input }) => {
 
-            const now = new Date()
-            const endOfCurrentMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
             const firstDayOfMonth = new Date();
             firstDayOfMonth.setDate(1);
             firstDayOfMonth.setHours(0, 0, 0, 0);
@@ -212,6 +210,18 @@ export const unitsRouter = createTRPCRouter({
 
             const unit = unitsData.docs[0] as Unit;
             // console.log("unit:", unit)
+
+            const tenants = await ctx.db.find({
+                collection: "tenants",
+                depth: 2,
+                pagination: false,
+                where: {
+                    id: {equals: unit.tenant.id},
+
+                }
+            });
+
+            const tenant = tenants.docs[0] as Tenant;
 
             const reservations = await ctx.db.find({
                 collection: "reservations",
@@ -266,6 +276,7 @@ export const unitsRouter = createTRPCRouter({
             return {
 
                 ...unit,
+                tenant,
                 reservations: reservations.docs as Reservation[],
                 rates: rates.docs as Rate[],
                 peakseasons: peakseasons.docs as Peakseason[],
