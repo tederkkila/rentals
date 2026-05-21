@@ -337,6 +337,7 @@ const seed = async () => {
             data: {
                 name: location.name,
                 slug: location.slug,
+                timezone: location.timezone,
                 icon: tenantIcon.id,
             },
         } as Parameters<typeof payload.create>[0]);
