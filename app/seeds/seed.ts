@@ -16,6 +16,7 @@ const locations = [
             filename: "forest.png",
             mimetype: "image/png",
         },
+        timezone: "America/New_York",
         description: "Caspian Lake has long been a favorite retreat for academics and artists. Hidden away in Vermont's Northeast Kingdom, the lake and its surroundings are nestled in a postcard setting of quiet pastures, green mountains and covered bridges. The famously crystal clear waters of the lake itself offer opportunity for sailing, swimming or just a quiet, care-free day out on the dock. Nature lovers will really enjoy the lush surroundings, endlessly starry nights, and the occasional wild visitor (loons, black bear, mergansers, mink, and the occasional moose have all been seen on the property).",
         units : [
             {
@@ -205,6 +206,7 @@ const locations = [
             filename: "dragonfly.png",
             mimetype: "image/png",
         },
+        timezone: "Pacific/Honolulu",
         units : [
             {
                 name: "Maui North",
