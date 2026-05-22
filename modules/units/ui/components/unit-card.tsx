@@ -28,15 +28,15 @@ export const UnitCard = ({ unit }: UnitCardProps) => {
         return;
     }
 
-    // const tenantIcon: Media= tenant.icon as Media;
-    // if (!tenant.icon || typeof tenant.icon === "string") {
-    //     return;
-    // }
+    const tenantIcon: Media= tenant.icon as Media;
+    if (!tenant.icon || typeof tenant.icon === "string") {
+        return;
+    }
 
-    // const unitImage: Media = unit.image as Media;
-    // if (!unit.image || typeof unit.image === "string") {
-    //     return;
-    // }
+    const unitImage: Media = unit.image as Media;
+    if (!unit.image || typeof unit.image === "string") {
+        return;
+    }
 
     const handleUserClick = (e: React.MouseEvent<HTMLDivElement>) => {
         e.preventDefault();
