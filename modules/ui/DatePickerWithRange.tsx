@@ -35,7 +35,7 @@ import { Discount, Peakseason, Rate, Reservation, Tenant, Unit } from "@/payload
     return bookingsOverlap
 }*/
 
-const processBookedRanges = (bookedRanges: DateRange[], peakSeasonRanges: DateRange[], minimumNights): [DateRange[], DateRange[], DateRange[], DateRange[]] => {
+const processBookedRanges = (bookedRanges: DateRange[], peakSeasonRanges: DateRange[], minimumNights: Record<string, number>): [DateRange[], DateRange[], DateRange[], DateRange[]] => {
 
     let effectiveBookedRanges: DateRange[] = []
     let checkOutOnlyRanges: DateRange[] = []
@@ -114,7 +114,7 @@ const processBookedRanges = (bookedRanges: DateRange[], peakSeasonRanges: DateRa
     return [effectiveBookedRanges, checkOutOnlyRanges, initialMinimumStayRanges, notPeakSundays]
 }
 
-const calculateNights = (bookedRange: DateRange, peakSeasonRange: DateRange, minimumNights) => {
+const calculateNights = (bookedRange: DateRange, peakSeasonRange: DateRange, minimumNights: Record<string, number>) => {
     let nights = minimumNights.offPeak
 
     let fromIsPeakSeason = undefined;
@@ -184,7 +184,7 @@ interface DatePickerWithRangeProps {
         reservations: Reservation[] | null,
         rates: Rate[] | null,
         peakseasons: Peakseason[] | null,
-        discount: Discount[] | null,
+        discounts: Discount[] | null,
     },
     selected: DateRange | undefined,
     setSelectedDateRange: (range: DateRange | undefined) => void,
@@ -305,21 +305,26 @@ export const DatePickerWithRange = ( { title, unit, selected, setSelectedDateRan
                 effectiveBookedDaysSetSorted,
                 (newRange.from as TZDate).toISOString().split('T')[0]
             )
-
             console.log("nextEffectiveBookedDate: ", nextEffectiveBookedDate);
-            const nextEffectiveBookedDateInSelection = rangeIncludesDate(newRange, TZDate.tz(nextEffectiveBookedDate as string, timeZone))
-            console.log("nextEffectiveBookedDateInSelection: ", nextEffectiveBookedDateInSelection);
 
-            const lastAvailableBookingDate = nextEffectiveBookedDate as TZDate;
+            if (nextEffectiveBookedDate !== undefined) {
+                //there might be no nextEffectiveBookedDate if there are no bookings in the next year
 
-            setCurrentCalendarValues( prevState => ({
-                ...prevState,
-                selectedRange: newRange,
-                minimumStayRanges: [newMinimumStayRange],
-                firstAvailableBookingDate: newRange.from as TZDate,
-                lastAvailableBookingDate: lastAvailableBookingDate,
-                disableCheckOutOnly: false,
-            }));
+                const nextEffectiveBookedDateInSelection = rangeIncludesDate(newRange, TZDate.tz(nextEffectiveBookedDate as string, timeZone))
+                console.log("nextEffectiveBookedDateInSelection: ", nextEffectiveBookedDateInSelection);
+
+                const lastAvailableBookingDate = nextEffectiveBookedDate as unknown as TZDate;
+
+                setCurrentCalendarValues( prevState => ({
+                    ...prevState,
+                    selectedRange: newRange,
+                    minimumStayRanges: [newMinimumStayRange],
+                    firstAvailableBookingDate: newRange.from as TZDate,
+                    lastAvailableBookingDate: lastAvailableBookingDate,
+                    disableCheckOutOnly: false,
+                }));
+
+            }
 
         }
 
@@ -446,7 +451,9 @@ export const DatePickerWithRange = ( { title, unit, selected, setSelectedDateRan
                         onSelect={handleSelect}
                         showOutsideDays={false}
                         components={{
-                            DayButton: ToolTipDayButton
+                            DayButton: (props) => (
+                                <ToolTipDayButton {...props} />
+                            )
                         }}
                     />
                     <div className="flex justify-center gap-2 m-2">

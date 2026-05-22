@@ -1,7 +1,6 @@
 "use client";
 
 import { useTRPC } from "@/trpc/client";
-import { Tenant } from "@/payload-types";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Box } from "@radix-ui/themes";
 import { RichText } from "@payloadcms/richtext-lexical/react";
@@ -15,8 +14,7 @@ export const ContactInfoView = ({ tenantSlug }: Props) => {
 
     const trpc = useTRPC();
 
-    const { data }: Tenant = useSuspenseQuery(trpc.tenants.getOne.queryOptions({ slug: tenantSlug }));
-
+    const { data } = useSuspenseQuery(trpc.tenants.getOne.queryOptions({ slug: tenantSlug }));
 
     return (
         <Box className="">

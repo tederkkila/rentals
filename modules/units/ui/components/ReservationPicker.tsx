@@ -8,20 +8,26 @@ import {
     FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Grid } from "@radix-ui/themes/dist/esm";
+import { Grid } from "@radix-ui/themes";
 import { DatePickerWithRange } from "@/modules/ui/DatePickerWithRange";
 import { useTRPC } from "@/trpc/client";
-import { useQuery, useSuspenseQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { DateRange } from "@daypicker/react"
+import { Discount, Peakseason, Rate, Reservation, Tenant } from "@/payload-types";
 
 interface UnitProps {
-    unit: Unit,
+    unit: Unit & {
+        tenant: Tenant | null,
+        reservations: Reservation[] | null,
+        rates: Rate[] | null,
+        peakseasons: Peakseason[] | null,
+        discounts: Discount[] | null,
+    },
 }
 
-export const ReservationPicker = ({unit}: UnitProps) => {
+export const ReservationPicker = ({ unit }: UnitProps) => {
 
     const trpc = useTRPC();
-    const {data} = useSuspenseQuery(trpc.units.getUnitWithCalendar.queryOptions({ slug: unit.slug }));
 
     const [selectedDateRange, setSelectedDateRange] = React.useState<DateRange | undefined>();
     const [open, setOpen] = React.useState(false)
@@ -86,7 +92,7 @@ export const ReservationPicker = ({unit}: UnitProps) => {
                 <form action={submitAction}>
                     <DatePickerWithRange
                         title={"Select Reservation Dates"}
-                        unit={ data }
+                        unit={ unit }
                         selected={selectedDateRange}
                         setSelectedDateRange={setSelectedDateRange}
                         open={open}
@@ -102,7 +108,7 @@ export const ReservationPicker = ({unit}: UnitProps) => {
                             <Input type='text' id="name" name="name" placeholder="Your Name" required/>
                         </Field>
                         <Field>
-                            <FieldLabel htmlFor="email">Email</FieldLabel>
+                            <FieldLabel htmlFor="email" aria-label="Email address">Email</FieldLabel>
                             <Input
                                 id="email"
                                 name="email"

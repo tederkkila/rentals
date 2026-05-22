@@ -38,7 +38,7 @@ const UnitFilter = ({ title, className, children }:UnitFilterProps) => {
 };
 
 interface UnitFiltersProps {
-    tenantSlug: string;
+    tenantSlug: string | undefined;
 }
 
 export const UnitFilters = ({ tenantSlug }:UnitFiltersProps ) => {

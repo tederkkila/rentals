@@ -51,11 +51,13 @@ export const Tenants: CollectionConfig = {
         {
             name: "icon",
             type: "upload",
+            required: true,
             relationTo: "media",
         },
         {
             name: "image",
             type: "upload",
+            required: true,
             relationTo: "media",
         },
         {

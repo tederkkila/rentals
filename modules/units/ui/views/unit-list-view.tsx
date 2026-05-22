@@ -6,7 +6,7 @@ import { UnitList, UnitListSkeleton } from "../components/unit-list"
 
 interface Props {
     category?: string;
-    tenantSlug?: string;
+    tenantSlug?: string | undefined;
 }
 
 export const UnitListView = ({ category, tenantSlug }: Props) => {

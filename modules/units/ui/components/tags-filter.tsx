@@ -5,16 +5,18 @@ import { useTRPC } from "@/trpc/client";
 import { DEFAULT_LIMIT } from "@/constants";
 import { Checkbox } from "@/components/ui/checkbox";
 import { IconSpan } from "@/modules/ui/icon-span";
+import { Tag } from "@/payload-types";
 import React from "react";
 
 interface TagsFilterProps {
-    tenantSlug: string;
+    tenantSlug: string | undefined;
     value?: string[] | null;
     onChange: (value: string[]) => void;
 }
 
 export const TagsFilter = ({ tenantSlug, value, onChange }: TagsFilterProps) => {
     const trpc = useTRPC();
+    if (!tenantSlug) return null;
     const {
         data,
         isLoading,
@@ -22,7 +24,6 @@ export const TagsFilter = ({ tenantSlug, value, onChange }: TagsFilterProps) => 
         hasNextPage,
         isFetchingNextPage
     } = useInfiniteQuery(trpc.tenants.getInfiniteUnitTags.infiniteQueryOptions(
-    // } = useInfiniteQuery(trpc.tags.getMany.infiniteQueryOptions(
         {
             slug: tenantSlug,
             limit: DEFAULT_LIMIT,
@@ -50,14 +51,14 @@ export const TagsFilter = ({ tenantSlug, value, onChange }: TagsFilterProps) => 
                 </div>
             ) : (
                 data?.pages.map((page) =>
-                    page.docs.map((tag) => (
+                    page.docs.map((tag: Tag) => (
                         <div
                             key={tag.id}
                             className="flex items-center justify-between cursor-pointer border bg-gray-100 rounded-sm p-1"
                             onClick={() => onClick(tag.slug)}
                         >
                             <p className="text-sm text-gray-600">
-                                <IconSpan name={tag.icon} label={tag.name} size={15} index={tag.id} />
+                                <IconSpan name={tag.icon} label={tag.name} size={15} key={tag.id} />
                                 {/*{tag.name}*/}
                             </p>
                             <Checkbox className="size-5 bg-white-300 border-gray-400"

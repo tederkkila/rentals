@@ -71,6 +71,7 @@ export const Units: CollectionConfig = {
         {
             name: "image",
             type: "upload",
+            required: true,
             relationTo: "media",
         },
         {

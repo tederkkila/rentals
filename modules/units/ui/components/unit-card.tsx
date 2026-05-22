@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 import { cn, generateTenantURL } from "@/lib/utils";
-import type { Unit, Tenant } from "@/payload-types";
+import type { Unit, Tenant, Media } from "@/payload-types";
 
 import { AmenitiesList } from "@/modules/units/ui/components/amenities-list"
 
@@ -16,41 +16,56 @@ const poppins = Poppins({
 });
 
 interface UnitCardProps {
-    unit: Unit & {
-        tenant: Tenant[] | null
-        },
+    unit: Unit,
     key?: React.Key,
 }
 
 export const UnitCard = ({ unit }: UnitCardProps) => {
     const router = useRouter();
 
-    unit = unit as Unit & { tenant: Tenant[] | null };
+    const tenant: Tenant = unit.tenant as Tenant;
+    if (!unit.tenant || typeof unit.tenant === "string") {
+        return;
+    }
+
+    // const tenantIcon: Media= tenant.icon as Media;
+    // if (!tenant.icon || typeof tenant.icon === "string") {
+    //     return;
+    // }
+
+    // const unitImage: Media = unit.image as Media;
+    // if (!unit.image || typeof unit.image === "string") {
+    //     return;
+    // }
 
     const handleUserClick = (e: React.MouseEvent<HTMLDivElement>) => {
         e.preventDefault();
         e.stopPropagation();
 
-        router.push(generateTenantURL(unit.tenant?.slug));
+        router.push(generateTenantURL(tenant.slug));
     };
 
     return (
-        <Link href={`${generateTenantURL(unit.tenant?.slug)}/units/${unit.slug}`}>
+        <Link href={`${generateTenantURL(tenant.slug)}/units/${unit.slug}`}>
             <div className="
             hover:shadow-[1px_1px_0px_0px_rgba(30,30,30,0.5)]
             transition-shadow border rounded-md bg-white
             overflow-hidden h-full
             flex flex-col md:flex-row ">
-                <div className="relative aspect-square">
-                    <Image
-                        loading="eager"
-                        alt={unit.name}
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        src={unit.image?.url || "/placeholder.png"}
-                        className="object-cover"
-                    />
-                </div>
+
+                {unit.image?.url && (
+                    <div className="relative aspect-square">
+                        <Image
+                            loading="eager"
+                            alt={unit.name}
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            src={unit.image?.url || "/placeholder.png"}
+                            className="object-cover"
+                        />
+                    </div>
+                )}
+
                 <div className="p-4 gap-3 flex-1 border-y md:border-none">
                     <h2 className={cn("text-xl font-bold leading-none", poppins.className)}>{unit.name}</h2>
                     <h3 className="font-light mb-2 text-gray-600 md:line-clamp-1">{unit.quickDescription}</h3>
@@ -74,17 +89,17 @@ export const UnitCard = ({ unit }: UnitCardProps) => {
                     </div>
 
                     <div className="flex items-center gap-2" onClick={handleUserClick}>
-                        {unit.tenant?.icon?.url && (
+                        {tenant.icon?.url && (
                             <Image
-                                alt={unit.tenant?.slug}
-                                src={unit.tenant?.icon?.url}
+                                alt={tenant.slug}
+                                src={tenant.icon?.url}
                                 width={16}
                                 height={16}
                                 sizes="(max-width: 1920px) 10vw"
                                 className="rounded-full border shrink-0 size-4"
                             />
                         )}
-                        <p className="text-sm underline font-medium">{unit.tenant?.slug}</p>
+                        <p className="text-sm underline font-medium">{tenant.slug}</p>
                     </div>
 
                 </div>

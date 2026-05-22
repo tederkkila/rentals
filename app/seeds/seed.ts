@@ -392,6 +392,7 @@ const seed = async () => {
                 slug: location.slug,
                 timezone: location.timezone,
                 icon: tenantIcon.id,
+                image: tenantIcon.id,
             },
         });
 

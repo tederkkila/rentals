@@ -11,25 +11,39 @@ import { IconSpan } from "@/modules/ui/icon-span";
 import { UnitImageGrid } from '@/modules/units/ui/components/UnitImageGrid'
 import { ReservationPicker } from '@/modules/units/ui/components/ReservationPicker'
 
+const isTag = (tag: string | Tag): tag is Tag => {
+    return typeof tag === "object" && tag !== null;
+};
+
 interface UnitViewProps {
     unit: string;
 }
+
+type UnitWithCalendar = Unit & {
+    tenant: Tenant | null;
+    reservations: Reservation[];
+    rates: Rate[];
+    peakseasons: Peakseason[];
+    discounts: Discount[];
+};
 
 export const UnitView = ({ unit }: UnitViewProps) => {
 
     const trpc = useTRPC();
 
     const {data} = useSuspenseQuery(trpc.units.getUnitWithCalendar.queryOptions({ slug: unit }));
-    const unitData = data as Unit & {
-        tenant: Tenant | null,
-        reservations: Reservation[] | null,
-        rates: Rate[] | null,
-        peakseasons: Peakseason[] | null,
-        discount: Discount[] | null,
-    }
+    const unitData: UnitWithCalendar = data;
 
     //console.log("unit:" + JSON.stringify(unitData));
-    const amenities = unitData.tags.filter( (tag) => tag.isAmenity === true);
+
+    let amenities: Tag[] = [];
+    if (unitData.tags) {
+        amenities = unitData.tags
+            .filter(isTag)
+            .filter((tag) => tag.isAmenity === true);
+    }
+    // console.log("amenities:" + JSON.stringify(unitData.tags));
+
 
     return (
         <Box className="p-8">

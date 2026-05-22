@@ -147,8 +147,8 @@ export interface Tenant {
    * This is the timezone for the location
    */
   timezone: 'America/New_York' | 'America/Vancouver' | 'Pacific/Honolulu';
-  icon?: (string | null) | Media;
-  image?: (string | null) | Media;
+  icon: string | Media;
+  image: string | Media;
   /**
    * Attractions for this tenant
    */
@@ -308,7 +308,7 @@ export interface Unit {
    * If checked, this unit will be archived
    */
   isArchived?: boolean | null;
-  image?: (string | null) | Media;
+  image: string | Media;
   coverImage?: (string | null) | Media;
   guests: number;
   bathrooms: number;

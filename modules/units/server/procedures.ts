@@ -130,7 +130,7 @@ export const unitsRouter = createTRPCRouter({
 
             const data = await ctx.db.find({
                 collection: "units",
-                depth: 2, // Populate "category", "image", "tenant" & "tenant.image"
+                depth: 2,
                 where,
                 sort,
                 page: input.cursor,
@@ -139,50 +139,17 @@ export const unitsRouter = createTRPCRouter({
 
             //console.log(data)
 
-            const dataWithPrices = await Promise.all(
-                data.docs.map(async (doc) => {
-                    const peakPriceData = await ctx.db.find({
-                        collection: "rates",
-                        depth: 0,
-                        pagination: false,
-                        where: {
-                            name: {equals: 2026},
-                            unit: {equals: doc.id},
-                            // peak: {equals: true},
-                        }
-                    });
-
-                    const offPriceData = await ctx.db.find({
-                        collection: "rates",
-                        depth: 0,
-                        pagination: false,
-                        where: {
-                            name: {equals: 2026},
-                            unit: {equals: doc.id},
-                            // peak: {not_equals: true},
-                        }
-                    });
-
-                    // console.log(peakPriceData.docs)
-
-                    return {
-                        ...doc,
-                        peakRate: peakPriceData.docs[0]?.price,
-                        offRate: offPriceData.docs[0]?.price,
-
-                    }
-                })
-            )
+            type PopulatedUnit = Unit & {
+                tenant?: Tenant | string | null;
+                coverImage?: Media | string | null;
+                image?: Media | string | null;
+            };
 
             return {
-
                 ...data,
-                docs: dataWithPrices.map((doc) => ({
-                     ...doc,
-                //     image: doc.image as Media | null,
-                //     tenant: doc.tenant as Tenant & { image: Media | null },
-                }))
-            }
+                docs: data.docs as PopulatedUnit[],
+            };
+
         }),
     getUnitWithCalendar: baseProcedure
         .input(
@@ -208,20 +175,17 @@ export const unitsRouter = createTRPCRouter({
                 pagination: false,
             });
 
-            const unit = unitsData.docs[0] as Unit;
+            let unit = unitsData.docs[0] as Unit | undefined;
             // console.log("unit:", unit)
 
-            const tenants = await ctx.db.find({
-                collection: "tenants",
-                depth: 2,
-                pagination: false,
-                where: {
-                    id: {equals: unit.tenant?.id},
+            if (!unit) {
+                throw new Error("Unit not found");
+            }
 
-                }
-            });
-
-            const tenant = tenants.docs[0] as Tenant;
+            const tenant =
+                typeof unit.tenant === "object" && unit.tenant !== null
+                    ? unit.tenant
+                    : null;
 
             const reservations = await ctx.db.find({
                 collection: "reservations",
@@ -273,16 +237,35 @@ export const unitsRouter = createTRPCRouter({
             });
 
 
-            return {
+            // return {
+            //
+            //     ...unit,
+            //     tenant,
+            //     reservations: reservations.docs as Reservation[],
+            //     rates: rates.docs as Rate[],
+            //     peakseasons: peakseasons.docs as Peakseason[],
+            //     discounts: discounts.docs as Discount[],
+            //
+            // }
 
+            type UnitWithCalendar = Unit & {
+                tenant: Tenant | null;
+                reservations: Reservation[];
+                rates: Rate[];
+                peakseasons: Peakseason[];
+                discounts: Discount[];
+            };
+
+            const unitWithCalendar: UnitWithCalendar = {
                 ...unit,
                 tenant,
                 reservations: reservations.docs as Reservation[],
                 rates: rates.docs as Rate[],
                 peakseasons: peakseasons.docs as Peakseason[],
                 discounts: discounts.docs as Discount[],
+            };
 
-            }
+            return unitWithCalendar;
 
         })
 });
