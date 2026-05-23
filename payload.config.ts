@@ -32,6 +32,7 @@ const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 import { resendAdapter } from '@payloadcms/email-resend'
+import { vercelBlobStorage } from "@payloadcms/storage-vercel-blob";
 
 //TODO add CSRF protection
 //https://payloadcms.com/docs/authentication/cookies#csrf-attacks
@@ -96,6 +97,13 @@ export default buildConfig({
                 includeDefaultField: false,
             },
             userHasAccessToAllTenants: (user) => isSuperAdmin(user),
+        }),
+        vercelBlobStorage({
+            enabled: true,
+            collections: {
+                media: true,
+            },
+            token: process.env.VERCEL_BLOB_STORAGE_TOKEN || '',
         })
     ],
     email: resendAdapter({
