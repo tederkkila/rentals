@@ -311,7 +311,7 @@ export const DatePickerWithRange = ( { title, unit, selected, setSelectedDateRan
 
             } else {
 
-                const nextEffectiveBookedDateInSelection = rangeIncludesDate(newRange, TZDate.tz(nextEffectiveBookedDate as string, timeZone))
+                const nextEffectiveBookedDateInSelection = rangeIncludesDate(newRange, TZDate.tz(nextEffectiveBookedDate as unknown as string, timeZone))
                 console.log("nextEffectiveBookedDateInSelection: ", nextEffectiveBookedDateInSelection);
 
                 const lastAvailableBookingDate = nextEffectiveBookedDate as unknown as TZDate;
