@@ -213,16 +213,7 @@ export const DatePickerWithRange = ( { title, unit, selected, setSelectedDateRan
                     to: new TZDate(reservation.endDate, reservation.endDate_tz),
                 })
             })
-        } /*else {
-            data = [
-                { from: new TZDate(2026, 4, 10, timeZone), to: new TZDate(2026, 4, 13, timeZone) },
-                { from: new TZDate(2026, 4, 2, timeZone), to: new TZDate(2026, 4, 9, timeZone) },
-                { from: new TZDate(2026, 4, 15, timeZone), to: new TZDate(2026, 4, 17, timeZone) },
-                { from: new TZDate(2026, 5, 13, timeZone), to: new TZDate(2026, 5, 20, timeZone) },
-                { from: new TZDate(2026, 6, 11, timeZone), to: new TZDate(2026, 6, 18, timeZone) },
-                { from: new TZDate(2026, 6, 18, timeZone), to: new TZDate(2026, 6, 22, timeZone) },
-            ]
-        }*/
+        }
 
         return data
     }, [unit.reservations])
@@ -308,7 +299,17 @@ export const DatePickerWithRange = ( { title, unit, selected, setSelectedDateRan
             console.log("nextEffectiveBookedDate: ", nextEffectiveBookedDate);
 
             if (nextEffectiveBookedDate !== undefined) {
+
                 //there might be no nextEffectiveBookedDate if there are no bookings in the next year
+                setCurrentCalendarValues( prevState => ({
+                    ...prevState,
+                    selectedRange: newRange,
+                    minimumStayRanges: [newMinimumStayRange],
+                    firstAvailableBookingDate: newRange.from as TZDate,
+                    disableCheckOutOnly: false,
+                }));
+
+            } else {
 
                 const nextEffectiveBookedDateInSelection = rangeIncludesDate(newRange, TZDate.tz(nextEffectiveBookedDate as string, timeZone))
                 console.log("nextEffectiveBookedDateInSelection: ", nextEffectiveBookedDateInSelection);
@@ -327,7 +328,6 @@ export const DatePickerWithRange = ( { title, unit, selected, setSelectedDateRan
             }
 
         }
-
 
         /*performance.mark('end-handleSelect');
         performance.measure('Total handleSelect', 'start-handleSelect', 'end-handleSelect');
