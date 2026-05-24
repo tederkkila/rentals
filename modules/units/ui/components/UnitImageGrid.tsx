@@ -65,15 +65,19 @@ export const UnitImageGridImage = ({ image, radius }: UnitImageGridImageProps) =
         }
     }
 
-    if (!image.url) image.url = "/file.svg";
+    let imageUrl = '/file.svg';
+    if (image.url) imageUrl = image.url;
+
+    let imageAlt = 'image missing';
+    if (image.alt) imageAlt = image.alt;
 
     return (
         <div key={image.id} className="w-full">
             <AspectRatio ratio={1}>
                 <Image
                     loading="eager"
-                    alt={image.alt}
-                    src={image.url}
+                    alt={imageAlt}
+                    src={imageUrl}
                     fill
                     sizes="50vw"
                     className="flex-1"
