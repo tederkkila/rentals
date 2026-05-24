@@ -128,8 +128,10 @@ export const Reservations: CollectionConfig = {
                         }
 
                         // Using Payload's native abstractions routes directly via Resend
+                        const emailTO =(process.env.APP_ENV == 'development') ? 'delivered@resend.dev' : 'tederkkila@gmail.com'
                         await req.payload.sendEmail({
-                            to: 'delivered@resend.dev',
+                            to: emailTO,
+                            from: customer.email,
                             subject: '🚀 New Reservation Added!',
                             html: `
             <h3>New Lead Details:</h3>
