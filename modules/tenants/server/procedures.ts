@@ -7,6 +7,7 @@ import { DEFAULT_LIMIT } from "@/constants";
 
 
 export const tenantsRouter = createTRPCRouter({
+
     getOne: baseProcedure
         .input(
             z.object({
@@ -36,7 +37,12 @@ export const tenantsRouter = createTRPCRouter({
                 throw new TRPCError({ code: "NOT_FOUND", message: "Tenant not found" });
             }
 
-            return tenant as Tenant & { icon: Media | null, image: Media | null, attractions: Attraction[] | null };
+            return tenant as Tenant & {
+                icon: Media | null;
+                image: Media | null;
+                favicon: Media | null;
+                attractions: Attraction[] | null;
+            };
         }),
     getInfiniteUnitTags: baseProcedure
         .input(

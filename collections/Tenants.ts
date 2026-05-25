@@ -61,6 +61,12 @@ export const Tenants: CollectionConfig = {
             relationTo: "media",
         },
         {
+            name: 'favicon',
+            type: 'upload',
+            relationTo: 'media', // Points to your Payload media collection
+            required: false,
+        },
+        {
             name: "attractions",
             type: "relationship",
             relationTo: "attractions",

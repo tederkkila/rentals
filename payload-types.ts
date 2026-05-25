@@ -149,6 +149,7 @@ export interface Tenant {
   timezone: 'America/New_York' | 'America/Vancouver' | 'Pacific/Honolulu';
   icon: string | Media;
   image: string | Media;
+  favicon?: (string | null) | Media;
   /**
    * Attractions for this tenant
    */
@@ -629,6 +630,7 @@ export interface TenantsSelect<T extends boolean = true> {
   timezone?: T;
   icon?: T;
   image?: T;
+  favicon?: T;
   attractions?: T;
   content?: T;
   contact?: T;
