@@ -1,5 +1,5 @@
 import type { CollectionConfig, Field } from 'payload'
-import {Customer} from "@/payload-types";
+import {Customer, Unit} from "@/payload-types";
 
 const RESERVATION_STATUS_OPTIONS = [
     {label: 'Pending', value: 'pending'},
@@ -98,7 +98,6 @@ export const Reservations: CollectionConfig = {
     hooks: {
         afterChange: [
             async ({ doc, operation, req }) => {
-            console.log("afterChange Hook")
                 // Triggers strictly on new database row creation
                 if (operation === 'create') {
                     try {
@@ -120,23 +119,85 @@ export const Reservations: CollectionConfig = {
                                     },
                                 })
                             ).docs[0];
-                            console.log(customer.email);
                         } else {
                             // If it was already populated via depth
                             customer = doc.customer
-                            console.log(doc.customer.email);
+                        }
+
+                        let unit: Unit;
+                        if (typeof doc.unit === 'string') {
+
+                            const unitId = doc.unit as unknown as string;
+
+                            unit = (
+                                await req.payload.find({
+                                    collection: 'units',
+                                    depth: 2,
+                                    limit: 1,
+                                    where: {
+                                        id: {
+                                            equals: unitId,
+                                        },
+                                    },
+                                })
+                            ).docs[0];
+                        } else {
+                            // If it was already populated via depth
+                            unit = doc.unit
+                        }
+
+                        const tenant =
+                            typeof unit.tenant === "object" && unit.tenant !== null
+                                ? unit.tenant
+                                : null;
+
+                        if (!tenant) {
+                            throw new Error("Tenant not found");
                         }
 
                         // Using Payload's native abstractions routes directly via Resend
-                        const emailTO =(process.env.APP_ENV == 'development') ? 'delivered@resend.dev' : 'tederkkila@gmail.com'
+                        const messageVariables: Record<string, any> = {
+                            caspian: {
+                                emoji: "🌲",
+                                emails: ['tederkkila@gmail.com'],
+                            },
+                            mauicondo: {
+                                emoji: "🌋",
+                                emails: ['tederkkila@gmail.com'],
+                            },
+                            whistler: {
+                                emoji: "🏔️",
+                                emails: ['tederkkila@gmail.com'],
+                            },
+                        }
+
+                        const messageVariable: Record<string, any> = messageVariables[tenant.slug]
+                        //console.log("unit", unit);
+
+                        const emailTO =(process.env.APP_ENV == 'development') ? 'delivered@resend.dev' : messageVariable.emails
+                        const subject = `${messageVariable.emoji} ${tenant.slug.toUpperCase()}: New Reservation Request for ${unit.name.toUpperCase()}!`
+                        const reservationUrl = `${process.env.NEXT_PUBLIC_APP_URL}/admin/collections/reservations/${doc.id}`
+
+                        const localStartTime: string = new Date(doc.startDate).toLocaleString('en-US', { timeZone: doc.startDate_tz });
+                        const localEndTime: string = new Date(doc.endDate).toLocaleString('en-US', { timeZone: doc.endDate_tz });
+
                         await req.payload.sendEmail({
                             to: emailTO,
-                            from: customer.email,
-                            subject: '🚀 New Reservation Added!',
+                            from: 'no-reply@henrymitchell.net',
+                            subject: subject,
                             html: `
-            <h3>New Lead Details:</h3>
-            <p><strong>Email:</strong> ${customer.email}</p>
-            <p><strong>Name:</strong> ${customer.name}</p>
+            <h3>New Reservation Details:</h3>
+            <p>
+                <strong>Email:</strong> ${customer.email}</br>
+                <strong>Name:</strong> ${customer.name}</br>
+                <strong>Start Date:</strong> ${localStartTime} (${doc.startDate_tz})</br>
+                <strong>End Date:</strong> ${localEndTime}  (${doc.endDate_tz})</br>
+                <strong>Status:</strong> ${doc.status}</br>
+                
+            </p>
+            <p>Click here to review the reservation<br>
+            <a href="${reservationUrl}" target="_blank">${reservationUrl}</a>
+            </p>
           `,
                         })
                     } catch (error) {
