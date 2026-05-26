@@ -7,7 +7,7 @@ import {Poppins} from "next/font/google";
 import Image from "next/image";
 import {usePathname} from "next/navigation";
 
-import { cn, generateTenantURL } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import {Button} from "@/components/ui/button";
 
 import {NavbarSidebar} from "./navbar-sidebar";
