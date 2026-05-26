@@ -64,7 +64,7 @@ export const Navbar = ({slug}: NavbarProps) => {
     const tenant = data as Tenant & { icon: Media | null, image: Media | null }
 
     const navbarItems = [
-        {href: "", children: "Home"},
+        {href: "/", children: "Home"},
         {href: "/attractions", children: "Nearby Attractions"},
         {href: "/contact", children: "Contact"},
     ];
@@ -79,7 +79,7 @@ export const Navbar = ({slug}: NavbarProps) => {
             mx-auto">
             <div className="max-w-(--breakpoint-xl) mx-auto flex items-center h-full gap-2 px-4 py-6" >
                 {/*<Link href={`/tenants/${slug}`} className="flex items-center mr-8">*/}
-                <Link href={`/`} className="flex items-center mr-8">
+                <Link href={'/'} className="flex items-center mr-8">
                     {tenant.icon?.url && (
                         <Image
                             alt={"tenantSlug"}
@@ -106,8 +106,8 @@ export const Navbar = ({slug}: NavbarProps) => {
                     {navbarItems.map((item, index) => (
                         <NavbarItem
                             key={index}
-                            href={generateTenantURL(slug) + item.href}
-                            isActive={pathname === generateTenantURL(slug) + item.href}
+                            href={item.href}
+                            isActive={pathname === item.href}
                         >
                             {item.children}
                         </NavbarItem>

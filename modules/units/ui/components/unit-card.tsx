@@ -46,7 +46,7 @@ export const UnitCard = ({ unit }: UnitCardProps) => {
     };
 
     return (
-        <Link href={`${generateTenantURL(tenant.slug)}/units/${unit.slug}`}>
+        <Link href={`/units/${unit.slug}`}>
             <div className="
             hover:shadow-[1px_1px_0px_0px_rgba(30,30,30,0.5)]
             transition-shadow border rounded-md bg-white
