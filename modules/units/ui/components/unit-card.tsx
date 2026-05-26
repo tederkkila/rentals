@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 import { cn, generateTenantURL } from "@/lib/utils";
-import type { Unit, Tenant, Media } from "@/payload-types";
+import type { Unit, Tenant } from "@/payload-types";
 
 import { AmenitiesList } from "@/modules/units/ui/components/amenities-list"
 
