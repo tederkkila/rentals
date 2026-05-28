@@ -40,10 +40,13 @@
 }
 
 .rdp-disabled.checkOutOnly .rdp-day_button {
-    font-weight: 500;
+    font-weight: 700;
 }
 .booked .rdp-day_button {
     font-weight: 500;
+}
+.booked button {
+    text-decoration: line-through
 }
 
 .disabled\:opacity-50 {

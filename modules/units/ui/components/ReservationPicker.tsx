@@ -14,6 +14,7 @@ import { useTRPC } from "@/trpc/client";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { DateRange } from "@daypicker/react"
 import { Discount, Peakseason, Rate, Reservation, Tenant } from "@/payload-types";
+import PriceBreakdown from "@/modules/ui/PriceBreakdown";
 
 interface UnitProps {
     unit: Unit & {
@@ -32,6 +33,7 @@ export const ReservationPicker = ({ unit }: UnitProps) => {
     const [selectedDateRange, setSelectedDateRange] = React.useState<DateRange | undefined>();
     const [open, setOpen] = React.useState(false)
     const [nickName, setNickname] = useState('');
+    const [totalNights, setTotalNights] = useState(0);
     const { data: tokenData, refetch: refreshToken } = useQuery(trpc.reservations.getFormToken.queryOptions(
         undefined,
         { refetchOnWindowFocus: false }
@@ -97,10 +99,13 @@ export const ReservationPicker = ({ unit }: UnitProps) => {
                         setSelectedDateRange={setSelectedDateRange}
                         open={open}
                         setOpen={setOpen}
-
+                        totalNights={totalNights}
+                        setTotalNights={setTotalNights}
                     />
 
                     {unit.taxInfo && <p className="text-xs text-gray-600 mb-2 ml-2 mt-0">{unit.taxInfo}</p>}
+
+                    <PriceBreakdown />
 
                     <FieldGroup>
                         <Field>

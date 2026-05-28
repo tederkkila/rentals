@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from "react"
 import { addDays, subDays, eachWeekOfInterval, format, isAfter, isBefore, isSameDay } from "date-fns"
-import { startOfDay } from 'date-fns';
+import { startOfDay, differenceInDays } from 'date-fns';
 import { CalendarIcon } from "lucide-react"
 import { DateRange, rangeIncludesDate, TZDate  } from "@daypicker/react"
 
@@ -15,7 +15,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { ToolTipDayButton } from "@/modules/units/ui/components/ToolTipDayButton";
+import { ToolTipDayButton } from "@/modules/ui/ToolTipDayButton";
 import { Discount, Peakseason, Rate, Reservation, Tenant, Unit } from "@/payload-types";
 
 /*const rangeContainsBookingRange = (range: DateRange, bookingRanges: DateRange[]) => {
@@ -123,6 +123,7 @@ const calculateNights = (bookedRange: DateRange, peakSeasonRange: DateRange, min
     if (rangeIncludesDate(peakSeasonRange, bookedRange.from as TZDate)) {
         fromIsPeakSeason = true;
     }
+
     if (rangeIncludesDate(peakSeasonRange, bookedRange.to as TZDate)) {
         toIsPeakSeason = true;
     }
@@ -169,6 +170,11 @@ const getNextChronological = (map: Map<string, any>, targetDate: string): string
     return nextDate;
 }
 
+const getNightsCount = (newRange: DateRange): number => {
+    if (!newRange?.from || !newRange?.to) return 0;
+    return differenceInDays(newRange.to, newRange.from);
+};
+
 interface handleStateProperties {
     selectedRange: DateRange | undefined,
     minimumStayRanges: DateRange[],
@@ -190,9 +196,20 @@ interface DatePickerWithRangeProps {
     setSelectedDateRange: (range: DateRange | undefined) => void,
     open: boolean
     setOpen: (open: boolean) => void
+    totalNights: number,
+    setTotalNights: (totalNights: number) => void,
 }
 
-export const DatePickerWithRange = ( { title, unit, selected, setSelectedDateRange, open, setOpen }: DatePickerWithRangeProps ) => {
+export const DatePickerWithRange = ( {
+    title,
+    unit,
+    selected,
+    setSelectedDateRange,
+    open,
+    setOpen,
+    totalNights,
+    setTotalNights,
+}: DatePickerWithRangeProps ) => {
     // console.log("DatePickerWithRange Re-Rendered");
     // console.log("unit imported: ", unit);
 
@@ -200,6 +217,8 @@ export const DatePickerWithRange = ( { title, unit, selected, setSelectedDateRan
         return unit.tenant?.timezone ?? 'America/New_York';
     }, [])
     //console.log("timeZone: ", timeZone);
+    //TODO Make set of rates for each date in year
+    //TODO Make set of minimum nights for each date in year
     const minimumNights: Record<string, number> = {offPeak: 2, peak: 7};
 
     //production will have no range selected to start
@@ -217,9 +236,7 @@ export const DatePickerWithRange = ( { title, unit, selected, setSelectedDateRan
 
         return data
     }, [unit.reservations])
-    // console.log("bookedRanges: ", bookedRanges);
 
-    //will be retrieved from the database for each unit for all years moving forward
     const peakSeasonRanges: DateRange[] = useMemo(() => {
         let data: DateRange[] = [];
 
@@ -231,9 +248,7 @@ export const DatePickerWithRange = ( { title, unit, selected, setSelectedDateRan
                 })
             })
         }
-
         /*[{ from: new TZDate(2026, 5, 20, timeZone), to: new TZDate(2026, 8, 7, timeZone) }];*/
-
         return data
     }, [unit.peakseasons])
 
@@ -253,16 +268,26 @@ export const DatePickerWithRange = ( { title, unit, selected, setSelectedDateRan
         },
     )
 
-    //console.log("currentCalendarValues: ", currentCalendarValues);
+
 
     const handleSelect = (newRange: DateRange | undefined) => {
         console.log("newRange: ", newRange);
-        //TODO extract current year peakSeasonRange from database
+
+
+
+        //TODO If end date is removed remove the .to from range and redisplay the calendar
+
         if (!newRange) return;
+
+        const nights = getNightsCount(newRange)
+        setTotalNights(nights)
 
         if (newRange?.from && newRange?.to) {
             //both dates selected
             console.log("newRange", newRange);
+
+
+
 
             //check if multiple days are not selected
             if (!isSameDay(newRange.from, newRange.to)) {
@@ -275,7 +300,8 @@ export const DatePickerWithRange = ( { title, unit, selected, setSelectedDateRan
                     minimumStayRanges: initialMinimumStayRanges, //reset to initial values
                     disableCheckOutOnly: true,
                 }));
-                setOpen(false)
+                setTimeout(() => setOpen(false), 500)
+
             } else {
                 //if the same day is selected, clear the selection
                 clearSelection();
@@ -293,7 +319,7 @@ export const DatePickerWithRange = ( { title, unit, selected, setSelectedDateRan
             }
 
             const nextEffectiveBookedDate = getNextChronological(
-                effectiveBookedDaysSetSorted,
+                effectiveBookedDaysMapSorted,
                 (newRange.from as TZDate).toISOString().split('T')[0]
             )
             console.log("nextEffectiveBookedDate: ", nextEffectiveBookedDate);
@@ -338,6 +364,7 @@ export const DatePickerWithRange = ( { title, unit, selected, setSelectedDateRan
 
     const clearSelection = () => {
         setSelectedDateRange(undefined);
+        setTotalNights(0);
         setCurrentCalendarValues( prevState => ({
             ...prevState,
             selectedRange: undefined,
@@ -349,29 +376,30 @@ export const DatePickerWithRange = ( { title, unit, selected, setSelectedDateRan
 
     }
 
-    const effectiveBookedDaysSet: Map<string, any> = useDateRangeMap(effectiveBookedRanges);
+    const effectiveBookedDaysMap: Map<string, any> = useDateRangeMap(effectiveBookedRanges);
 
-    const effectiveBookedDaysSetSorted = useMemo(() => {
-        const keysSorted = Array.from(effectiveBookedDaysSet.keys()).sort();
+    const effectiveBookedDaysMapSorted = useMemo(() => {
+        const keysSorted = Array.from(effectiveBookedDaysMap.keys()).sort();
 
         const sortedMap  = new Map();
         keysSorted.forEach(key => {
-            sortedMap .set(key, effectiveBookedDaysSet.get(key));
+            sortedMap .set(key, effectiveBookedDaysMap.get(key));
         });
 
         return sortedMap ;
-    }, [effectiveBookedDaysSet])
+    }, [effectiveBookedDaysMap])
 
-    // console.log("effectiveBookedDaysSet:", effectiveBookedDaysSet);
-    // console.log("effectiveBookedDaysSetSorted: ", effectiveBookedDaysSetSorted);
-    const checkOutOnlyDaySet = useDateRangeMap(checkOutOnlyRanges);
-    // console.log("checkOutOnlyDaySet: ", checkOutOnlyDaySet);
-    const notPeakSundaysSet = useDateRangeMap(notPeakSundays);
-    // console.log("notPeakSundaysSet: ", notPeakSundaysSet);
-    const minimumStaySet = useDateRangeMap(currentCalendarValues.minimumStayRanges);
-    //console.log("minimumStaySet: ", minimumStaySet);
-    const peakSeasonSet = useDateRangeMap(peakSeasonRanges);
-    // console.log("peakSeasonSet:", peakSeasonSet);
+    //Create sets for fast lookup of dates by date string
+    // console.log("effectiveBookedDaysMap:", effectiveBookedDaysMap);
+    // console.log("effectiveBookedDaysMapSorted: ", effectiveBookedDaysMapSorted);
+    const checkOutOnlyDayMap = useDateRangeMap(checkOutOnlyRanges);
+    // console.log("checkOutOnlyDayMap: ", checkOutOnlyDayMap);
+    const notPeakSundaysMap = useDateRangeMap(notPeakSundays);
+    // console.log("notPeakSundaysMap: ", notPeakSundaysMap);
+    const minimumStayMap = useDateRangeMap(currentCalendarValues.minimumStayRanges);
+    //console.log("minimumStayMap: ", minimumStayMap);
+    const peakSeasonMap = useDateRangeMap(peakSeasonRanges);
+    // console.log("peakSeasonMap:", peakSeasonMap);
 
     const isDayDisabled = useMemo(() => (day: Date) => {
 
@@ -380,22 +408,22 @@ export const DatePickerWithRange = ( { title, unit, selected, setSelectedDateRan
 
         const dateString = format(day, 'yyyy-MM-dd');
 
-        if (effectiveBookedDaysSetSorted.has(dateString)) return true;
-        if (currentCalendarValues.disableCheckOutOnly && checkOutOnlyDaySet.has(dateString)) return true;
-        if (notPeakSundaysSet.has(dateString)) return true;
-        if (minimumStaySet.has(dateString)) return true;
+        if (effectiveBookedDaysMapSorted.has(dateString)) return true;
+        if (currentCalendarValues.disableCheckOutOnly && checkOutOnlyDayMap.has(dateString)) return true;
+        if (notPeakSundaysMap.has(dateString)) return true;
+        if (minimumStayMap.has(dateString)) return true;
 
         return false;
 
-    }, [effectiveBookedDaysSetSorted, checkOutOnlyDaySet, notPeakSundaysSet, minimumStaySet, currentCalendarValues]);
+    }, [effectiveBookedDaysMapSorted, checkOutOnlyDayMap, notPeakSundaysMap, minimumStayMap, currentCalendarValues.disableCheckOutOnly]);
 
     const modifiers = useMemo(() => ({
-        booked: (day: Date) => effectiveBookedDaysSetSorted.has(format(day, 'yyyy-MM-dd')),
-        checkOutOnly: (day: Date) => checkOutOnlyDaySet.has(format(day, 'yyyy-MM-dd')),
-        saturdayCheckOutOnly: (day: Date) => notPeakSundaysSet.has(format(day, 'yyyy-MM-dd')),
-        minimumStay: (day: Date) => minimumStaySet.has(format(day, 'yyyy-MM-dd')),
-        peak: (day: Date) => peakSeasonSet.has(format(day, 'yyyy-MM-dd')),
-    }), [effectiveBookedDaysSetSorted, checkOutOnlyDaySet, notPeakSundaysSet, minimumStaySet, peakSeasonSet]);
+        booked: (day: Date) => effectiveBookedDaysMapSorted.has(format(day, 'yyyy-MM-dd')),
+        checkOutOnly: (day: Date) => checkOutOnlyDayMap.has(format(day, 'yyyy-MM-dd')),
+        saturdayCheckOutOnly: (day: Date) => notPeakSundaysMap.has(format(day, 'yyyy-MM-dd')),
+        minimumStay: (day: Date) => minimumStayMap.has(format(day, 'yyyy-MM-dd')),
+        peak: (day: Date) => peakSeasonMap.has(format(day, 'yyyy-MM-dd')),
+    }), [effectiveBookedDaysMapSorted, checkOutOnlyDayMap, notPeakSundaysMap, minimumStayMap, peakSeasonMap]);
 
     return (
         <Field className="/*w-60*/ mb-2">
@@ -441,8 +469,8 @@ export const DatePickerWithRange = ( { title, unit, selected, setSelectedDateRan
                         //     saturdayCheckOutOnly: notPeakSundays,
                         // }}
                         modifiersClassNames={{
-                            booked: "[&_button]:line-through opacity-50 text-gray-500 booked",
-                            peak: "text-medium bg-red-100 text-red-600 peak",
+                            booked: "booked",
+                            peak: "peak",
                             checkOutOnly: "checkOutOnly ",
                             minimumStay: "text-green-700 text-small minimumStay",
                             saturdayCheckOutOnly: "saturdayCheckOutOnly",
@@ -456,8 +484,8 @@ export const DatePickerWithRange = ( { title, unit, selected, setSelectedDateRan
                             )
                         }}
                     />
-                    <div className="flex justify-center gap-2 m-2">
-                        <Button variant="outline" size="sm" onClick={() => setOpen(false)}>
+                    <div className="flex justify-center gap-2 mb-2">
+                        <Button variant="outline" size="sm" onClick={() => setTimeout(() => setOpen(false), 100)}>
                             Close
                         </Button>
                         <Button variant="outline" size="sm" onClick={clearSelection}>

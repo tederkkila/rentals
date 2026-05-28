@@ -378,6 +378,14 @@ export interface Rate {
   id: string;
   tenant?: (string | null) | Tenant;
   name: string;
+  /**
+   * If checked, is active in calendar. Inactives still appear on unit page
+   */
+  active?: boolean | null;
+  /**
+   * If checked, overrides 'active' and  will not appear in calendar or unit page
+   */
+  archived?: boolean | null;
   unit: string | Unit;
   price: number;
   priceType: 'night' | 'week' | 'month';
@@ -397,10 +405,37 @@ export interface Peakseason {
   id: string;
   tenant?: (string | null) | Tenant;
   name: string;
+  /**
+   * If checked, is active in calendar. Inactives still appear on unit page
+   */
+  active?: boolean | null;
+  /**
+   * If checked, overrides 'active' and  will not appear in calendar or unit page
+   */
+  archived?: boolean | null;
   unit: string | Unit;
   price: number;
   priceType: 'night' | 'week' | 'month';
   minimumNights: number;
+  color:
+    | 'white'
+    | 'red'
+    | 'orange'
+    | 'amber'
+    | 'yellow'
+    | 'green'
+    | 'emerald'
+    | 'teal'
+    | 'cyan'
+    | 'sky'
+    | 'blue'
+    | 'indigo'
+    | 'violet'
+    | 'purple'
+    | 'fuchsia'
+    | 'pink'
+    | 'rose';
+  colorstep?: ('50' | '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900' | '950') | null;
   startDate: string;
   startDate_tz: SupportedTimezones;
   endDate: string;
@@ -416,10 +451,37 @@ export interface Discount {
   id: string;
   tenant?: (string | null) | Tenant;
   name: string;
+  /**
+   * If checked, is active in calendar. Inactives still appear on unit page
+   */
+  active?: boolean | null;
+  /**
+   * If checked, overrides 'active' and  will not appear in calendar or unit page
+   */
+  archived?: boolean | null;
   unit: string | Unit;
   price: number;
   priceType: 'night' | 'week' | 'month';
   minimumNights: number;
+  color:
+    | 'white'
+    | 'red'
+    | 'orange'
+    | 'amber'
+    | 'yellow'
+    | 'green'
+    | 'emerald'
+    | 'teal'
+    | 'cyan'
+    | 'sky'
+    | 'blue'
+    | 'indigo'
+    | 'violet'
+    | 'purple'
+    | 'fuchsia'
+    | 'pink'
+    | 'rose';
+  colorstep?: ('50' | '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900' | '950') | null;
   startDate: string;
   startDate_tz: SupportedTimezones;
   endDate: string;
@@ -671,6 +733,8 @@ export interface UnitsSelect<T extends boolean = true> {
 export interface RatesSelect<T extends boolean = true> {
   tenant?: T;
   name?: T;
+  active?: T;
+  archived?: T;
   unit?: T;
   price?: T;
   priceType?: T;
@@ -702,10 +766,14 @@ export interface AttractionsSelect<T extends boolean = true> {
 export interface PeakseasonsSelect<T extends boolean = true> {
   tenant?: T;
   name?: T;
+  active?: T;
+  archived?: T;
   unit?: T;
   price?: T;
   priceType?: T;
   minimumNights?: T;
+  color?: T;
+  colorstep?: T;
   startDate?: T;
   startDate_tz?: T;
   endDate?: T;
@@ -720,10 +788,14 @@ export interface PeakseasonsSelect<T extends boolean = true> {
 export interface DiscountsSelect<T extends boolean = true> {
   tenant?: T;
   name?: T;
+  active?: T;
+  archived?: T;
   unit?: T;
   price?: T;
   priceType?: T;
   minimumNights?: T;
+  color?: T;
+  colorstep?: T;
   startDate?: T;
   startDate_tz?: T;
   endDate?: T;

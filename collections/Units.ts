@@ -118,18 +118,27 @@ export const Units: CollectionConfig = {
             type: "join",
             collection: "rates",
             on: "unit",
+            where: {
+                "archived": { not_equals: true },
+            },
         },
         {
             name: 'peakseasons',
             type: "join",
             collection: "peakseasons",
             on: "unit",
+            where: {
+                "archived": { not_equals: true },
+            },
         },
         {
             name: 'discounts',
             type: "join",
             collection: "discounts",
             on: "unit",
+            where: {
+                "archived": { not_equals: true },
+            },
             admin: {
                 description: "Note: Discounts are not yet implemented"
             },
