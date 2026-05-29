@@ -11,6 +11,9 @@
     opacity: 1.0 !important;
 }
 
+.rdp-disabled .day-number {
+    font-weight:300
+}
 .rdp-disabled.rdp-selected {
     opacity: 1.0;
 }
@@ -45,7 +48,7 @@
 .booked .rdp-day_button {
     font-weight: 500;
 }
-.booked button {
+.booked button .day-number {
     text-decoration: line-through
 }
 
@@ -53,4 +56,10 @@
     &:disabled {
         opacity: 90%;
     }
+}
+
+
+.rdp-month_grid {
+    border-collapse: separate !important;
+    border-spacing: 4px; /* Adjust this value for more/less space */
 }

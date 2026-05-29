@@ -4,7 +4,7 @@ import React, { useState, useMemo } from "react"
 import { addDays, subDays, eachWeekOfInterval, format, isAfter, isBefore, isSameDay } from "date-fns"
 import { startOfDay, differenceInDays } from 'date-fns';
 import { CalendarIcon } from "lucide-react"
-import { DateRange, rangeIncludesDate, TZDate  } from "@daypicker/react"
+import { DayPicker, DateRange, rangeIncludesDate, TZDate  } from "@daypicker/react"
 
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
@@ -15,8 +15,11 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { ToolTipDayButton } from "@/modules/ui/ToolTipDayButton";
+import { ToolTipDayButton, CalendarPriceContext } from "@/modules/ui/ToolTipDayButton";
+import { CalendarColorContext, DynamicDay } from "@/modules/ui/DynamicDay"
 import { Discount, Peakseason, Rate, Reservation, Tenant, Unit } from "@/payload-types";
+import { oklab, formatOklab, Oklab } from 'culori'
+
 
 /*const rangeContainsBookingRange = (range: DateRange, bookingRanges: DateRange[]) => {
 
@@ -85,8 +88,6 @@ const processBookedRanges = (bookedRanges: DateRange[], peakSeasonRanges: DateRa
             })
 
         });
-
-
     })
 
     peakSeasonRanges.forEach(peakSeasonRange => {
@@ -112,6 +113,66 @@ const processBookedRanges = (bookedRanges: DateRange[], peakSeasonRanges: DateRa
     });
 
     return [effectiveBookedRanges, checkOutOnlyRanges, initialMinimumStayRanges, notPeakSundays]
+}
+
+const createCalendarInformationMap = (
+    rates: Rate[] | null,
+    peakseasons: Peakseason[] | null,
+    discounts: Discount[] | null,
+    reservations: Reservation[] | null,
+    timeZone: string
+) => {
+
+    const calendarInformationMap: Record<string, any> = {};
+
+    const addDateToCalendarInformationMap = (data: Rate | Peakseason | Discount ) => {
+
+        const startDate = new TZDate(data.startDate, data.startDate_tz);
+        const endDate = new TZDate(data.endDate, data.endDate_tz);
+        const priceType = data.priceType;
+
+        let price: number = 0;
+        if (priceType === 'night') price = data.price;
+        if (priceType === 'week') price = Math.ceil(data.price / 7);
+        if (priceType === 'month') price = Math.ceil(data.price / 28);
+
+        while (startDate <= endDate) {
+            const dateKey = startDate.toISOString().slice(0, 10);
+            calendarInformationMap[dateKey] = {
+                price: price,
+                minimumNights: data.minimumNights,
+            }
+            if ("color" in data && data.color) {
+                calendarInformationMap[dateKey].color = data.color;
+            }
+            if ("colorstep" in data && data.colorstep) {
+                calendarInformationMap[dateKey].colorstep = data.colorstep;
+            }
+            startDate.setDate(startDate.getDate() + 1);
+        }
+
+    }
+
+    //add rate data to calendarInformationMap
+    if (!rates) return calendarInformationMap; //return empty map if no rates
+    rates.forEach((rate: Rate) => {
+        addDateToCalendarInformationMap (rate)
+    })
+
+    if (peakseasons) {
+        peakseasons.forEach((peakseason: Peakseason) => {
+            addDateToCalendarInformationMap (peakseason)
+        })
+    }
+
+    if (discounts) {
+        discounts.forEach((discount: Discount) => {
+            addDateToCalendarInformationMap (discount)
+        })
+    }
+
+
+    return calendarInformationMap;
 }
 
 const calculateNights = (bookedRange: DateRange, peakSeasonRange: DateRange, minimumNights: Record<string, number>) => {
@@ -252,10 +313,15 @@ export const DatePickerWithRange = ( {
         return data
     }, [unit.peakseasons])
 
-
     const [effectiveBookedRanges, checkOutOnlyRanges, initialMinimumStayRanges, notPeakSundays] = useMemo(() => {
         return processBookedRanges(bookedRanges, peakSeasonRanges, minimumNights)
     }, [bookedRanges]); // Only compute once
+
+    const calendarInformationMap = useMemo(() => {
+        return createCalendarInformationMap(unit.rates, unit.peakseasons, unit.discounts, unit.reservations, timeZone)
+    }, [unit.rates, unit.peakseasons, unit.discounts, unit.reservations, timeZone])
+
+    //console.log("calendarInformationMap: ", calendarInformationMap);
 
     //TODO create function to calculate first available check-in date (weekend preferred)
     const [currentCalendarValues, setCurrentCalendarValues ] = useState<handleStateProperties>(
@@ -450,8 +516,10 @@ export const DatePickerWithRange = ( {
                         )}
                     </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="center">
-                    <Calendar
+                <PopoverContent className="w-auto p-4" align="center">
+                    <CalendarColorContext value={calendarInformationMap}>
+                    <CalendarPriceContext value={calendarInformationMap}>
+                    <DayPicker
                         mode="range"
                         fixedWeeks
                         resetOnSelect={true}
@@ -472,18 +540,21 @@ export const DatePickerWithRange = ( {
                             booked: "booked",
                             peak: "peak",
                             checkOutOnly: "checkOutOnly ",
-                            minimumStay: "text-green-700 text-small minimumStay",
+                            minimumStay: "minimumStay",
                             saturdayCheckOutOnly: "saturdayCheckOutOnly",
                         }}
                         numberOfMonths={1}
                         onSelect={handleSelect}
                         showOutsideDays={false}
                         components={{
+                            Day: DynamicDay,
                             DayButton: (props) => (
                                 <ToolTipDayButton {...props} />
                             )
                         }}
                     />
+                    </CalendarPriceContext>
+                    </CalendarColorContext>
                     <div className="flex justify-center gap-2 mb-2">
                         <Button variant="outline" size="sm" onClick={() => setTimeout(() => setOpen(false), 100)}>
                             Close

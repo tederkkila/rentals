@@ -1,8 +1,11 @@
-import React from "react"
+import React, { createContext, useContext } from "react"
 import { CalendarDayButton } from "@/components/ui/calendar"
+import {DayButton} from "@daypicker/react";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/modules/units/ui/components/tooltip"
 
-type ToolTipDayButtonProps = React.ComponentProps<typeof CalendarDayButton>
+export const CalendarPriceContext = createContext<Record<string, string>>({});
+
+type ToolTipDayButtonProps = React.ComponentProps<typeof DayButton>
 
 export const ToolTipDayButton = ({
     modifiers,
@@ -30,17 +33,28 @@ export const ToolTipDayButton = ({
         }
     }
 
+    const rateData = useContext(CalendarPriceContext);
+    const dateString = day.date.toISOString().split("T")[0];
+    //console.log("dateString", dateString);
+    const data = rateData[dateString];
+
+    const price = ("price" in data && data.price) ? data.price : ""
+    const color = ("color" in data && data.color) ? data.color : "gray"
+    const colorstep = ("colorstep" in data && data.colorstep) ? data.colorstep : ""
+
     return (
         <TooltipProvider>
             <Tooltip>
                 <TooltipTrigger asChild>
-                <span className="inline-block w-fit">
-                    <CalendarDayButton {...buttonProps} day={day} modifiers={modifiers}>
+                <span className="inline-block w-fit test">
+                    <DayButton {...buttonProps} day={day} modifiers={modifiers}>
+                        <div className="block">
                         <div className="day-number">{day.date.getDate()}</div>
-                        {/*<div className="day-price" style={{ fontSize: '0.7em', color: 'green', marginTop: '-8px' }}>*/}
-                        {/*  {"$375"}*/}
-                        {/*</div>*/}
-                    </CalendarDayButton>
+                        <div className="day-price" style={{ fontSize: '10px', fontWeight: '300', color: 'black', marginTop: '-2px' }}>
+                          {price}
+                        </div>
+                        </div>
+                    </DayButton>
                 </span>
                 </TooltipTrigger>
                 {tooltipText && (

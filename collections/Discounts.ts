@@ -79,6 +79,7 @@ export const Discounts: CollectionConfig = {
                         {label: 'Orange', value: 'orange'},
                         {label: 'Amber', value: 'amber'},
                         {label: 'Yellow', value: 'yellow'},
+                        {label: 'Lime', value: 'lime'},
                         {label: 'Green', value: 'green'},
                         {label: 'Emerald', value: 'emerald'},
                         {label: 'Teal', value: 'teal'},
