@@ -11,7 +11,7 @@ export const CalendarColorContext = createContext<Record<string, DayDataConfig>>
 export function DynamicDay(props: DayProps) {
     // Extract date and internal children (the DayButton) from props
     const { day, modifiers, children, ...tdProps } = props;
-    const {disabled} = modifiers;
+    //const { disabled } = modifiers;
     // Consume your dynamic hex color data mapping
     const rateData: Record<string, DayDataConfig> = useContext(CalendarColorContext);
 
@@ -35,7 +35,7 @@ export function DynamicDay(props: DayProps) {
         //console.log("value", value)
 
         const okLCH = new Color(value).oklch;
-        let {l, c, h} = okLCH;
+        // let {l, c, h} = okLCH;
         // l = l * (colorstep * 0.01);
         //console.log("okLCH", Math.round(l * 1000)/1000, Math.round(c * 1000)/1000, Math.round(h * 1000)/1000)
 

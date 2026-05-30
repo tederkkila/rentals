@@ -7,7 +7,6 @@ import { CalendarIcon } from "lucide-react"
 import { DayPicker, DateRange, rangeIncludesDate, TZDate  } from "@daypicker/react"
 
 import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
 import { Field, FieldLabel } from "@/components/ui/field"
 
 import {

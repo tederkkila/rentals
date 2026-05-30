@@ -1,5 +1,4 @@
 import React, { createContext, useContext } from "react"
-import { CalendarDayButton } from "@/components/ui/calendar"
 import {DayButton} from "@daypicker/react";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/modules/units/ui/components/tooltip"
 import { type DayDataConfig } from "@/modules/ui/DayDataConfig";
@@ -13,7 +12,7 @@ export const ToolTipDayButton = ({
     day,
     ...buttonProps
 }: ToolTipDayButtonProps) => {
-    const { outside, disabled, booked, checkOutOnly, minimumStay, peak, saturdayCheckOutOnly } = modifiers;
+    const { disabled, booked, checkOutOnly, minimumStay, peak, saturdayCheckOutOnly } = modifiers;
 
     //console.log("disabled", disabled.toString())
 
@@ -48,8 +47,8 @@ export const ToolTipDayButton = ({
     const data = rateData[dateString];
 
     const price = ("price" in data && data.price) ? data.price : ""
-    const color = ("color" in data && data.color) ? data.color : "gray"
-    const colorstep = ("colorstep" in data && data.colorstep) ? data.colorstep : ""
+    //const color = ("color" in data && data.color) ? data.color : "gray"
+    //const colorstep = ("colorstep" in data && data.colorstep) ? data.colorstep : ""
 
     return (
         <TooltipProvider>
