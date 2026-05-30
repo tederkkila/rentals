@@ -1,20 +1,24 @@
 import { createContext, useContext } from "react";
 import { type DayProps } from "@daypicker/react";
 import Color from 'colorjs.io'
+import { type DayDataConfig } from "@/modules/ui/DayDataConfig";
 
 // Structure: { "2026-05-28": {color: "#ff5733"} }
-export const CalendarColorContext = createContext<Record<string, string>>({});
+export const CalendarColorContext = createContext<Record<string, DayDataConfig>>({});
+
+
 
 export function DynamicDay(props: DayProps) {
     // Extract date and internal children (the DayButton) from props
     const { day, modifiers, children, ...tdProps } = props;
     const {disabled} = modifiers;
     // Consume your dynamic hex color data mapping
-    const rateData = useContext(CalendarColorContext);
+    const rateData: Record<string, DayDataConfig> = useContext(CalendarColorContext);
 
     const dateString = day.date.toISOString().split("T")[0];
-    const data = rateData[dateString];
+    const data: DayDataConfig = rateData[dateString];
     const color = ("color" in data && data.color) ? data.color : null
+
     const colorstep = ("colorstep" in data && data.colorstep) ? data.colorstep : ""
 
     let bgColor = "transparent";
@@ -51,7 +55,7 @@ export function DynamicDay(props: DayProps) {
         backgroundColor: bgColor || "transparent",
         outlineColor: borderColor || "transparent",
         outlineWidth: "thin",
-        outlineStyle: "solid",
+        outlineStyle: "solid" as const,
         borderRadius: "4px",
     };
 

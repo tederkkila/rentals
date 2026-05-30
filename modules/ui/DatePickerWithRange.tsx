@@ -18,7 +18,7 @@ import {
 import { ToolTipDayButton, CalendarPriceContext } from "@/modules/ui/ToolTipDayButton";
 import { CalendarColorContext, DynamicDay } from "@/modules/ui/DynamicDay"
 import { Discount, Peakseason, Rate, Reservation, Tenant, Unit } from "@/payload-types";
-import { oklab, formatOklab, Oklab } from 'culori'
+import { type DayDataConfig } from "@/modules/ui/DayDataConfig";
 
 
 /*const rangeContainsBookingRange = (range: DateRange, bookingRanges: DateRange[]) => {
@@ -333,7 +333,7 @@ export const DatePickerWithRange = ( {
         return processBookedRanges(bookedRanges, peakSeasonRanges, minimumNights)
     }, [bookedRanges]); // Only compute once
 
-    const calendarInformationMap = useMemo(() => {
+    const calendarInformationMap: Record<string, DayDataConfig> = useMemo(() => {
         return createCalendarInformationMap(unit.rates, unit.peakseasons, unit.discounts, unit.reservations, timeZone)
     }, [unit.rates, unit.peakseasons, unit.discounts, unit.reservations, timeZone])
 
@@ -500,10 +500,10 @@ export const DatePickerWithRange = ( {
 
         return false;
 
-    }, [effectiveBookedDaysMapSorted, checkOutOnlyDayMap, notPeakSundaysMap, minimumStayMap, currentCalendarValues.disableCheckOutOnly]);
+    }, [effectiveBookedDaysMapSorted, fullBookedMap, checkOutOnlyDayMap, notPeakSundaysMap, minimumStayMap, currentCalendarValues.disableCheckOutOnly]);
 
     const modifiers = useMemo(() => ({
-        booked: (day: Date) => effectiveBookedDaysMapSorted.has(format(day, 'yyyy-MM-dd')),
+        booked: (day: Date) => effectiveBookedDaysMapSorted.has(format(day, 'yyyy-MM-dd')) || fullBookedMap.has(format(day, 'yyyy-MM-dd')),
         checkOutOnly: (day: Date) => checkOutOnlyDayMap.has(format(day, 'yyyy-MM-dd')),
         saturdayCheckOutOnly: (day: Date) => notPeakSundaysMap.has(format(day, 'yyyy-MM-dd')),
         minimumStay: (day: Date) => minimumStayMap.has(format(day, 'yyyy-MM-dd')),

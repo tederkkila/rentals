@@ -2,8 +2,9 @@ import React, { createContext, useContext } from "react"
 import { CalendarDayButton } from "@/components/ui/calendar"
 import {DayButton} from "@daypicker/react";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/modules/units/ui/components/tooltip"
+import { type DayDataConfig } from "@/modules/ui/DayDataConfig";
 
-export const CalendarPriceContext = createContext<Record<string, string>>({});
+export const CalendarPriceContext = createContext<Record<string, DayDataConfig>>({});
 
 type ToolTipDayButtonProps = React.ComponentProps<typeof DayButton>
 
