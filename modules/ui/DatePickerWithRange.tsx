@@ -293,9 +293,9 @@ export const DatePickerWithRange = ( {
         return unit.tenant?.timezone ?? 'America/New_York';
     }, [])
     //console.log("timeZone: ", timeZone);
-    //TODO Make set of rates for each date in year
-    //TODO Make set of minimum nights for each date in year
-    const minimumNights: Record<string, number> = {offPeak: 2, peak: 7};
+
+    //TODO Remove this next line
+    const minimumNights: Record<string, number> = {offPeak: 3, peak: 7};
 
     //production will have no range selected to start
     const bookedRanges: DateRange[] = useMemo(() => {
@@ -331,6 +331,8 @@ export const DatePickerWithRange = ( {
     const [effectiveBookedRanges, checkOutOnlyRanges, initialMinimumStayRanges, notPeakSundays, fullBookedRanges] = useMemo(() => {
         return processBookedRanges(bookedRanges, peakSeasonRanges, minimumNights)
     }, [bookedRanges]); // Only compute once
+
+    console.log("initialMinimumStayRanges: ", initialMinimumStayRanges);
 
     const calendarInformationMap: Record<string, DayDataConfig> = useMemo(() => {
         return createCalendarInformationMap(unit.rates, unit.peakseasons, unit.discounts, unit.reservations, timeZone)
@@ -381,7 +383,7 @@ export const DatePickerWithRange = ( {
                     minimumStayRanges: initialMinimumStayRanges, //reset to initial values
                     disableCheckOutOnly: true,
                 }));
-                setTimeout(() => setOpen(false), 500)
+                setTimeout(() => setOpen(false), 1000)
 
             } else {
                 //if the same day is selected, clear the selection

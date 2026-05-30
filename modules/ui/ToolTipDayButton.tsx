@@ -34,8 +34,10 @@ export const ToolTipDayButton = ({
             } else  if (minimumStay) {
                 if (peak) {
                     tooltipText = "< peak night min";
+                    showPrice = true;
                 } else {
                     tooltipText = "< night min";
+                    showPrice = true;
                 }
             }
         }

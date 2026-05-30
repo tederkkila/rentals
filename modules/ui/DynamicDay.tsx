@@ -11,7 +11,7 @@ export const CalendarColorContext = createContext<Record<string, DayDataConfig>>
 export function DynamicDay(props: DayProps) {
     // Extract date and internal children (the DayButton) from props
     const { day, modifiers, children, ...tdProps } = props;
-    //const { disabled } = modifiers;
+    const { range_start, range_middle, range_end } = modifiers;
     // Consume your dynamic hex color data mapping
     const rateData: Record<string, DayDataConfig> = useContext(CalendarColorContext);
 
@@ -21,7 +21,7 @@ export function DynamicDay(props: DayProps) {
 
     const colorstep = ("colorstep" in data && data.colorstep) ? data.colorstep : ""
 
-    let bgColor = "transparent";
+    let bgColor = "";
     let borderColor = "var(--color-neutral-200)";
 
     if (color) {
@@ -49,15 +49,46 @@ export function DynamicDay(props: DayProps) {
     // Intercept the inline styles to apply your dynamic background color
     //console.log("props.style", props.style);
     //console.log("className:", props.className);
-
-    const cellStyle = {
+    let cellStyle = {
         ...props.style,
-        backgroundColor: bgColor || "transparent",
-        outlineColor: borderColor || "transparent",
-        outlineWidth: "thin",
-        outlineStyle: "solid" as const,
-        borderRadius: "4px",
-    };
+    }
+
+    if (!range_middle && !range_start && !range_end) {
+        cellStyle = {
+            ...cellStyle,
+            backgroundColor: bgColor || "",
+            outlineColor: borderColor || "transparent",
+            outlineWidth: "thin",
+            outlineStyle: "solid" as const,
+            borderRadius: "4px",
+        };
+    } else {
+        cellStyle = {
+            ...cellStyle,
+            borderColor: 'black',
+            borderWidth: '1px',
+            borderStyle: 'solid' as const,
+        }
+        if (range_start){
+            cellStyle = {
+                ...cellStyle,
+                borderRadius: "50% 0 0 50%",
+                borderRightColor : "transparent",
+            }
+        } else if (range_middle) {
+            cellStyle = {
+                ...cellStyle,
+                borderRightColor:"transparent",
+                borderLeftColor:"transparent",
+            }
+        } else if (range_end) {
+            cellStyle = {
+                ...cellStyle,
+                borderRadius: "0 50% 50% 0",
+                borderLeftColor : "transparent",
+            }
+        }
+    }
 
     return (
         <td {...tdProps} style={cellStyle} /*className={updatedClassName}*/ >

@@ -63,3 +63,6 @@
     border-collapse: separate !important;
     border-spacing: 4px; /* Adjust this value for more/less space */
 }
+:is(.rdp-range_start, .rdp-range_end) .rdp-day_button .day-price {
+    color: white !important;
+}
