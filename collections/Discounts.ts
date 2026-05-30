@@ -119,6 +119,7 @@ export const Discounts: CollectionConfig = {
         {
             name: "startDate",
             type: "date",
+            index: true,
             required: true,
             timezone: {
                 defaultTimezone: 'America/New_York',

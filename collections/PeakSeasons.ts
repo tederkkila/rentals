@@ -119,6 +119,7 @@ export const PeakSeasons: CollectionConfig = {
         {
             name: "startDate",
             type: "date",
+            index: true,
             required: true,
             timezone: true,
             admin: {

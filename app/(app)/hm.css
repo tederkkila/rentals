@@ -3,7 +3,7 @@
     --rdp-accent-background-color: #f0f0f0; /* Change the accent background color. */
     /* Add more CSS variables here. */
     --rdp-disabled-opacity: 0.5; /* The opacity of the disabled days. */
-    --rdp-outside-opacity: 0.3; /* The opacity of the days outside the current month. */
+    --rdp-outside-opacity: 0.2; /* The opacity of the days outside the current month. */
     /*--rdp-selected-border: 2px solid var(--rdp-accent-color); !* The border of the selected days. *!*/
 }
 

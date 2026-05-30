@@ -38,28 +38,44 @@ import { oklab, formatOklab, Oklab } from 'culori'
     return bookingsOverlap
 }*/
 
-const processBookedRanges = (bookedRanges: DateRange[], peakSeasonRanges: DateRange[], minimumNights: Record<string, number>): [DateRange[], DateRange[], DateRange[], DateRange[]] => {
+const processBookedRanges = (bookedRanges: DateRange[], peakSeasonRanges: DateRange[], minimumNights: Record<string, number>): [DateRange[], DateRange[], DateRange[], DateRange[], DateRange[] ] => {
 
     let effectiveBookedRanges: DateRange[] = []
     let checkOutOnlyRanges: DateRange[] = []
+    let fullBookedRanges: DateRange[] = []
     let initialMinimumStayRanges: DateRange[] = []
     let notPeakSundays: DateRange[] = []
+    const checkedOutDays = new Set<string>()
 
     bookedRanges.forEach((bookedRange: DateRange) => {
 
         if (bookedRange.from && bookedRange.to) {
 
+            const fromTZDate = bookedRange.from as TZDate
+            const toTZDate = bookedRange.to as TZDate
+
             effectiveBookedRanges.push({
-                from: addDays(bookedRange.from as TZDate, 1) as TZDate,
-                to:   subDays(bookedRange.to as TZDate, 1) as TZDate
+                from: addDays(fromTZDate, 1) as TZDate,
+                to:   subDays(toTZDate, 1) as TZDate,
             });
 
-            checkOutOnlyRanges.push({
-                from: bookedRange.from as TZDate,
-                to: bookedRange.from as TZDate
-            });
+            const fromTZString = fromTZDate.toISOString().split('T')[0]
+
+            if (!checkedOutDays.has(fromTZString)) {
+                checkOutOnlyRanges.push({
+                    from: fromTZDate,
+                    to: fromTZDate,
+                });
+            } else {
+                fullBookedRanges.push({
+                    from: fromTZDate,
+                    to: fromTZDate,
+                })
+            }
+
+            checkedOutDays.add(toTZDate.toISOString().split('T')[0])
+
         }
-
 
         peakSeasonRanges.forEach(peakSeasonRange => {
             bookedRanges.forEach(bookedRange => {
@@ -112,7 +128,7 @@ const processBookedRanges = (bookedRanges: DateRange[], peakSeasonRanges: DateRa
 
     });
 
-    return [effectiveBookedRanges, checkOutOnlyRanges, initialMinimumStayRanges, notPeakSundays]
+    return [effectiveBookedRanges, checkOutOnlyRanges, initialMinimumStayRanges, notPeakSundays, fullBookedRanges]
 }
 
 const createCalendarInformationMap = (
@@ -313,7 +329,7 @@ export const DatePickerWithRange = ( {
         return data
     }, [unit.peakseasons])
 
-    const [effectiveBookedRanges, checkOutOnlyRanges, initialMinimumStayRanges, notPeakSundays] = useMemo(() => {
+    const [effectiveBookedRanges, checkOutOnlyRanges, initialMinimumStayRanges, notPeakSundays, fullBookedRanges] = useMemo(() => {
         return processBookedRanges(bookedRanges, peakSeasonRanges, minimumNights)
     }, [bookedRanges]); // Only compute once
 
@@ -466,6 +482,8 @@ export const DatePickerWithRange = ( {
     //console.log("minimumStayMap: ", minimumStayMap);
     const peakSeasonMap = useDateRangeMap(peakSeasonRanges);
     // console.log("peakSeasonMap:", peakSeasonMap);
+    const fullBookedMap = useDateRangeMap(fullBookedRanges);
+    // console.log("fullBookedMap:", fullBookedMap);
 
     const isDayDisabled = useMemo(() => (day: Date) => {
 
@@ -475,6 +493,7 @@ export const DatePickerWithRange = ( {
         const dateString = format(day, 'yyyy-MM-dd');
 
         if (effectiveBookedDaysMapSorted.has(dateString)) return true;
+        if (fullBookedMap.has(dateString)) return true;
         if (currentCalendarValues.disableCheckOutOnly && checkOutOnlyDayMap.has(dateString)) return true;
         if (notPeakSundaysMap.has(dateString)) return true;
         if (minimumStayMap.has(dateString)) return true;

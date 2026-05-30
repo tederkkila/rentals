@@ -32,6 +32,7 @@ export const Reservations: CollectionConfig = {
         {
             name: 'startDate',
             type: 'date',
+            index: true,
             timezone: true,
             required: true,
             admin: {

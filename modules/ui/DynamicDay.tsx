@@ -7,8 +7,8 @@ export const CalendarColorContext = createContext<Record<string, string>>({});
 
 export function DynamicDay(props: DayProps) {
     // Extract date and internal children (the DayButton) from props
-    const { day, children, ...tdProps } = props;
-
+    const { day, modifiers, children, ...tdProps } = props;
+    const {disabled} = modifiers;
     // Consume your dynamic hex color data mapping
     const rateData = useContext(CalendarColorContext);
 
@@ -18,22 +18,22 @@ export function DynamicDay(props: DayProps) {
     const colorstep = ("colorstep" in data && data.colorstep) ? data.colorstep : ""
 
     let bgColor = "transparent";
-    let borderColor = "transparent";
+    let borderColor = "var(--color-neutral-200)";
 
     if (color) {
-        console.log("color", color)
+        //console.log("color", color)
 
         const colorVarName = `--color-${color}-${colorstep}`;
-        console.log("colorVarName", colorVarName)
+        //console.log("colorVarName", colorVarName)
         const value = getComputedStyle(document.documentElement)
             .getPropertyValue(colorVarName)
             .trim();
-        console.log("value", value)
+        //console.log("value", value)
 
         const okLCH = new Color(value).oklch;
         let {l, c, h} = okLCH;
         // l = l * (colorstep * 0.01);
-        console.log("okLCH", Math.round(l * 1000)/1000, Math.round(c * 1000)/1000, Math.round(h * 1000)/1000)
+        //console.log("okLCH", Math.round(l * 1000)/1000, Math.round(c * 1000)/1000, Math.round(h * 1000)/1000)
 
         bgColor = `var(${colorVarName})`;
         borderColor = `var(--color-${color}-300)`;

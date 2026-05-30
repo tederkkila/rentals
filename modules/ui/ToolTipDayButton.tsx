@@ -12,17 +12,25 @@ export const ToolTipDayButton = ({
     day,
     ...buttonProps
 }: ToolTipDayButtonProps) => {
-    const { booked, checkOutOnly, minimumStay, peak, saturdayCheckOutOnly } = modifiers;
+    const { outside, disabled, booked, checkOutOnly, minimumStay, peak, saturdayCheckOutOnly } = modifiers;
+
+    //console.log("disabled", disabled.toString())
 
     let tooltipText = "";
+    let showPrice = true;
+    if (disabled) showPrice = false
+
     if (booked) {
         tooltipText = "Booked";
+        showPrice = false;
     } else {
         if (checkOutOnly) {
             tooltipText = "Checkout Only";
+            showPrice = true;
         } else {
             if (saturdayCheckOutOnly) {
                 tooltipText = "Sat. Check in/out";
+                showPrice = true;
             } else  if (minimumStay) {
                 if (peak) {
                     tooltipText = "< peak night min";
@@ -50,9 +58,11 @@ export const ToolTipDayButton = ({
                     <DayButton {...buttonProps} day={day} modifiers={modifiers}>
                         <div className="block">
                         <div className="day-number">{day.date.getDate()}</div>
-                        <div className="day-price" style={{ fontSize: '10px', fontWeight: '300', color: 'black', marginTop: '-2px' }}>
-                          {price}
-                        </div>
+                            {showPrice &&
+                                <div className="day-price" style={{ fontSize: '10px', fontWeight: '300', color: 'gray', marginTop: '-2px' }}>
+                                  {price}
+                                </div>
+                            }
                         </div>
                     </DayButton>
                 </span>
