@@ -17,7 +17,7 @@ import {
 import { ToolTipDayButton, CalendarPriceContext } from "@/modules/ui/ToolTipDayButton";
 import { CalendarColorContext, DynamicDay } from "@/modules/ui/DynamicDay"
 import { Discount, Peakseason, Rate, Reservation, Tenant, Unit } from "@/payload-types";
-import { type DayDataConfig } from "@/modules/ui/DayDataConfig";
+import { type DayDataConfig } from "@/modules/ui/calendarTypes";
 
 
 /*const rangeContainsBookingRange = (range: DateRange, bookingRanges: DateRange[]) => {
@@ -194,6 +194,11 @@ const createCalendarInformationMap = (
     }
 
 
+    //TODO Sort entries
+    // const sortedEntries = Object.entries(calendarInformationMap).sort(([dateA], [dateB]) => {
+    //     return new Date(dateA).getTime() - new Date(dateB).getTime();
+    // });
+
     return [calendarInformationMap, maxMiniumNights];
 }
 
@@ -366,8 +371,16 @@ export const DatePickerWithRange = ( {
     const [calendarInformationMap, maxMinimumNights] = useMemo(() => {
         return createCalendarInformationMap(unit.rates, unit.peakseasons, unit.discounts, unit.reservations, timeZone)
     }, [unit.rates, unit.peakseasons, unit.discounts, unit.reservations, timeZone])
+    //console.log("calendarInformationMap: ", JSON.stringify(calendarInformationMap));
 
-    //console.log("calendarInformationMap: ", calendarInformationMap);
+    //Determine the last date to display in the calendar
+    let lastDate: Date | string | undefined = Object.keys(calendarInformationMap).at(-1);
+    if (lastDate === undefined) {
+        //there is an issue with the calendarInformationMap, so use today's date as the last date'
+        const today = TZDate.tz(timeZone);
+        lastDate = today.toISOString().split('T')[0];
+    }
+    lastDate = TZDate.tz(timeZone, lastDate as string);
 
     const [effectiveBookedRanges, checkOutOnlyRanges, initialMinimumStayRanges, notPeakSundays, fullBookedRanges] = useMemo(() => {
         return processBookedRanges(bookedRanges, peakSeasonRanges, minimumNights)
@@ -453,17 +466,21 @@ export const DatePickerWithRange = ( {
 
             //get the value of the first night
             const firstNightMinimumNights = Object.values(dateMatrix)[0].minimumNights;
-            console.log("firstNightMinimumNights: ", firstNightMinimumNights);
+            // console.log("firstNightMinimumNights: ", firstNightMinimumNights);
 
             let effectiveMinimumNights = firstNightMinimumNights;
-            //check first night plus this value dates for higher min
-            for (let i = 1; i <= firstNightMinimumNights; i++) {
-                console.log(Object.values(dateMatrix)[i])
+            const mapSize: number = Object.keys(dateMatrix).length;
+            const previewDays = Math.min(mapSize, effectiveMinimumNights) - 1;
+            // console.log("previewDays: ", previewDays);
+
+            //check first night plus this number of nights dates for higher min
+            for (let i = 1; i <= previewDays; i++) {
+                // console.log(Object.values(dateMatrix)[i])
                 if (Object.values(dateMatrix)[i].minimumNights > effectiveMinimumNights) {
                     effectiveMinimumNights = Object.values(dateMatrix)[i].minimumNights;
                 }
             }
-            console.log("effectiveMinimumNights: ", effectiveMinimumNights);
+            // console.log("effectiveMinimumNights: ", effectiveMinimumNights);
 
             //const nights = calculateMinimumNights(newRange, peakSeasonRanges[0], minimumNights)
             //find the next effective booking date from a set of dates
@@ -613,6 +630,7 @@ export const DatePickerWithRange = ( {
                         resetOnSelect={true}
                         timeZone={timeZone}
                         startMonth={new Date()}
+                        endMonth={lastDate}
                         defaultMonth={currentCalendarValues.selectedRange?.from}
                         selected={currentCalendarValues.selectedRange}
                         disabled={isDayDisabled}

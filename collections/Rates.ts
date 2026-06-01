@@ -66,6 +66,7 @@ export const Rates: CollectionConfig = {
             name: "startDate",
             type: "date",
             required: true,
+            index: true,
             timezone: true,
             admin: {
                 date: {

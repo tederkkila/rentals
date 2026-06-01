@@ -18,6 +18,10 @@
     opacity: 1.0;
 }
 
+.textContrast {
+    color: white;
+}
+
 /*.rdp-range_start.peak .rdp-day_button {*/
 /*    !*background-color: var(--rdp-range_start-date-background-color);*!*/
 /*    background-color: darkred;*/
