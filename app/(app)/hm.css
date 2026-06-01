@@ -2,7 +2,7 @@
     --rdp-accent-color: blue; /* Change the accent color to indigo. */
     --rdp-accent-background-color: #f0f0f0; /* Change the accent background color. */
     /* Add more CSS variables here. */
-    --rdp-disabled-opacity: 0.5; /* The opacity of the disabled days. */
+    --rdp-disabled-opacity: 0.6; /* The opacity of the disabled days. */
     --rdp-outside-opacity: 0.2; /* The opacity of the days outside the current month. */
     /*--rdp-selected-border: 2px solid var(--rdp-accent-color); !* The border of the selected days. *!*/
 }
@@ -18,25 +18,21 @@
     opacity: 1.0;
 }
 
-.rdp-range_start.peak .rdp-day_button {
-    /*background-color: var(--rdp-range_start-date-background-color);*/
-    background-color: darkred;
-    color: var(--rdp-range_start-color);
-}
+/*.rdp-range_start.peak .rdp-day_button {*/
+/*    !*background-color: var(--rdp-range_start-date-background-color);*!*/
+/*    background-color: darkred;*/
+/*    color: var(--rdp-range_start-color);*/
+/*}*/
 
-.rdp-range_end.peak .rdp-day_button  {
-    color: var(--rdp-range_start-color);
-    /*background-color: var(--rdp-range_end-date-background-color);*/
-    background-color: darkred;
-}
+/*.rdp-range_end.peak .rdp-day_button  {*/
+/*    color: var(--rdp-range_start-color);*/
+/*    !*background-color: var(--rdp-range_end-date-background-color);*!*/
+/*    background-color: darkred;*/
+/*}*/
 
-.rdp-selected.peak .rdp-day_button {
-    border: red;
-}
-
-.rdp-range_middle {
-    border:red
-}
+/*.rdp-selected.peak .rdp-day_button {*/
+/*    border: red;*/
+/*}*/
 
 .rdp-day_button {
     font-weight: 700;

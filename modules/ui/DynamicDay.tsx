@@ -11,7 +11,7 @@ export const CalendarColorContext = createContext<Record<string, DayDataConfig>>
 export function DynamicDay(props: DayProps) {
     // Extract date and internal children (the DayButton) from props
     const { day, modifiers, children, ...tdProps } = props;
-    const { range_start, range_middle, range_end } = modifiers;
+    const { booked, range_start, range_middle, range_end } = modifiers;
     // Consume your dynamic hex color data mapping
     const rateData: Record<string, DayDataConfig> = useContext(CalendarColorContext);
 
@@ -40,7 +40,9 @@ export function DynamicDay(props: DayProps) {
         //console.log("okLCH", Math.round(l * 1000)/1000, Math.round(c * 1000)/1000, Math.round(h * 1000)/1000)
 
         bgColor = `var(${colorVarName})`;
-        borderColor = `var(--color-${color}-300)`;
+        const colorStepNumber = colorstep as unknown as number;
+        const borderColorStep = (colorStepNumber <= 700) ? colorStepNumber + 200 : 950;
+        borderColor = `var(--color-${color}-${borderColorStep})`;
     }
 
 
@@ -57,15 +59,29 @@ export function DynamicDay(props: DayProps) {
         cellStyle = {
             ...cellStyle,
             backgroundColor: bgColor || "",
-            outlineColor: borderColor || "transparent",
-            outlineWidth: "thin",
-            outlineStyle: "solid" as const,
             borderRadius: "4px",
-        };
+
+        }
+        if (!booked) {
+            cellStyle = {
+                ...cellStyle,
+                outlineColor: borderColor || "transparent",
+                outlineWidth: "thin",
+                outlineStyle: "solid" as const,
+
+            };
+        } else {
+            cellStyle = {
+                ...cellStyle,
+                opacity: 0.3,
+            }
+        }
+
+
     } else {
         cellStyle = {
             ...cellStyle,
-            borderColor: 'black',
+            borderColor: 'blue',
             borderWidth: '1px',
             borderStyle: 'solid' as const,
         }

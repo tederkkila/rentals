@@ -13,6 +13,11 @@ export const Tenants: CollectionConfig = {
     admin: {
         useAsTitle: 'slug',
     },
+    defaultPopulate: {
+        attractions: false,
+        content: false,
+        contact: false,
+    },
     fields: [
         {
             name: "name",
@@ -32,6 +37,15 @@ export const Tenants: CollectionConfig = {
             admin: {
                 description:
                     "This is the subdomain for the location (e.g. [slug].henrymitchell.net)",
+            },
+        },
+        {
+            name: "tax",
+            type: "number",
+            required: true,
+            defaultValue: 0,
+            admin: {
+                description: "This is the tax rate for the location",
             },
         },
         {

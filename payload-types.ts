@@ -144,6 +144,10 @@ export interface Tenant {
    */
   slug: string;
   /**
+   * This is the tax rate for the location
+   */
+  tax: number;
+  /**
    * This is the timezone for the location
    */
   timezone: 'America/New_York' | 'America/Vancouver' | 'Pacific/Honolulu';
@@ -691,6 +695,7 @@ export interface ReservationsSelect<T extends boolean = true> {
 export interface TenantsSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
+  tax?: T;
   timezone?: T;
   icon?: T;
   image?: T;

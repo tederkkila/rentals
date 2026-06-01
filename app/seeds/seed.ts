@@ -387,12 +387,14 @@ const seed = async () => {
 
         const tenant = await payload.create({
             collection: "tenants",
+            draft: false,
             data: {
                 name: location.name,
                 slug: location.slug,
                 timezone: location.timezone,
                 icon: tenantIcon.id,
                 image: tenantIcon.id,
+                tax: 0,
             },
         });
 

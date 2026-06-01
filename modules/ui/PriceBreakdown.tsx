@@ -3,15 +3,51 @@ import {
     CollapsibleContent,
     CollapsibleTrigger,
 } from "@/components/ui/collapsible"
+import React, {useEffect} from "react";
 
 interface PriceBreakdownProps {
-    prices: Record<string, Record<string, any>>;
-    taxes: Record<string, number>;
+    dateMatrix: Record<string, any>;
+    tax: number;
+    setQuote: (quote: number) => void;
 }
 
-export default function PriceBreakdown() {
+export default function PriceBreakdown({ dateMatrix, tax, setQuote }: PriceBreakdownProps) {
 
-    const totalNights = 3;
+    //console.log(dateMatrix);
+    //console.log(tax);
+
+    const priceCounts: Record<number, number> = {};
+    for (const date in dateMatrix) {
+        const price = dateMatrix[date].price;
+        priceCounts[price] = (priceCounts[price] || 0) + 1;
+    }
+
+    let totalPrice = 0;
+    let totalNights = 0;
+
+
+    const priceComponents: React.ReactNode[] = Object.entries(priceCounts).map(([ key, count ]) => {
+        let price: number = parseInt(key);
+        totalPrice += price * count;
+        totalNights += count;
+        return (
+            <PriceLine
+                key={key}
+                title={`$${key} x ${count} night(s)`}
+                amount={price * count}
+            />
+
+        );
+    });
+
+    const totalTaxes = Math.round(totalPrice * tax);
+    totalPrice += totalTaxes;
+
+    useEffect(() => {
+        // console.log("totalPrice: " + totalPrice);
+        setQuote(totalPrice);
+    }, [dateMatrix]);
+
 
     return (
         <Collapsible className="text-sm text-gray-600 mb-2 mt-0 bg-gray-100 p-2">
@@ -33,20 +69,29 @@ export default function PriceBreakdown() {
             </CollapsibleTrigger>
 
             <CollapsibleContent className="mt-2">
-                <div className="flex nowrap justify-between">
-                    <span>{totalNights} nights x $300.00</span>
-                    <span>$3000.00</span>
-                </div>
-                <div className="flex nowrap justify-between border-b-2 pb-1">
-                    <span>Taxes</span>
-                    <span>$300.00</span>
-                </div>
+                {priceComponents}
+                <PriceLine title="Taxes" amount={totalTaxes} />
+
             </CollapsibleContent>
 
             <div className="flex nowrap justify-between font-bold mt-1">
-                <span>Total</span>
-                <span>$300.00</span>
+                <span>{totalNights} night Total</span>
+                <span>${totalPrice}</span>
             </div>
         </Collapsible>
     );
+}
+
+interface PriceLineProps {
+    title: string;
+    amount: number;
+}
+
+const PriceLine = ({title, amount}: PriceLineProps) => {
+    return (
+        <div className="flex nowrap justify-between">
+            <span>{title}</span>
+            <span>${amount}</span>
+        </div>
+    )
 }

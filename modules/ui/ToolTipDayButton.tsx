@@ -1,5 +1,5 @@
 import React, { createContext, useContext } from "react"
-import {DayButton} from "@daypicker/react";
+import { DayButton } from "@daypicker/react";
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/modules/units/ui/components/tooltip"
 import { type DayDataConfig } from "@/modules/ui/DayDataConfig";
 
@@ -12,7 +12,14 @@ export const ToolTipDayButton = ({
     day,
     ...buttonProps
 }: ToolTipDayButtonProps) => {
-    const { disabled, booked, checkOutOnly, minimumStay, peak, saturdayCheckOutOnly } = modifiers;
+    const { disabled,
+        booked,
+        checkOutOnly,
+        minimumStay,
+        peak,
+        saturdayCheckOutOnly,
+        range_start, range_middle, range_end
+    } = modifiers;
 
     //console.log("disabled", disabled.toString())
 
@@ -50,7 +57,15 @@ export const ToolTipDayButton = ({
 
     const price = ("price" in data && data.price) ? data.price : ""
     //const color = ("color" in data && data.color) ? data.color : "gray"
-    //const colorstep = ("colorstep" in data && data.colorstep) ? data.colorstep : ""
+    const colorstep = ("colorstep" in data && data.colorstep) ? data.colorstep : ""
+
+    let textColor = "black";
+    let priceColor = "gray";
+    const colorStepNumber = colorstep as unknown as number;
+    if (colorStepNumber > 500 || range_start || range_end) {
+        textColor = "white";
+        priceColor = "white";
+    }
 
     return (
         <TooltipProvider>
@@ -58,11 +73,16 @@ export const ToolTipDayButton = ({
                 <TooltipTrigger asChild>
                 <span className="inline-block w-fit test">
                     <DayButton {...buttonProps} day={day} modifiers={modifiers}>
-                        <div className="block">
-                        <div className="day-number">{day.date.getDate()}</div>
-                            {showPrice &&
-                                <div className="day-price" style={{ fontSize: '10px', fontWeight: '300', color: 'gray', marginTop: '-2px' }}>
-                                  {price}
+                        <div className="block ">
+                        <div className={`day-number text-${textColor}`}>{day.date.getDate()}</div>
+                            {showPrice && !range_end &&
+                                <div className={`day-price text-${textColor}`} style={{ fontSize: '10px', fontWeight: '300', marginTop: '-2px' }}>
+                                  ${price}
+                                </div>
+                            }
+                            {range_end &&
+                                <div className={`day-price text-${textColor}`} style={{ fontSize: '10px', fontWeight: '300', marginTop: '-2px' }}>
+                                    ➜
                                 </div>
                             }
                         </div>

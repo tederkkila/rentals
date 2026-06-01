@@ -33,7 +33,8 @@ export const ReservationPicker = ({ unit }: UnitProps) => {
     const [selectedDateRange, setSelectedDateRange] = React.useState<DateRange | undefined>();
     const [open, setOpen] = React.useState(false)
     const [nickName, setNickname] = useState('');
-    const [totalNights, setTotalNights] = useState(0);
+    const [dateMatrix, setDateMatrix] = useState<Record<string, any>>({})
+    const [quote, setQuote] = useState<number>(0);
     const { data: tokenData, refetch: refreshToken } = useQuery(trpc.reservations.getFormToken.queryOptions(
         undefined,
         { refetchOnWindowFocus: false }
@@ -74,9 +75,9 @@ export const ReservationPicker = ({ unit }: UnitProps) => {
                 startDate: formData.get('startDate') as string,
                 endDate: formData.get('endDate') as string,
                 timeZone: timeZone,
-                quote: 100,
+                quote: quote,
                 token: tokenData?.token || "",
-                honeyPot: formData.get('nickname') as string,
+                nickname: formData.get('nickname') as string,
             });
 
             return {success: true, recordId: result.recordId, error: null};
@@ -85,7 +86,7 @@ export const ReservationPicker = ({ unit }: UnitProps) => {
         }
     }, {success: false, recordId: null, error: null});
 
-
+    const tax = unit.tenant?.tax ?? 0;
 
     return (
         <Box >
@@ -99,13 +100,18 @@ export const ReservationPicker = ({ unit }: UnitProps) => {
                         setSelectedDateRange={setSelectedDateRange}
                         open={open}
                         setOpen={setOpen}
-                        totalNights={totalNights}
-                        setTotalNights={setTotalNights}
+                        setDateMatrix={setDateMatrix}
                     />
 
                     {unit.taxInfo && <p className="text-xs text-gray-600 mb-2 ml-2 mt-0">{unit.taxInfo}</p>}
 
-                    <PriceBreakdown />
+                    {dateMatrix && Object.keys(dateMatrix).length > 0 &&
+                    <PriceBreakdown
+                        dateMatrix={dateMatrix}
+                        tax={tax}
+                        setQuote={setQuote}
+                    />
+                    }
 
                     <FieldGroup>
                         <Field>

@@ -37,7 +37,11 @@ import { type DayDataConfig } from "@/modules/ui/DayDataConfig";
     return bookingsOverlap
 }*/
 
-const processBookedRanges = (bookedRanges: DateRange[], peakSeasonRanges: DateRange[], minimumNights: Record<string, number>): [DateRange[], DateRange[], DateRange[], DateRange[], DateRange[] ] => {
+const processBookedRanges = (
+    bookedRanges: DateRange[],
+    peakSeasonRanges: DateRange[],
+    minimumNights: Record<string, number>
+): [DateRange[], DateRange[], DateRange[], DateRange[], DateRange[] ] => {
 
     let effectiveBookedRanges: DateRange[] = []
     let checkOutOnlyRanges: DateRange[] = []
@@ -79,7 +83,7 @@ const processBookedRanges = (bookedRanges: DateRange[], peakSeasonRanges: DateRa
         peakSeasonRanges.forEach(peakSeasonRange => {
             bookedRanges.forEach(bookedRange => {
 
-                const nights = calculateNights(bookedRange, peakSeasonRange, minimumNights)
+                const nights = calculateMinimumNights(bookedRange, peakSeasonRange, minimumNights)
 
                 const minimumStayRange = {
                     from: addDays(bookedRange.from as TZDate, -1 * (nights - 1)) as TZDate,
@@ -136,9 +140,10 @@ const createCalendarInformationMap = (
     discounts: Discount[] | null,
     reservations: Reservation[] | null,
     timeZone: string
-) => {
+): [Record<string, any>, number] => {
 
     const calendarInformationMap: Record<string, any> = {};
+    let maxMiniumNights = 0;
 
     const addDateToCalendarInformationMap = (data: Rate | Peakseason | Discount ) => {
 
@@ -150,12 +155,14 @@ const createCalendarInformationMap = (
         if (priceType === 'night') price = data.price;
         if (priceType === 'week') price = Math.ceil(data.price / 7);
         if (priceType === 'month') price = Math.ceil(data.price / 28);
+        const minimumNights = data.minimumNights;
+        if (minimumNights > maxMiniumNights) maxMiniumNights = minimumNights;
 
         while (startDate <= endDate) {
             const dateKey = startDate.toISOString().slice(0, 10);
             calendarInformationMap[dateKey] = {
                 price: price,
-                minimumNights: data.minimumNights,
+                minimumNights: minimumNights,
             }
             if ("color" in data && data.color) {
                 calendarInformationMap[dateKey].color = data.color;
@@ -169,7 +176,7 @@ const createCalendarInformationMap = (
     }
 
     //add rate data to calendarInformationMap
-    if (!rates) return calendarInformationMap; //return empty map if no rates
+    if (!rates) return [calendarInformationMap, maxMiniumNights]; //return empty map if no rates
     rates.forEach((rate: Rate) => {
         addDateToCalendarInformationMap (rate)
     })
@@ -187,10 +194,10 @@ const createCalendarInformationMap = (
     }
 
 
-    return calendarInformationMap;
+    return [calendarInformationMap, maxMiniumNights];
 }
 
-const calculateNights = (bookedRange: DateRange, peakSeasonRange: DateRange, minimumNights: Record<string, number>) => {
+const calculateMinimumNights = (bookedRange: DateRange, peakSeasonRange: DateRange, minimumNights: Record<string, number>) => {
     let nights = minimumNights.offPeak
 
     let fromIsPeakSeason = undefined;
@@ -251,6 +258,36 @@ const getNightsCount = (newRange: DateRange): number => {
     return differenceInDays(newRange.to, newRange.from);
 };
 
+const createDateMatrix = (newRange: DateRange, calendarInformationMap: Record<string, any>, maxMiniumNights: number): Record<string, any> => {
+    //if from is missing, return an empty object
+    if (!newRange?.from) return {};
+
+    const dateMatrix: Record<string, any> = {};
+
+    const fromTZDate = new TZDate(newRange.from)
+
+    let toTZDate = addDays(fromTZDate, maxMiniumNights) as TZDate; //set missing toTZDate to fromTZDate to start
+    if (newRange?.to) {
+        toTZDate = new TZDate(newRange.to)
+    }
+
+    let currentDate = new TZDate(fromTZDate);
+    // console.log("currentDate: ", currentDate);
+
+    while (currentDate < toTZDate) {
+        const dateKey = currentDate.toISOString().slice(0, 10);
+        const price = calendarInformationMap[dateKey]?.price ?? 0;
+        const minimumNights = calendarInformationMap[dateKey]?.minimumNights ?? 0;
+        dateMatrix[dateKey] = {
+            price: price,
+            minimumNights: minimumNights,
+        }
+        currentDate = (addDays(currentDate, 1) as TZDate)
+    }
+
+    return dateMatrix;
+}
+
 interface handleStateProperties {
     selectedRange: DateRange | undefined,
     minimumStayRanges: DateRange[],
@@ -272,8 +309,7 @@ interface DatePickerWithRangeProps {
     setSelectedDateRange: (range: DateRange | undefined) => void,
     open: boolean
     setOpen: (open: boolean) => void
-    totalNights: number,
-    setTotalNights: (totalNights: number) => void,
+    setDateMatrix: (matrix: Record<string, any>) => void,
 }
 
 export const DatePickerWithRange = ( {
@@ -283,8 +319,7 @@ export const DatePickerWithRange = ( {
     setSelectedDateRange,
     open,
     setOpen,
-    totalNights,
-    setTotalNights,
+    setDateMatrix,
 }: DatePickerWithRangeProps ) => {
     // console.log("DatePickerWithRange Re-Rendered");
     // console.log("unit imported: ", unit);
@@ -328,17 +363,19 @@ export const DatePickerWithRange = ( {
         return data
     }, [unit.peakseasons])
 
-    const [effectiveBookedRanges, checkOutOnlyRanges, initialMinimumStayRanges, notPeakSundays, fullBookedRanges] = useMemo(() => {
-        return processBookedRanges(bookedRanges, peakSeasonRanges, minimumNights)
-    }, [bookedRanges]); // Only compute once
-
-    console.log("initialMinimumStayRanges: ", initialMinimumStayRanges);
-
-    const calendarInformationMap: Record<string, DayDataConfig> = useMemo(() => {
+    const [calendarInformationMap, maxMinimumNights] = useMemo(() => {
         return createCalendarInformationMap(unit.rates, unit.peakseasons, unit.discounts, unit.reservations, timeZone)
     }, [unit.rates, unit.peakseasons, unit.discounts, unit.reservations, timeZone])
 
     //console.log("calendarInformationMap: ", calendarInformationMap);
+
+    const [effectiveBookedRanges, checkOutOnlyRanges, initialMinimumStayRanges, notPeakSundays, fullBookedRanges] = useMemo(() => {
+        return processBookedRanges(bookedRanges, peakSeasonRanges, minimumNights)
+    }, [bookedRanges]); // Only compute once
+
+    //console.log("initialMinimumStayRanges: ", initialMinimumStayRanges);
+
+
 
     //TODO create function to calculate first available check-in date (weekend preferred)
     const [currentCalendarValues, setCurrentCalendarValues ] = useState<handleStateProperties>(
@@ -356,25 +393,21 @@ export const DatePickerWithRange = ( {
     const handleSelect = (newRange: DateRange | undefined) => {
         console.log("newRange: ", newRange);
 
-
-
-        //TODO If end date is removed remove the .to from range and redisplay the calendar
-
         if (!newRange) return;
 
         const nights = getNightsCount(newRange)
-        setTotalNights(nights)
 
         if (newRange?.from && newRange?.to) {
             //both dates selected
-            console.log("newRange", newRange);
-
-
-
 
             //check if multiple days are not selected
             if (!isSameDay(newRange.from, newRange.to)) {
-                setSelectedDateRange(newRange);
+
+                //create dataMatrix and send to the parent component
+                const dateMatrix = createDateMatrix({...newRange}, calendarInformationMap, maxMinimumNights);
+                setDateMatrix(dateMatrix);
+
+                setSelectedDateRange({...newRange});
                 setCurrentCalendarValues( prevState => ({
                     ...prevState,
                     selectedRange: newRange,
@@ -383,7 +416,9 @@ export const DatePickerWithRange = ( {
                     minimumStayRanges: initialMinimumStayRanges, //reset to initial values
                     disableCheckOutOnly: true,
                 }));
-                setTimeout(() => setOpen(false), 1000)
+
+
+                setTimeout(() => setOpen(false), 1200)
 
             } else {
                 //if the same day is selected, clear the selection
@@ -393,19 +428,52 @@ export const DatePickerWithRange = ( {
         } else {
             //partial range selected
 
-            const nights = calculateNights(newRange, peakSeasonRanges[0], minimumNights)
-            //find the next effective booking date from a set of dates
-
-            const newMinimumStayRange: DateRange = {
-                from: addDays(newRange.from as TZDate, 1),
-                to: addDays(newRange.from as TZDate, (nights - 1)) as TZDate,
-            }
-
             const nextEffectiveBookedDate = getNextChronological(
                 effectiveBookedDaysMapSorted,
                 (newRange.from as TZDate).toISOString().split('T')[0]
             )
             console.log("nextEffectiveBookedDate: ", nextEffectiveBookedDate);
+
+            //get the dateMatrix for the next maxMinimumNights days
+            let dateMatrix = createDateMatrix({...newRange}, calendarInformationMap, maxMinimumNights);
+            console.log("dateMatrix: ", JSON.stringify(dateMatrix));
+
+            if (nextEffectiveBookedDate !== undefined) {
+                //if date is defined, remove it and any days after from dateMatrix
+                dateMatrix = Object.keys(dateMatrix).reduce<Record<string, any>>((acc, key) => {
+                    if (key < nextEffectiveBookedDate) {
+                        acc[key] = dateMatrix[key];
+                    }
+                    return acc;
+                }, {});
+
+             }
+
+            console.log("dateMatrix: ", JSON.stringify(dateMatrix));
+
+            //get the value of the first night
+            const firstNightMinimumNights = Object.values(dateMatrix)[0].minimumNights;
+            console.log("firstNightMinimumNights: ", firstNightMinimumNights);
+
+            let effectiveMinimumNights = firstNightMinimumNights;
+            //check first night plus this value dates for higher min
+            for (let i = 1; i <= firstNightMinimumNights; i++) {
+                console.log(Object.values(dateMatrix)[i])
+                if (Object.values(dateMatrix)[i].minimumNights > effectiveMinimumNights) {
+                    effectiveMinimumNights = Object.values(dateMatrix)[i].minimumNights;
+                }
+            }
+            console.log("effectiveMinimumNights: ", effectiveMinimumNights);
+
+            //const nights = calculateMinimumNights(newRange, peakSeasonRanges[0], minimumNights)
+            //find the next effective booking date from a set of dates
+
+            const newMinimumStayRange: DateRange = {
+                from: addDays(newRange.from as TZDate, 1),
+                to: addDays(newRange.from as TZDate, (effectiveMinimumNights - 1)) as TZDate,
+            }
+
+
 
             if (nextEffectiveBookedDate !== undefined) {
 
@@ -447,7 +515,7 @@ export const DatePickerWithRange = ( {
 
     const clearSelection = () => {
         setSelectedDateRange(undefined);
-        setTotalNights(0);
+        setDateMatrix({});
         setCurrentCalendarValues( prevState => ({
             ...prevState,
             selectedRange: undefined,
