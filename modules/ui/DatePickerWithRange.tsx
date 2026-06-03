@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useMemo } from "react"
+import React, { useState, useMemo, useEffect } from "react"
 import { addDays, subDays, eachWeekOfInterval, format, isAfter, isBefore, isSameDay } from "date-fns"
 import { startOfDay, differenceInDays } from 'date-fns';
 import { CalendarIcon } from "lucide-react"
@@ -366,6 +366,8 @@ export const DatePickerWithRange = ( {
 }: DatePickerWithRangeProps ) => {
     // console.log("DatePickerWithRange Re-Rendered");
 
+    const [isLoading, setIsLoading] = useState(true);
+
     const timeZone = useMemo (() => {
         return unit.tenant?.timezone ?? 'America/New_York';
     }, [])
@@ -621,15 +623,21 @@ export const DatePickerWithRange = ( {
         peak: (day: Date) => peakSeasonSet.has(format(day, 'yyyy-MM-dd')),
     }), [effectiveBookedDaysSet, checkOutOnlyDaySet, notChosenDaySet, currentCalendarValues.minimumStaySet, peakSeasonSet]);
 
+    useEffect(() => {
+        setIsLoading(false);
+    }, []);
+
     return (
         <Field className="/*w-60*/ mb-2">
             <FieldLabel htmlFor="date-picker-range">{title}</FieldLabel>
-            <Popover open={open} onOpenChange={setOpen}>
+
+            <Popover open={open} onOpenChange={setOpen} >
                 <PopoverTrigger asChild>
                     <Button
+                        disabled={isLoading}
                         variant="outline"
                         id="date-picker-range"
-                        className="justify-start px-2.5 font-normal"
+                        className={`justify-start px-2.5 font-normal ${isLoading ? 'opacity-10' : ''}`}
                     >
                         <CalendarIcon />
                         {currentCalendarValues.selectedRange?.from ? (
@@ -642,7 +650,7 @@ export const DatePickerWithRange = ( {
                                 format(currentCalendarValues.selectedRange.from, "LLL dd, y")
                             )
                         ) : (
-                            <span>Pick a date</span>
+                            <span>{isLoading ? 'Loading Reservations...' : 'Pick a date'}</span>
                         )}
                     </Button>
                 </PopoverTrigger>

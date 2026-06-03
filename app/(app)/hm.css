@@ -52,11 +52,11 @@
     text-decoration: line-through
 }
 
-.disabled\:opacity-50 {
-    &:disabled {
-        opacity: 90%;
-    }
-}
+/*.disabled\:opacity-50 {*/
+/*    &:disabled {*/
+/*        opacity: 90%;*/
+/*    }*/
+/*}*/
 
 
 .rdp-month_grid {
