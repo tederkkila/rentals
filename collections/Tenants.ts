@@ -88,7 +88,18 @@ export const Tenants: CollectionConfig = {
             admin: {
                 description: "Attractions for this tenant",
                 isSortable: true,
-            }
+            },
+            filterOptions: ({ data }) => {
+                // This filters the dropdown dynamically in the Admin UI
+                if (data?.tenant) {
+                    return {
+                        tenant: {
+                            equals: data.tenant,
+                        },
+                    };
+                }
+                return false; // Hide options if no tenant is selected yet
+            },
         },
         {
             name: "content",
