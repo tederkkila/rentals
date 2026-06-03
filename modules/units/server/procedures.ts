@@ -241,6 +241,7 @@ export const unitsRouter = createTRPCRouter({
                 where: {
                     unit: {equals: unit.id},
                     active: {not_equals: false},
+                    archived: {not_equals: true},
                     endDate: {
                         greater_than_equal: firstDayOfMonth.toISOString(),
                     },
