@@ -17,7 +17,7 @@ export const ToolTipDayButton = ({
         checkOutOnly,
         minimumStay,
         peak,
-        saturdayCheckOutOnly,
+        chosenDayCheckOutOnly,
         range_start, range_middle, range_end,
         outside, today,
     } = modifiers;
@@ -33,10 +33,16 @@ export const ToolTipDayButton = ({
         showPrice = false;
     } else {
         if (checkOutOnly) {
-            tooltipText = "Checkout Only";
-            showPrice = true;
+            if (chosenDayCheckOutOnly){
+                tooltipText = "Sat. Check out only";
+                showPrice = true;
+            } else {
+                tooltipText = "Checkout Only";
+                showPrice = true;
+            }
+
         } else {
-            if (saturdayCheckOutOnly) {
+            if (chosenDayCheckOutOnly) {
                 tooltipText = "Sat. Check in/out";
                 showPrice = true;
             } else  if (minimumStay) {

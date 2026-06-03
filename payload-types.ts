@@ -421,6 +421,7 @@ export interface Peakseason {
   price: number;
   priceType: 'night' | 'week' | 'month';
   minimumNights: number;
+  requireCheckin: '-1' | '0' | '1' | '2' | '3' | '4' | '5' | '6';
   color:
     | 'white'
     | 'red'
@@ -779,6 +780,7 @@ export interface PeakseasonsSelect<T extends boolean = true> {
   price?: T;
   priceType?: T;
   minimumNights?: T;
+  requireCheckin?: T;
   color?: T;
   colorstep?: T;
   startDate?: T;

@@ -7,9 +7,9 @@
     /*--rdp-selected-border: 2px solid var(--rdp-accent-color); !* The border of the selected days. *!*/
 }
 
-.checkOutOnly:not(.booked) {
-    opacity: 1.0 !important;
-}
+/*.checkOutOnly:not(.booked) {*/
+/*    opacity: 1.0 !important;*/
+/*}*/
 
 .rdp-disabled .day-number {
     font-weight:300

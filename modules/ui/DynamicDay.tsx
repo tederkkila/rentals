@@ -8,7 +8,10 @@ export const CalendarColorContext = createContext<Record<string, DayDataConfig>>
 export function DynamicDay(props: DayProps) {
     // Extract date and internal children (the DayButton) from props
     const { day, modifiers, children, ...tdProps } = props;
-    const { booked, range_start, range_middle, range_end } = modifiers;
+    const {
+        booked, chosenDayCheckOutOnly,
+        range_start, range_middle, range_end,
+    } = modifiers;
     // Consume your dynamic hex color data mapping
     const rateData: Record<string, DayDataConfig> = useContext(CalendarColorContext);
 

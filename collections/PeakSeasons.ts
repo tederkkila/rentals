@@ -64,6 +64,22 @@ export const PeakSeasons: CollectionConfig = {
             required: true,
         },
         {
+            name: "requireCheckin",
+            type: "select",
+            options: [
+                {label: 'Any day', value: "-1"},
+                {label: 'Sunday', value: "0"},
+                {label: 'Monday', value: "1"},
+                {label: 'Tuesday', value: "2"},
+                {label: 'Wednesday', value: "3"},
+                {label: 'Thursday', value: "4"},
+                {label: 'Friday', value: "5"},
+                {label: 'Saturday', value: "6"},
+            ],
+            defaultValue: "-1",
+            required: true,
+        },
+        {
             label: "Calendar Shading",
             type: "group",
             admin: {
