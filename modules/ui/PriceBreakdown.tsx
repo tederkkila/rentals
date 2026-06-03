@@ -33,7 +33,7 @@ export default function PriceBreakdown({ dateMatrix, tax, setQuote }: PriceBreak
         return (
             <PriceLine
                 key={key}
-                title={`$${key} x ${count} night(s)`}
+                title={`${count} nights x $${key}`}
                 amount={price * count}
             />
 
