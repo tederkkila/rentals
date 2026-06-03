@@ -100,6 +100,7 @@ export const reservationsRouter = createTRPCRouter({
             endDate: z.coerce.date(),
             timeZone: z.enum(supportedTimezones),
             quote: z.number().nonnegative(),
+            notes: z.string().optional(),
             token: z.string(),
             nickname: z.string().optional(),
         }).refine((data) => data.endDate > data.startDate, {
@@ -250,6 +251,7 @@ export const reservationsRouter = createTRPCRouter({
                 quote: input.quote,
                 amountPaid: 0,
                 depositPaid: 0,
+                notes: input.notes,
             }
         });
 

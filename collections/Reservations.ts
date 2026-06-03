@@ -194,6 +194,8 @@ export const Reservations: CollectionConfig = {
                 <strong>Start Date:</strong> ${localStartTime} (${doc.startDate_tz})</br>
                 <strong>End Date:</strong> ${localEndTime}  (${doc.endDate_tz})</br>
                 <strong>Status:</strong> ${doc.status}</br>
+                <strong>Quote:</strong> $${doc.quote} USD</br>
+                <strong>Notes:</strong> ${doc.notes}</br>
                 
             </p>
             <p>Click here to review the reservation<br>
