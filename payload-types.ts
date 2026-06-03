@@ -144,6 +144,10 @@ export interface Tenant {
    */
   slug: string;
   /**
+   * This is the tax rate for the location
+   */
+  tax: number;
+  /**
    * This is the timezone for the location
    */
   timezone: 'America/New_York' | 'America/Vancouver' | 'Pacific/Honolulu';
@@ -378,6 +382,14 @@ export interface Rate {
   id: string;
   tenant?: (string | null) | Tenant;
   name: string;
+  /**
+   * If checked, is active in calendar. Inactives still appear on unit page
+   */
+  active?: boolean | null;
+  /**
+   * If checked, overrides 'active' and  will not appear in calendar or unit page
+   */
+  archived?: boolean | null;
   unit: string | Unit;
   price: number;
   priceType: 'night' | 'week' | 'month';
@@ -397,10 +409,39 @@ export interface Peakseason {
   id: string;
   tenant?: (string | null) | Tenant;
   name: string;
+  /**
+   * If checked, is active in calendar. Inactives still appear on unit page
+   */
+  active?: boolean | null;
+  /**
+   * If checked, overrides 'active' and  will not appear in calendar or unit page
+   */
+  archived?: boolean | null;
   unit: string | Unit;
   price: number;
   priceType: 'night' | 'week' | 'month';
   minimumNights: number;
+  requireCheckin: '-1' | '0' | '1' | '2' | '3' | '4' | '5' | '6';
+  color:
+    | 'white'
+    | 'red'
+    | 'orange'
+    | 'amber'
+    | 'yellow'
+    | 'lime'
+    | 'green'
+    | 'emerald'
+    | 'teal'
+    | 'cyan'
+    | 'sky'
+    | 'blue'
+    | 'indigo'
+    | 'violet'
+    | 'purple'
+    | 'fuchsia'
+    | 'pink'
+    | 'rose';
+  colorstep?: ('50' | '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900' | '950') | null;
   startDate: string;
   startDate_tz: SupportedTimezones;
   endDate: string;
@@ -416,10 +457,38 @@ export interface Discount {
   id: string;
   tenant?: (string | null) | Tenant;
   name: string;
+  /**
+   * If checked, is active in calendar. Inactives still appear on unit page
+   */
+  active?: boolean | null;
+  /**
+   * If checked, overrides 'active' and  will not appear in calendar or unit page
+   */
+  archived?: boolean | null;
   unit: string | Unit;
   price: number;
   priceType: 'night' | 'week' | 'month';
   minimumNights: number;
+  color:
+    | 'white'
+    | 'red'
+    | 'orange'
+    | 'amber'
+    | 'yellow'
+    | 'lime'
+    | 'green'
+    | 'emerald'
+    | 'teal'
+    | 'cyan'
+    | 'sky'
+    | 'blue'
+    | 'indigo'
+    | 'violet'
+    | 'purple'
+    | 'fuchsia'
+    | 'pink'
+    | 'rose';
+  colorstep?: ('50' | '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900' | '950') | null;
   startDate: string;
   startDate_tz: SupportedTimezones;
   endDate: string;
@@ -627,6 +696,7 @@ export interface ReservationsSelect<T extends boolean = true> {
 export interface TenantsSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
+  tax?: T;
   timezone?: T;
   icon?: T;
   image?: T;
@@ -671,6 +741,8 @@ export interface UnitsSelect<T extends boolean = true> {
 export interface RatesSelect<T extends boolean = true> {
   tenant?: T;
   name?: T;
+  active?: T;
+  archived?: T;
   unit?: T;
   price?: T;
   priceType?: T;
@@ -702,10 +774,15 @@ export interface AttractionsSelect<T extends boolean = true> {
 export interface PeakseasonsSelect<T extends boolean = true> {
   tenant?: T;
   name?: T;
+  active?: T;
+  archived?: T;
   unit?: T;
   price?: T;
   priceType?: T;
   minimumNights?: T;
+  requireCheckin?: T;
+  color?: T;
+  colorstep?: T;
   startDate?: T;
   startDate_tz?: T;
   endDate?: T;
@@ -720,10 +797,14 @@ export interface PeakseasonsSelect<T extends boolean = true> {
 export interface DiscountsSelect<T extends boolean = true> {
   tenant?: T;
   name?: T;
+  active?: T;
+  archived?: T;
   unit?: T;
   price?: T;
   priceType?: T;
   minimumNights?: T;
+  color?: T;
+  colorstep?: T;
   startDate?: T;
   startDate_tz?: T;
   endDate?: T;

@@ -43,16 +43,16 @@ export const NavbarSidebar = ({
                                 {item.children}
                             </Link>
                         ))}
-                        <div className="border-t">
-                            <Link
-                                onClick={() => onOpenChange(false)} href="/sign-in" className="w-full text-left p-4 hover:bg-black hover:text-white flex items-center text-base font-medium">
-                                Log in
-                            </Link>
-                            <Link
-                                onClick={() => onOpenChange(false)} href="/sign-up" className="w-full text-left p-4 hover:bg-black hover:text-white flex items-center text-base font-medium">
-                                Register
-                            </Link>
-                        </div>
+                        {/*<div className="border-t">*/}
+                        {/*    <Link*/}
+                        {/*        onClick={() => onOpenChange(false)} href="/sign-in" className="w-full text-left p-4 hover:bg-black hover:text-white flex items-center text-base font-medium">*/}
+                        {/*        Log in*/}
+                        {/*    </Link>*/}
+                        {/*    <Link*/}
+                        {/*        onClick={() => onOpenChange(false)} href="/sign-up" className="w-full text-left p-4 hover:bg-black hover:text-white flex items-center text-base font-medium">*/}
+                        {/*        Register*/}
+                        {/*    </Link>*/}
+                        {/*</div>*/}
                     </ScrollArea>
                 </SheetHeader>
             </SheetContent>

@@ -4,13 +4,35 @@ export const Rates: CollectionConfig = {
     slug: "rates",
     admin: {
         description: "The default rate for a unit before peak rate and/or discount is applied",
-        defaultColumns: ["name", "unit", "price", "priceType", "startDate", "endDate"],
+        defaultColumns: ["name", "active", "unit", "price", "priceType", "startDate", "endDate"],
     },
     fields: [
         {
             name: "name",
             type: "text",
             required: true,
+        },
+        {
+            label: "Status",
+            type: "group",
+            fields: [
+                {
+                    name: "active",
+                    type: "checkbox",
+                    defaultValue: true,
+                    admin: {
+                        description: "If checked, is active in calendar. Inactives still appear on unit page"
+                    }
+                },
+                {
+                    name: "archived",
+                    type: "checkbox",
+                    defaultValue: false,
+                    admin: {
+                        description: "If checked, overrides 'active' and  will not appear in calendar or unit page"
+                    }
+                },
+            ],
         },
         {
             name: "unit",
@@ -44,6 +66,7 @@ export const Rates: CollectionConfig = {
             name: "startDate",
             type: "date",
             required: true,
+            index: true,
             timezone: true,
             admin: {
                 date: {

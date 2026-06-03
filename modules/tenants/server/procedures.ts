@@ -20,12 +20,19 @@ export const tenantsRouter = createTRPCRouter({
 
             const tenantsData = await ctx.db.find({
                 collection: "tenants",
-                depth: 2, // "tenant.image" is a type of "Media"
+                depth: 1, // "tenant.image" is a type of "Media"
                 where: {
                     slug: {
                         equals: input.slug,
                     },
                 },
+                /*populate: {
+                    tenants: {
+                        attractions: true,
+                        content: true, // Forces Payload to include this field for this query
+                        contact: true,
+                    },
+                },*/
                 limit: 1,
                 pagination: false,
             });

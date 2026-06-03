@@ -14,6 +14,7 @@ import { useTRPC } from "@/trpc/client";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { DateRange } from "@daypicker/react"
 import { Discount, Peakseason, Rate, Reservation, Tenant } from "@/payload-types";
+import PriceBreakdown from "@/modules/ui/PriceBreakdown";
 
 interface UnitProps {
     unit: Unit & {
@@ -32,6 +33,8 @@ export const ReservationPicker = ({ unit }: UnitProps) => {
     const [selectedDateRange, setSelectedDateRange] = React.useState<DateRange | undefined>();
     const [open, setOpen] = React.useState(false)
     const [nickName, setNickname] = useState('');
+    const [dateMatrix, setDateMatrix] = useState<Record<string, any>>({})
+    const [quote, setQuote] = useState<number>(0);
     const { data: tokenData, refetch: refreshToken } = useQuery(trpc.reservations.getFormToken.queryOptions(
         undefined,
         { refetchOnWindowFocus: false }
@@ -72,9 +75,9 @@ export const ReservationPicker = ({ unit }: UnitProps) => {
                 startDate: formData.get('startDate') as string,
                 endDate: formData.get('endDate') as string,
                 timeZone: timeZone,
-                quote: 100,
+                quote: quote,
                 token: tokenData?.token || "",
-                honeyPot: formData.get('nickname') as string,
+                nickname: formData.get('nickname') as string,
             });
 
             return {success: true, recordId: result.recordId, error: null};
@@ -83,7 +86,7 @@ export const ReservationPicker = ({ unit }: UnitProps) => {
         }
     }, {success: false, recordId: null, error: null});
 
-
+    const tax = unit.tenant?.tax ?? 0;
 
     return (
         <Box >
@@ -97,10 +100,18 @@ export const ReservationPicker = ({ unit }: UnitProps) => {
                         setSelectedDateRange={setSelectedDateRange}
                         open={open}
                         setOpen={setOpen}
-
+                        setDateMatrix={setDateMatrix}
                     />
 
                     {unit.taxInfo && <p className="text-xs text-gray-600 mb-2 ml-2 mt-0">{unit.taxInfo}</p>}
+
+                    {dateMatrix && Object.keys(dateMatrix).length > 0 &&
+                    <PriceBreakdown
+                        dateMatrix={dateMatrix}
+                        tax={tax}
+                        setQuote={setQuote}
+                    />
+                    }
 
                     <FieldGroup>
                         <Field>

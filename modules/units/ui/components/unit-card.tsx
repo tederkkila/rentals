@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 import { cn, generateTenantURL } from "@/lib/utils";
-import type { Unit, Tenant, Media } from "@/payload-types";
+import type { Unit, Tenant } from "@/payload-types";
 
 import { AmenitiesList } from "@/modules/units/ui/components/amenities-list"
 
@@ -28,12 +28,12 @@ export const UnitCard = ({ unit }: UnitCardProps) => {
         return;
     }
 
-    const tenantIcon: Media= tenant.icon as Media;
+    //const tenantIcon: Media= tenant.icon as Media;
     if (!tenant.icon || typeof tenant.icon === "string") {
         return;
     }
 
-    const unitImage: Media = unit.image as Media;
+    //const unitImage: Media = unit.image as Media;
     if (!unit.image || typeof unit.image === "string") {
         return;
     }
@@ -46,7 +46,7 @@ export const UnitCard = ({ unit }: UnitCardProps) => {
     };
 
     return (
-        <Link href={`${generateTenantURL(tenant.slug)}/units/${unit.slug}`}>
+        <Link href={`/units/${unit.slug}`}>
             <div className="
             hover:shadow-[1px_1px_0px_0px_rgba(30,30,30,0.5)]
             transition-shadow border rounded-md bg-white

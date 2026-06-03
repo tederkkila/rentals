@@ -18,7 +18,7 @@ export const UnitImageGrid = ({ unit } : UnitCardProps) => {
         <div>
 
             <div className="hidden sm:block">
-                <Grid columns={{ initial: '1', sm: '4' }} rows={{ initial: '1', sm: '2' }} gap={"2"}>
+                <Grid columns={{ initial: '1', xs: '4' }} rows={{ initial: '1', xs: '2' }} gap={"2"}>
                     <Box className="col-span-2 row-span-2">
                         <UnitImageGridImage image={Object.values(firstFive)[0]} radius={"left"} />
                     </Box>
@@ -29,7 +29,7 @@ export const UnitImageGrid = ({ unit } : UnitCardProps) => {
                 </Grid>
             </div>
 
-            <div className="sm:hidden">
+            <div className="block sm:hidden">
                 <UnitImageGridImage image={Object.values(firstFive)[0]} radius={""} />
 
             </div>

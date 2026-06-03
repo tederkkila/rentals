@@ -197,7 +197,15 @@ export const unitsRouter = createTRPCRouter({
                     endDate: {
                         greater_than_equal: firstDayOfMonth.toISOString(),
                     },
-                }
+                },
+                select: {
+                    startDate: true,
+                    startDate_tz: true,
+                    endDate: true,
+                    endDate_tz: true,
+                    id: true,
+                },
+                sort: "startDate",
             });
 
             const rates = await ctx.db.find({
@@ -209,7 +217,8 @@ export const unitsRouter = createTRPCRouter({
                     endDate: {
                         greater_than_equal: firstDayOfMonth.toISOString(),
                     },
-                }
+                },
+                sort: "+startDate",
             });
 
             const peakseasons = await ctx.db.find({
@@ -221,7 +230,8 @@ export const unitsRouter = createTRPCRouter({
                     endDate: {
                         greater_than_equal: firstDayOfMonth.toISOString(),
                     },
-                }
+                },
+                sort: "+startDate",
             });
 
             const discounts = await ctx.db.find({
@@ -230,10 +240,12 @@ export const unitsRouter = createTRPCRouter({
                 pagination: false,
                 where: {
                     unit: {equals: unit.id},
+                    active: {not_equals: false},
                     endDate: {
                         greater_than_equal: firstDayOfMonth.toISOString(),
                     },
-                }
+                },
+                sort: "+startDate",
             });
 
 

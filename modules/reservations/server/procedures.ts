@@ -101,7 +101,7 @@ export const reservationsRouter = createTRPCRouter({
             timeZone: z.enum(supportedTimezones),
             quote: z.number().nonnegative(),
             token: z.string(),
-            honeyPot: z.string().optional(),
+            nickname: z.string().optional(),
         }).refine((data) => data.endDate > data.startDate, {
             message: "End date must be after start date",
             path: ["endDate"],
@@ -109,7 +109,7 @@ export const reservationsRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
 
-        if (input.honeyPot && input.honeyPot.trim().length > 0) {
+        if (input.nickname && input.nickname.trim().length > 0) {
             console.warn("Spam caught silently via honeyPot.");
 
             // Return a fake success message to fool the bot into stopping
@@ -136,10 +136,17 @@ export const reservationsRouter = createTRPCRouter({
             });
         }
 
-        if (unit.isArchived || unit.isPrivate) {
+        if (unit.isArchived) {
             throw new TRPCError({
                 code: "NOT_FOUND",
                 message: "Unit not found",
+            });
+        }
+
+        if (unit.isPrivate) {
+            throw new TRPCError({
+                code: "NOT_FOUND",
+                message: "Unit not available for online reservation. Please contact the unit owner for more information.",
             });
         }
 
@@ -240,7 +247,7 @@ export const reservationsRouter = createTRPCRouter({
                 endDate: input.endDate.toISOString(),
                 endDate_tz: reservationTimezone,
                 status: initialReservationStatus,
-                quote: 100,
+                quote: input.quote,
                 amountPaid: 0,
                 depositPaid: 0,
             }

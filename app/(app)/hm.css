@@ -2,52 +2,67 @@
     --rdp-accent-color: blue; /* Change the accent color to indigo. */
     --rdp-accent-background-color: #f0f0f0; /* Change the accent background color. */
     /* Add more CSS variables here. */
-    --rdp-disabled-opacity: 0.5; /* The opacity of the disabled days. */
-    --rdp-outside-opacity: 0.3; /* The opacity of the days outside the current month. */
+    --rdp-disabled-opacity: 0.6; /* The opacity of the disabled days. */
+    --rdp-outside-opacity: 0.2; /* The opacity of the days outside the current month. */
     /*--rdp-selected-border: 2px solid var(--rdp-accent-color); !* The border of the selected days. *!*/
 }
 
-.checkOutOnly:not(.booked) {
-    opacity: 1.0 !important;
-}
+/*.checkOutOnly:not(.booked) {*/
+/*    opacity: 1.0 !important;*/
+/*}*/
 
+.rdp-disabled .day-number {
+    font-weight:300
+}
 .rdp-disabled.rdp-selected {
     opacity: 1.0;
 }
 
-.rdp-range_start.peak .rdp-day_button {
-    /*background-color: var(--rdp-range_start-date-background-color);*/
-    background-color: darkred;
-    color: var(--rdp-range_start-color);
+.textContrast {
+    color: white;
 }
 
-.rdp-range_end.peak .rdp-day_button  {
-    color: var(--rdp-range_start-color);
-    /*background-color: var(--rdp-range_end-date-background-color);*/
-    background-color: darkred;
-}
+/*.rdp-range_start.peak .rdp-day_button {*/
+/*    !*background-color: var(--rdp-range_start-date-background-color);*!*/
+/*    background-color: darkred;*/
+/*    color: var(--rdp-range_start-color);*/
+/*}*/
 
-.rdp-selected.peak .rdp-day_button {
-    border: red;
-}
+/*.rdp-range_end.peak .rdp-day_button  {*/
+/*    color: var(--rdp-range_start-color);*/
+/*    !*background-color: var(--rdp-range_end-date-background-color);*!*/
+/*    background-color: darkred;*/
+/*}*/
 
-.rdp-range_middle {
-    border:red
-}
+/*.rdp-selected.peak .rdp-day_button {*/
+/*    border: red;*/
+/*}*/
 
 .rdp-day_button {
     font-weight: 700;
 }
 
 .rdp-disabled.checkOutOnly .rdp-day_button {
-    font-weight: 500;
+    font-weight: 700;
 }
 .booked .rdp-day_button {
     font-weight: 500;
 }
+.booked button .day-number {
+    text-decoration: line-through
+}
 
-.disabled\:opacity-50 {
-    &:disabled {
-        opacity: 90%;
-    }
+/*.disabled\:opacity-50 {*/
+/*    &:disabled {*/
+/*        opacity: 90%;*/
+/*    }*/
+/*}*/
+
+
+.rdp-month_grid {
+    border-collapse: separate !important;
+    border-spacing: 4px; /* Adjust this value for more/less space */
+}
+:is(.rdp-range_start, .rdp-range_end) .rdp-day_button .day-price {
+    color: white !important;
 }
