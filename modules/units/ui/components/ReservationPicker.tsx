@@ -15,6 +15,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { DateRange } from "@daypicker/react"
 import { Discount, Peakseason, Rate, Reservation, Tenant } from "@/payload-types";
 import PriceBreakdown from "@/modules/ui/PriceBreakdown";
+import { Textarea } from "@/components/ui/textarea";
 
 interface UnitProps {
     unit: Unit & {
@@ -76,6 +77,7 @@ export const ReservationPicker = ({ unit }: UnitProps) => {
                 endDate: formData.get('endDate') as string,
                 timeZone: timeZone,
                 quote: quote,
+                notes: formData.get('notes') as string,
                 token: tokenData?.token || "",
                 nickname: formData.get('nickname') as string,
             });
@@ -130,6 +132,15 @@ export const ReservationPicker = ({ unit }: UnitProps) => {
                             <FieldDescription className="ml-2">
                                 We will contact you about the booking at this email address.
                             </FieldDescription>
+                        </Field>
+                        <Field>
+                            <FieldLabel htmlFor="notes">Message</FieldLabel>
+                            <Textarea
+                                id="notes"
+                                name="notes"
+                                placeholder="Any special requests or notes? (Max 150 characters)"
+                                maxLength={150}
+                            />
                         </Field>
                             <input type="hidden" name="unit" value={unit.id} required />
                             <input type="hidden" name="startDate" value={selectedDateRange?.from?.toISOString() || ""} required />
