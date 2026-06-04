@@ -41,7 +41,7 @@ export const AttractionsListView = ({ tenantSlug }: Props) => {
                                                 ? attraction.image?.url ?? undefined
                                                 : undefined}
                                             radius="medium"
-                                            fallback="O"
+                                            fallback=""
                                             alt={attraction.name}
                                         />
                                         <Box>

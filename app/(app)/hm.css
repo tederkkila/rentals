@@ -66,3 +66,6 @@
 :is(.rdp-range_start, .rdp-range_end) .rdp-day_button .day-price {
     color: white !important;
 }
+.rt-Box {
+    --tw-prose-quote-borders: var(--muted-foreground);
+}

@@ -18,7 +18,7 @@ export const UnitListView = ({ category, tenantSlug }: Props) => {
                 <UnitSort />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-6 xl:grid-cols-8 gap-y-6 gap-x-12">
+            <div className="grid grid-cols-1 lg:grid-cols-6 xl:grid-cols-8 gap-y-6 gap-x-8">
                 <div className="lg:col-span-2 xl:col-span-2">
                     <UnitFilters tenantSlug={tenantSlug} />
                 </div>
