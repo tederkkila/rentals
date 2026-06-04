@@ -91,37 +91,10 @@ export const UnitImageGridImage = ({ image, radius }: UnitImageGridImageProps) =
 
 export const UnitImageGridSkeleton = () => {
     return (
-        <div className="w-full aspect-4/1 bg-neutral-200 rounded-lg animate-pulse">
-
-            <div className="hidden sm:block">
-                <Grid columns={{ initial: '1', xs: '4' }} rows={{ initial: '1', xs: '2' }} gap={"2"}>
-                    <Box className="col-span-2 row-span-2">
-                        <DecorativeBox/>
-                    </Box>
-                    <Box className="w-12 h-12 rounded-full animate-pulse">
-                        <DecorativeBox/>
-                    </Box>
-                    <Box className="w-12 h-12 rounded-full animate-pulse">
-                        <DecorativeBox/>
-                    </Box>
-                    <Box className="w-12 h-12 rounded-full animate-pulse">
-                        <DecorativeBox/>
-                    </Box>
-                    <Box className="w-12 h-12 rounded-full animate-pulse">
-                        <DecorativeBox/>
-                    </Box>
-                </Grid>
-            </div>
-
-            <div className="block sm:hidden">
-                <UnitImageGridImage image={Object.values(firstFive)[0]} radius={""} />
-
-            </div>
-
-
-        </div>
+        <div className="w-full aspect-4/1 bg-neutral-200 rounded-lg animate-pulse"/>
     );
 };
+
 
 
 
