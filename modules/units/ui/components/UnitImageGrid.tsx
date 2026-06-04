@@ -2,7 +2,7 @@ import React from "react";
 import type { Media, Unit } from "@/payload-types";
 import { Box, Grid, AspectRatio } from "@radix-ui/themes";
 import Image from "next/image";
-import DecorativeBox from "@/modules/ui/DecorativeBox";
+//import DecorativeBox from "@/modules/ui/DecorativeBox";
 
 interface UnitCardProps {
     unit: Unit,
