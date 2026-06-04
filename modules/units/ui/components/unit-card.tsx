@@ -1,15 +1,15 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+//import { useRouter } from "next/navigation";
 
-import { cn, generateTenantURL } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import type { Unit, Tenant } from "@/payload-types";
 
 import { AmenitiesList } from "@/modules/units/ui/components/amenities-list"
 
 import { Poppins } from "next/font/google";
-import { Box, Card, Flex, AspectRatio, Text, Inset, Grid } from "@radix-ui/themes";
+import { Box, Card, Flex, AspectRatio, Inset, Grid } from "@radix-ui/themes";
 
 const poppins = Poppins({
     subsets: [ "latin" ],
@@ -22,7 +22,7 @@ interface UnitCardProps {
 }
 
 export const UnitCard = ({ unit }: UnitCardProps) => {
-    const router = useRouter();
+    //const router = useRouter();
 
     const tenant: Tenant = unit.tenant as Tenant;
     if (!unit.tenant || typeof unit.tenant === "string") {
@@ -39,12 +39,12 @@ export const UnitCard = ({ unit }: UnitCardProps) => {
         return;
     }
 
-    const handleUserClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        router.push(generateTenantURL(tenant.slug));
-    };
+    // const handleUserClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    //     e.preventDefault();
+    //     e.stopPropagation();
+    //
+    //     router.push(generateTenantURL(tenant.slug));
+    // };
 
     return (
         <Link href={`/units/${unit.slug}`}>
