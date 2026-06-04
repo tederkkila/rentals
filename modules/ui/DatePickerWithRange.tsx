@@ -157,6 +157,13 @@ const createCalendarInformationMap = (
 
                 startDate.setDate(startDate.getDate() + 1);
             }
+
+            const cleaningDate = reservation.cleaningDate
+                ? new TZDate(reservation.cleaningDate, reservation.cleaningDate_tz)
+                : null;
+            if (cleaningDate) {
+                calendarInformationMap[cleaningDate.toISOString().slice(0, 10)].cleaning = true;
+            }
         })
     }
 
@@ -406,8 +413,8 @@ export const DatePickerWithRange = ( {
     const [calendarInformationMap, maxMinimumNights] = useMemo(() => {
         return createCalendarInformationMap(unit.rates, unit.peakseasons, unit.discounts, unit.reservations)
     }, [unit.rates, unit.peakseasons, unit.discounts, unit.reservations])
-    // console.log("calendarInformationMap: ", JSON.stringify(calendarInformationMap));
-    // console.log("calendarInformationMap: ", calendarInformationMap);
+    //console.log("calendarInformationMap: ", JSON.stringify(calendarInformationMap));
+    //console.log("calendarInformationMap: ", calendarInformationMap);
 
     //Determine the last date to display in the calendar
     let lastDate: Date | string | undefined = Object.keys(calendarInformationMap).at(-1);
@@ -433,7 +440,10 @@ export const DatePickerWithRange = ( {
     )
 
     const effectiveBookedDaysSet = createCalendarInformationSet(calendarInformationMap,
-        [ {'booked': true, 'checkin': false, 'checkout': false} ] //both in one object must match
+        [
+            {'booked': true, 'checkin': false, 'checkout': false}, //single Object uses AND logic
+            /*{'cleaning': true}*/ //separate object uses OR logic
+        ]
     );
     //console.log("effectiveBookedDaysSet: ", effectiveBookedDaysSet);
 

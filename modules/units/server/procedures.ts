@@ -203,6 +203,8 @@ export const unitsRouter = createTRPCRouter({
                     startDate_tz: true,
                     endDate: true,
                     endDate_tz: true,
+                    //cleaningDate: true,
+                    //cleaningDate_tz: true,
                     id: true,
                 },
                 sort: "startDate",
