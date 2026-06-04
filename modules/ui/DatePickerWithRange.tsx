@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useEffect } from "react"
 import { addDays, subDays, eachWeekOfInterval, format, isAfter, isBefore, isSameDay } from "date-fns"
-import { startOfDay, differenceInDays } from 'date-fns';
+import { startOfDay, /*differenceInDays*/ } from 'date-fns';
 import { CalendarIcon } from "lucide-react"
 import { DayPicker, DateRange, rangeIncludesDate, TZDate  } from "@daypicker/react"
 
@@ -17,7 +17,7 @@ import {
 import { ToolTipDayButton, CalendarPriceContext } from "@/modules/ui/ToolTipDayButton";
 import { CalendarColorContext, DynamicDay } from "@/modules/ui/DynamicDay"
 import { Discount, Peakseason, Rate, Reservation, Tenant, Unit } from "@/payload-types";
-import { type DayDataConfig } from "@/modules/ui/calendarTypes";
+//import { type DayDataConfig } from "@/modules/ui/calendarTypes";
 
 
 /*const rangeContainsBookingRange = (range: DateRange, bookingRanges: DateRange[]) => {
@@ -157,6 +157,13 @@ const createCalendarInformationMap = (
 
                 startDate.setDate(startDate.getDate() + 1);
             }
+
+            const cleaningDate = reservation.cleaningDate
+                ? new TZDate(reservation.cleaningDate, reservation.cleaningDate_tz)
+                : null;
+            if (cleaningDate) {
+                calendarInformationMap[cleaningDate.toISOString().slice(0, 10)].cleaning = true;
+            }
         })
     }
 
@@ -282,7 +289,7 @@ const calculateInitialMinimumNightSet = (calendarInformationMap: Record<string, 
             for (let nights = maxMinimumNights; nights >= 1; nights--) {
                 const minimumNightDate = subDays(new TZDate(dateStr, 'UTC'), nights) as TZDate;
                 const minimumNightDateStr = minimumNightDate.toISOString().split('T')[0];
-                const booked = calendarInformationMap[minimumNightDateStr]?.booked ?? false;
+                //const booked = calendarInformationMap[minimumNightDateStr]?.booked ?? false;
                 const minimumNight = calendarInformationMap[minimumNightDateStr]?.minimumNights ?? 0;
 
                 //console.log(`   ${nights} | ${minimumNightDateStr}, ${minimumNight}, booked:${booked}`)
@@ -406,8 +413,8 @@ export const DatePickerWithRange = ( {
     const [calendarInformationMap, maxMinimumNights] = useMemo(() => {
         return createCalendarInformationMap(unit.rates, unit.peakseasons, unit.discounts, unit.reservations)
     }, [unit.rates, unit.peakseasons, unit.discounts, unit.reservations])
-    // console.log("calendarInformationMap: ", JSON.stringify(calendarInformationMap));
-    // console.log("calendarInformationMap: ", calendarInformationMap);
+    //console.log("calendarInformationMap: ", JSON.stringify(calendarInformationMap));
+    //console.log("calendarInformationMap: ", calendarInformationMap);
 
     //Determine the last date to display in the calendar
     let lastDate: Date | string | undefined = Object.keys(calendarInformationMap).at(-1);
@@ -433,7 +440,10 @@ export const DatePickerWithRange = ( {
     )
 
     const effectiveBookedDaysSet = createCalendarInformationSet(calendarInformationMap,
-        [ {'booked': true, 'checkin': false, 'checkout': false} ] //both in one object must match
+        [
+            {'booked': true, 'checkin': false, 'checkout': false}, //single Object uses AND logic
+            /*{'cleaning': true}*/ //separate object uses OR logic
+        ]
     );
     //console.log("effectiveBookedDaysSet: ", effectiveBookedDaysSet);
 

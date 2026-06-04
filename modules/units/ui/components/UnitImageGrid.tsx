@@ -2,6 +2,7 @@ import React from "react";
 import type { Media, Unit } from "@/payload-types";
 import { Box, Grid, AspectRatio } from "@radix-ui/themes";
 import Image from "next/image";
+//import DecorativeBox from "@/modules/ui/DecorativeBox";
 
 interface UnitCardProps {
     unit: Unit,
@@ -72,7 +73,7 @@ export const UnitImageGridImage = ({ image, radius }: UnitImageGridImageProps) =
     if (image.alt) imageAlt = image.alt;
 
     return (
-        <div key={image.id} className="w-full">
+        <div key={image.id} className="w-full bg-neutral-200">
             <AspectRatio ratio={1}>
                 <Image
                     loading="eager"
@@ -93,4 +94,7 @@ export const UnitImageGridSkeleton = () => {
         <div className="w-full aspect-4/1 bg-neutral-200 rounded-lg animate-pulse"/>
     );
 };
+
+
+
 
