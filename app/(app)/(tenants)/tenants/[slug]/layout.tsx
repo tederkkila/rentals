@@ -42,7 +42,7 @@ const Layout = async ({ children, params }: LayoutProps) => {
         <div className="wave4 min-h-screen relative w-full">
 
             <HydrateClient>
-                <ErrorBoundary fallback={<div>Something went wrong with the Navbar</div>}>
+                <ErrorBoundary fallback={<div>Error Loading the Navigation Bar</div>}>
                     <Suspense fallback={<NavbarSkeleton />}>
                         <Navbar slug={ slug }/>
                     </Suspense>

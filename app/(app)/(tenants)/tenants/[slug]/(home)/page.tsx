@@ -4,10 +4,11 @@ import { DEFAULT_LIMIT } from "@/constants";
 import { HydrateClient, prefetch, trpc } from "@/trpc/server";
 
 import { UnitListView } from "@/modules/units/ui/views/unit-list-view";
-import { TenantRichText } from "@/modules/tenants/ui/components/tenant-rich-text"
+import { TenantRichText, TenantRichTextSkeleton } from "@/modules/tenants/ui/components/tenant-rich-text"
 import { loadUnitFilters } from "@/modules/units/search-params";
 import { ErrorBoundary } from "react-error-boundary";
 import React, { Suspense } from "react";
+import TenantMainSkeleton from "@/modules/tenants/ui/components/tenant-main-skeleton";
 
 interface Props {
     searchParams: Promise<SearchParams>;
@@ -34,10 +35,10 @@ const Page = async ({ params, searchParams }: Props) => {
 
     return (
         <div className="flex flex-col gap-4">
-
+            {/*<TenantMainSkeleton />*/}
             <HydrateClient>
                 <ErrorBoundary fallback={<div>Something went wrong</div>}>
-                    <Suspense>
+                    <Suspense fallback={<TenantMainSkeleton />} >
                         <TenantRichText slug={slug} />
                         <UnitListView tenantSlug={slug} />
                     </Suspense>
