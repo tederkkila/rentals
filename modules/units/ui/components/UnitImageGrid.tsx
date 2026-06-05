@@ -80,7 +80,7 @@ export const UnitImageGridImage = ({ image, radius }: UnitImageGridImageProps) =
                     alt={imageAlt}
                     src={imageUrl}
                     fill
-                    sizes="50vw"
+                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
                     className="flex-1"
                     style={style}
                 />
