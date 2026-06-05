@@ -64,7 +64,7 @@ export const UnitCard = ({ unit }: UnitCardProps) => {
                                     loading="eager"
                                     alt={unit.name}
                                     fill
-                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 33vw"
                                     src={unit.image?.url || "/placeholder.png"}
                                     className="object-cover"
                                 />
@@ -74,14 +74,14 @@ export const UnitCard = ({ unit }: UnitCardProps) => {
 
                         <Box gridColumn={{initial:"", 'sm':'span 2'}} pl={{initial:"0", sm: "10px"}}>
 
-                            <h2 className={cn("text-xl font-bold leading-none", poppins.className)}>{unit.name}</h2>
+                            <h2 className={cn("text-xl font-bold leading-none mt-2", poppins.className)}>{unit.name}</h2>
                             <h3 className="font-light mb-2 text-gray-600 md:line-clamp-2">{unit.quickDescription}</h3>
 
                             <Flex
                                 gridColumn={{initial:"", 'sm':'span 2'}}
                                 direction={{initial:'column', sm: 'row'}}
                                 gap={"4"}
-                                className="text-gray-800"
+                                className="text-gray-600"
                             >
 
                                 <Box className="columns-2 sm:flex-1 sm:columns-1 ">
@@ -91,6 +91,7 @@ export const UnitCard = ({ unit }: UnitCardProps) => {
                                         <span className="text-nowrap flex">{unit.size} sq. ft.</span>
                                     }
                                 </Box>
+                                <div className="border-b border-gray-300 md:border-none"/>
 
                                 <div className="flex-1 columns-2 ">
                                     <div className="flex">
