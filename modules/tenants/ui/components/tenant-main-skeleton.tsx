@@ -1,7 +1,7 @@
 import React from "react";
 import { TenantRichTextSkeleton } from "@/modules/tenants/ui/components/tenant-rich-text"
 import { UnitListViewSkeleton } from "@/modules/units/ui/views/unit-list-view";
-import { AspectRatio, Skeleton } from "@radix-ui/themes";
+//import { AspectRatio, Skeleton } from "@radix-ui/themes";
 
 export default function TenantMainSkeleton() {
     return (
