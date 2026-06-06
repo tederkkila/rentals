@@ -17,7 +17,7 @@ const poppins = Poppins({
 });
 
 interface NavbarProps {
-    slug: string;
+    //slug: string;
 }
 
 interface NavbarItemProps {
@@ -50,7 +50,7 @@ const NavbarItem = ({
 };
 
 
-export const Navbar = ({slug}: NavbarProps) => {
+export const Navbar = ({/*slug*/}: NavbarProps) => {
 
     const navbarItems = [
         {href: "/", children: "Home"},
@@ -64,7 +64,7 @@ export const Navbar = ({slug}: NavbarProps) => {
         <nav className="h-20 flex border-b justify-between font-medium bg-white">
             <Link href="/" className="pl-6 flex items-center">
                 <span className={cn("text-5xl font-semibold", poppins.className)}>
-                  {slug}
+                  {/*{slug}*/}
                 </span>
             </Link>
 
@@ -87,23 +87,23 @@ export const Navbar = ({slug}: NavbarProps) => {
             </div>
 
             <div className="hidden lg:flex">
-                <Button
-                    asChild
-                    variant="secondary"
-                    className="border-l border-t-0 border-b-0 border-r-0 px-12 h-full rounded-none bg-white hover:bg-pink-400 transition-colors text-lg"
-                >
-                    <Link prefetch href="/sign-in">
-                        Log in
-                    </Link>
-                </Button>
-                <Button
-                    asChild
-                    className="border-l border-t-0 border-b-0 border-r-0 px-12 h-full rounded-none bg-black text-white hover:bg-pink-400 hover:text-black transition-colors text-lg"
-                >
-                    <Link prefetch href="/sign-up">
-                        Register
-                    </Link>
-                </Button>
+                {/*<Button*/}
+                {/*    asChild*/}
+                {/*    variant="secondary"*/}
+                {/*    className="border-l border-t-0 border-b-0 border-r-0 px-12 h-full rounded-none bg-white hover:bg-pink-400 transition-colors text-lg"*/}
+                {/*>*/}
+                {/*    <Link prefetch href="/sign-in">*/}
+                {/*        Log in*/}
+                {/*    </Link>*/}
+                {/*</Button>*/}
+                {/*<Button*/}
+                {/*    asChild*/}
+                {/*    className="border-l border-t-0 border-b-0 border-r-0 px-12 h-full rounded-none bg-black text-white hover:bg-pink-400 hover:text-black transition-colors text-lg"*/}
+                {/*>*/}
+                {/*    <Link prefetch href="/sign-up">*/}
+                {/*        Register*/}
+                {/*    </Link>*/}
+                {/*</Button>*/}
             </div>
 
             <div className="flex lg:hidden items-center justify-center">
