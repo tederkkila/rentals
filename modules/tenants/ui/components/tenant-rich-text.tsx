@@ -64,7 +64,7 @@ export const TenantRichTextSkeleton = () => {
                 <div className="p-4 pb-0 sm:pb-4 md:p-8
                     md:border-r
                     md:col-span-1">
-                    <Container size="1">
+                    {/*<Container size="1">*/}
                         <Flex direction="column" gap="3">
                             <Skeleton>
                                 <Text size="8" weight="bold" className="mb-2">
@@ -93,7 +93,7 @@ export const TenantRichTextSkeleton = () => {
                             </Text>
 
                         </Flex>
-                    </Container>
+                    {/*</Container>*/}
                 </div>
 
                 <div className="p-4 pt-0 md:p-8
