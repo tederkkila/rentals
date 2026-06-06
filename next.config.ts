@@ -3,6 +3,25 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+
+    async redirects() {
+        return [
+            // 1. Static path to subdomain
+            {
+                source: '/caspian',
+                destination: 'https://caspian.henrymitchell.net',
+                permanent: true, // Uses 308 permanent redirect status code
+            },
+            // 2. Dynamic path matching (e.g., forwarding slugs)
+            // {
+            //     source: '/docs/:slug*',
+            //     destination: 'https://example.com*',
+            //     permanent: false, // Uses 307 temporary redirect status code
+            // },
+        ]
+    },
+
+
     // Add this if you use SQLite or other native drivers
     serverExternalPackages: ['@payloadcms/db-mongodb', '@payloadcms/db-postgres'],
 };
