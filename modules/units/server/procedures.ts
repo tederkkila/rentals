@@ -176,7 +176,7 @@ export const unitsRouter = createTRPCRouter({
             });
 
             let unit = unitsData.docs[0] as Unit | undefined;
-            // console.log("unit:", unit)
+            //console.log("unit:", unit)
 
             if (!unit) {
                 throw new Error("Unit not found");

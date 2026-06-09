@@ -108,9 +108,22 @@ export const Units: CollectionConfig = {
         },
         {
             name: 'gallery',
+            admin: {
+                description: "This is the gallery of pretty images for the top of the unit",
+            },
             type: 'upload',
             relationTo: 'media',
             required: true,
+            hasMany: true // This enables multiple images
+        },
+        {
+            name: 'contentImages',
+            admin: {
+                description: "This is the gallery under the content text. Used for interior photos etc.",
+            },
+            type: 'upload',
+            relationTo: 'media',
+            required: false,
             hasMany: true // This enables multiple images
         },
         {

@@ -325,7 +325,14 @@ export interface Unit {
    * Tags for this unit
    */
   tags?: (string | Tag)[] | null;
+  /**
+   * This is the gallery of pretty images for the top of the unit
+   */
   gallery: (string | Media)[];
+  /**
+   * This is the gallery under the content text. Used for interior photos etc.
+   */
+  contentImages?: (string | Media)[] | null;
   rates?: {
     docs?: (string | Rate)[];
     hasNextPage?: boolean;
@@ -727,6 +734,7 @@ export interface UnitsSelect<T extends boolean = true> {
   size?: T;
   tags?: T;
   gallery?: T;
+  contentImages?: T;
   rates?: T;
   peakseasons?: T;
   discounts?: T;
