@@ -10,9 +10,9 @@ import {
     type CarouselApi,
 } from "@/components/ui/carousel"
 import { cn } from "@/lib/utils"
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from "next/image";
-import { Media, Tag } from "@/payload-types";
+import { Media } from "@/payload-types";
+import { AspectRatio } from "@radix-ui/themes";
 
 interface DotImageSliderProps {
     images: Media[];
@@ -106,9 +106,10 @@ const ImageSliderImage = ({ image, aspectRatio }: ImageSliderImageProps) => {
     let imageUrl = '/file.svg';
     if (image.url) imageUrl = image.url;
 
+    let style: object = { objectFit: 'cover' }
 
     return (
-        <AspectRatio ratio={aspectRatio}>
+        <AspectRatio ratio={aspectRatio} >
             <Image
                 loading="eager"
                 alt={imageAlt}
@@ -116,7 +117,7 @@ const ImageSliderImage = ({ image, aspectRatio }: ImageSliderImageProps) => {
                 fill
                 sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
                 className="flex-1"
-
+                style={style}
             />
         </AspectRatio>
     )
