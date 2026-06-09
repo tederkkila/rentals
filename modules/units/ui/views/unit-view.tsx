@@ -10,6 +10,8 @@ import React, { Suspense } from "react";
 import { IconSpan } from "@/modules/ui/icon-span";
 import { UnitImageGrid } from '@/modules/units/ui/components/UnitImageGrid'
 import { ReservationPicker } from '@/modules/units/ui/components/ReservationPicker'
+import {ImageSlider} from "@/modules/ui/ImageSlider";
+import {DotImageSlider} from "@/modules/ui/DotImageSlider";
 
 const isTag = (tag: string | Tag): tag is Tag => {
     return typeof tag === "object" && tag !== null;
@@ -34,7 +36,7 @@ export const UnitView = ({ unit }: UnitViewProps) => {
     const {data} = useSuspenseQuery(trpc.units.getUnitWithCalendar.queryOptions({ slug: unit }));
     const unitData: UnitWithCalendar = data;
 
-    //console.log("unit:" + JSON.stringify(unitData));
+    //console.log("unit:" + JSON.stringify(unitData.contentImages));
 
     let amenities: Tag[] = [];
     if (unitData.tags) {
@@ -58,29 +60,39 @@ export const UnitView = ({ unit }: UnitViewProps) => {
                             <RichText data={unitData.content}/>
                         )}
                     </Box>
+
+                    {unitData.contentImages &&
+                        <Box className="flex flex-col items-center">
+
+                            <DotImageSlider images={ unitData.contentImages } aspectRatio={4/3} />
+                        </Box>
+                    }
+
                 </Box>
                 <Box className="flex-4">
-                    <Box ml={{ initial: "0", sm: "5" }} mt="25px">
+                    <Box ml={{ initial: "0", sm: "5" }} mt="25px" mb="25px">
                         <Suspense fallback={"loading calendar..."}>
                             <ReservationPicker unit={unitData} />
                         </Suspense>
+                    </Box>
+
+                    <Box ml={{ initial: "0", sm: "5" }} mt={{ initial: "0", sm: "25px" }}>
+                        <Heading as="h2" size="5" mb={"4"}>Amenities</Heading>
+                        {amenities && (
+                            <div className="flex flex-wrap gap-2">
+                                {amenities.map((tag: Tag) => (
+                                    <div key={tag.id} className="bg-gray-100 rounded-full px-3 py-1 text-sm font-medium text-gray-700">
+                                        <IconSpan name={tag.icon} label={tag.name} size={15}  />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </Box>
                 </Box>
             </Flex>
 
 
-            <Section size="1" >
-                <Heading as="h2" size="4">Amenities</Heading>
-                {amenities && (
-                    <div className="flex flex-wrap gap-2">
-                        {amenities.map((tag: Tag) => (
-                            <div key={tag.id} className="bg-gray-100 rounded-full px-3 py-1 text-sm font-medium text-gray-700">
-                                <IconSpan name={tag.icon} label={tag.name} size={15}  />
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </Section>
+
 
         </Box>
     )

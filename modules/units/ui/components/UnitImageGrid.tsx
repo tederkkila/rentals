@@ -2,6 +2,7 @@ import React from "react";
 import type { Media, Unit } from "@/payload-types";
 import { Box, Grid, AspectRatio } from "@radix-ui/themes";
 import Image from "next/image";
+import { DotImageSlider } from "@/modules/ui/DotImageSlider";
 //import DecorativeBox from "@/modules/ui/DecorativeBox";
 
 interface UnitCardProps {
@@ -31,7 +32,13 @@ export const UnitImageGrid = ({ unit } : UnitCardProps) => {
             </div>
 
             <div className="block sm:hidden">
-                <UnitImageGridImage image={Object.values(firstFive)[0]} radius={""} />
+                {/*<UnitImageGridImage image={Object.values(firstFive)[0]} radius={""} />*/}
+                {unit.contentImages &&
+                    <Box>
+
+                        <DotImageSlider images={ firstFive } aspectRatio={1}/>
+                    </Box>
+                }
 
             </div>
 
