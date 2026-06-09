@@ -12,9 +12,10 @@ import {
 import { cn } from "@/lib/utils"
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from "next/image";
+import { Media, Tag } from "@/payload-types";
 
 interface DotImageSliderProps {
-    images: Media[] | undefined;
+    images: Media[];
     aspectRatio: number;
 }
 
@@ -36,7 +37,8 @@ export function DotImageSlider( { images, aspectRatio }: DotImageSliderProps) {
     }, [api])
 
     //console.log("DotImageSlider images:" + JSON.stringify(images));
-    console.log("DotImageSlider images:" + images);
+    //console.log("DotImageSlider images:" + images);
+
 
     return (
         <Carousel
@@ -47,25 +49,18 @@ export function DotImageSlider( { images, aspectRatio }: DotImageSliderProps) {
             }}
         >
             <CarouselContent className="ml-0">
-                {images.map((image, index) => (
+                {images?.map((image, index) => (
+
                     <CarouselItem key={index} className="pl-0 basis-full">
+                        {image &&
                         <div className="p-0">
                             <div className="flex items-center justify-center rounded-xl bg-muted font-semibold">
-
-                                <AspectRatio ratio={aspectRatio}>
-                                    <Image
-                                        loading="eager"
-                                        alt={image.alt}
-                                        src={image.url}
-                                        fill
-                                        sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
-                                        className="flex-1"
-
-                                    />
-                                </AspectRatio>
+                                <ImageSliderImage image={image} aspectRatio={aspectRatio} />
                             </div>
                         </div>
+                        }
                     </CarouselItem>
+
                 ))}
             </CarouselContent>
 
@@ -95,5 +90,34 @@ export function DotImageSlider( { images, aspectRatio }: DotImageSliderProps) {
                 </div>
             </div>
         </Carousel>
+    )
+}
+
+interface ImageSliderImageProps {
+    image: Media;
+    aspectRatio: number;
+}
+
+const ImageSliderImage = ({ image, aspectRatio }: ImageSliderImageProps) => {
+
+    let imageAlt = 'image missing';
+    if (image.alt) imageAlt = image.alt;
+
+    let imageUrl = '/file.svg';
+    if (image.url) imageUrl = image.url;
+
+
+    return (
+        <AspectRatio ratio={aspectRatio}>
+            <Image
+                loading="eager"
+                alt={imageAlt}
+                src={imageUrl}
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+                className="flex-1"
+
+            />
+        </AspectRatio>
     )
 }

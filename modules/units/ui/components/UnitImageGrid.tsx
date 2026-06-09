@@ -33,9 +33,8 @@ export const UnitImageGrid = ({ unit } : UnitCardProps) => {
 
             <div className="block sm:hidden">
                 {/*<UnitImageGridImage image={Object.values(firstFive)[0]} radius={""} />*/}
-                {unit.contentImages &&
+                {firstFive &&
                     <Box>
-
                         <DotImageSlider images={ firstFive } aspectRatio={1}/>
                     </Box>
                 }

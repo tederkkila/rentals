@@ -3,7 +3,7 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 
 import { useTRPC } from "@/trpc/client";
-import { Unit, Tag, Tenant, Reservation, Rate, Peakseason, Discount } from "@/payload-types"
+import { Unit, Tag, Tenant, Reservation, Rate, Peakseason, Discount, Media } from "@/payload-types"
 import { Section, Box, Heading, Flex } from "@radix-ui/themes";
 import { RichText } from "@payloadcms/richtext-lexical/react";
 import React, { Suspense } from "react";
@@ -15,6 +15,10 @@ import {DotImageSlider} from "@/modules/ui/DotImageSlider";
 
 const isTag = (tag: string | Tag): tag is Tag => {
     return typeof tag === "object" && tag !== null;
+};
+
+const isMedia = (media: string | Media): media is Media => {
+    return typeof media === "object" && media !== null;
 };
 
 interface UnitViewProps {
@@ -44,7 +48,15 @@ export const UnitView = ({ unit }: UnitViewProps) => {
             .filter(isTag)
             .filter((tag) => tag.isAmenity === true);
     }
+
+
     // console.log("amenities:" + JSON.stringify(unitData.tags));
+
+    let contentImages: Media[] = [];
+    if (unitData.contentImages) {
+        contentImages = unitData.contentImages
+            .filter(isMedia);
+    }
 
 
     return (
@@ -61,10 +73,10 @@ export const UnitView = ({ unit }: UnitViewProps) => {
                         )}
                     </Box>
 
-                    {unitData.contentImages &&
+                    {contentImages &&
                         <Box className="flex flex-col items-center">
 
-                            <DotImageSlider images={ unitData.contentImages } aspectRatio={4/3} />
+                            <DotImageSlider images={ contentImages } aspectRatio={4/3} />
                         </Box>
                     }
 
