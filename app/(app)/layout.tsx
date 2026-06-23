@@ -10,6 +10,7 @@ import "@daypicker/react/style.css"
 import "./hm.css"
 
 import { Theme, ThemePanel } from "@radix-ui/themes";
+import { Analytics } from '@vercel/analytics/next';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,6 +39,7 @@ export default function RootLayout({
           <TRPCReactProvider>
               <Theme radius="medium">
                   {children}
+                  <Analytics />
                   {/*<ThemePanel />*/}
               </Theme>
           </TRPCReactProvider>
