@@ -29,6 +29,7 @@
     "@trpc/client": "^11.15.0",
     "@trpc/server": "^11.15.0",
     "@trpc/tanstack-react-query": "^11.15.0",
+    "@vercel/analytics": "^2.0.1",
     "class-variance-authority": "^0.7.1",
     "client-only": "^0.0.1",
     "clsx": "^2.1.1",

@@ -85,6 +85,7 @@ export default function PriceBreakdown({ dateMatrix, tax, setQuote }: PriceBreak
 interface PriceLineProps {
     title: string;
     amount: number;
+    key?: React.Key;
 }
 
 const PriceLine = ({title, amount}: PriceLineProps) => {

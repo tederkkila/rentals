@@ -220,7 +220,7 @@ export const unitsRouter = createTRPCRouter({
                         greater_than_equal: firstDayOfMonth.toISOString(),
                     },
                 },
-                sort: "+startDate",
+                sort: "startDate",
             });
 
             const peakseasons = await ctx.db.find({
@@ -233,7 +233,7 @@ export const unitsRouter = createTRPCRouter({
                         greater_than_equal: firstDayOfMonth.toISOString(),
                     },
                 },
-                sort: "+startDate",
+                sort: "startDate",
             });
 
             const discounts = await ctx.db.find({
@@ -248,7 +248,7 @@ export const unitsRouter = createTRPCRouter({
                         greater_than_equal: firstDayOfMonth.toISOString(),
                     },
                 },
-                sort: "+startDate",
+                sort: "startDate",
             });
 
 
