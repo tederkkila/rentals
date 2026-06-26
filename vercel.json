@@ -1,0 +1,14 @@
+{
+  "redirects": [
+    {
+      "source": "/crossroads-of/:path*",
+      "destination": "/",
+      "statusCode": 301
+    },
+    {
+      "source": "/mdn82/:path*",
+      "destination": "/",
+      "statusCode": 301
+    }
+  ]
+}
