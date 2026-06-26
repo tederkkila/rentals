@@ -54,7 +54,7 @@ export const Navbar = ({/*slug*/}: NavbarProps) => {
 
     const navbarItems = [
         {href: "/", children: "Home"},
-        {href: "/contact", children: "Contact"},
+        /*{href: "/contact", children: "Contact"},*/
     ];
 
     const pathname = usePathname();
