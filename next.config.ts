@@ -4,6 +4,20 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
 
+    images: {
+        // Whitelist your Payload media domains here
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: '*.public.blob.vercel-storage.com',
+            },
+            {
+                protocol: 'http', // Required for local development
+                hostname: 'localhost',
+            },
+        ],
+    },
+
     async redirects() {
         return [
             // 1. Static path to subdomain
