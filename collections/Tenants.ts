@@ -89,12 +89,12 @@ export const Tenants: CollectionConfig = {
                 description: "Attractions for this tenant",
                 isSortable: true,
             },
-            filterOptions: ({ data }) => {
+            filterOptions: ({ id }) => {
                 // This filters the dropdown dynamically in the Admin UI
-                if (data?.tenant) {
+                if (id) {
                     return {
                         tenant: {
-                            equals: data.tenant,
+                            equals: id,
                         },
                     };
                 }
